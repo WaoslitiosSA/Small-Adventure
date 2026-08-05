@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Foro Small Adventure</title>
+    <link rel="stylesheet" href="Foro SM.css">
+</head>
+
+<body>
+
+    <div style="text-align: center;">
+        <h3 id="entradaUsuario"></h3>
+    </div>
+
+    <!-- Pájaros -->
+    <div class="pajaro p1">🕊</div>
+    <div class="pajaro p2">🕊</div>
+    <div class="pajaro p3">🕊</div>
+
+    <!-- Nubes -->
+    <div class="nube n1">☁</div>
+    <div class="nube n2">☁</div>
+    <div class="nube n3">☁</div>
+
+    <!-- Montañas -->
+    <div class="montanas">
+        <div class="montana m1"></div>
+        <div class="montana m2"></div>
+        <div class="montana m3"></div>
+    </div>
+
+    <!-- Bosque -->
+    <div class="bosque">
+        <div class="pino-fondo"></div>
+        <div class="pino-fondo"></div>
+        <div class="pino-fondo"></div>
+        <div class="pino-fondo"></div>
+        <div class="pino-fondo"></div>
+        <div class="pino-fondo"></div>
+    </div>
+
+    <!-- Burbujas -->
+    <div class="burbujas">
+        <div class="burbuja"></div>
+        <div class="burbuja"></div>
+        <div class="burbuja"></div>
+        <div class="burbuja"></div>
+        <div class="burbuja"></div>
+    </div>
+
+    <!-- Pantalla de bienvenida -->
+    <div id="bienvenida">
+
+        <h1>Bienvenidos al foro de Small Adventure</h1>
+
+        <p id="bienvenidaUsuario"></p>
+
+        <p>Antes de participar en el foro, por favor lee las siguientes reglas:</p>
+
+        <p>1. Respeta a todos los miembros de la comunidad.</p>
+        <p>2. No publiques contenido ofensivo o inapropiado.</p>
+        <p>3. No hagas spam ni publicidad no autorizada.</p>
+        <p>4. Mantén las conversaciones relacionadas con Small Adventure.</p>
+        <p>5. Sigue las indicaciones de los administradores.</p>
+
+        <button onclick="entrarForo()">
+            Aceptar y entrar al foro
+        </button>
+
+    </div>
+
+        <!-- Menú del foro -->
+    <div id="menuForo">
+
+        <button onclick="mostrarGeneral()">
+            Información General
+        </button>
+
+        <button onclick="mostrarEspanol()">
+            Español
+        </button>
+
+        <button onclick="mostrarIngles()">
+            Inglés
+        </button>
+
+        <button onclick="mostrarPortugues()">
+            Portugués
+        </button>
+
+    </div>
+
+    <!-- Contenido del foro -->
+    <div id="contenidoForo">
+
+        <!-- Información General -->
+        <div id="general" style="display: none;">
+
+            <h2>Información General</h2>
+
+            <div id="comentariosGeneral">
+
+                <div class="comentario">
+                    Bienvenidos al foro.
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Foro Español -->
+        <div id="espanol" style="display: none;">
+
+            <h2>Foro Español</h2>
+
+            <div id="comentariosEspanol">
+
+                <p style="color:red; font-size:30px;">
+                    FUNCIONA ESPAÑOL
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Foro Inglés -->
+        <div id="ingles" style="display: none;">
+
+            <h2>English Forum</h2>
+
+            <div id="comentariosIngles"></div>
+
+        </div>
+
+        <!-- Foro Portugués -->
+        <div id="portugues" style="display: none;">
+
+            <h2>Fórum Português</h2>
+
+            <div id="comentariosPortugues"></div>
+
+        </div>
+
+        <!-- Comentarios generales -->
+        <div id="comentarios">
+
+            <div class="comentario">
+                <strong>Explorador123:</strong>
+                ¡Bienvenidos al foro!
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Caja para escribir comentarios -->
+    <div class="contenedor">
+
+        <textarea id="mensaje" placeholder="Escribe tu comentario aquí..."></textarea>
+        <button onclick="agregarComentario()">
+            Publicar comentario
+        </button>
+
+        <button id="btnAdmin" onclick="iniciarAdmin()">
+            Iniciar sesión como administrador
+        </button>
+
+        <button id="btnCerrar" onclick="cerrarSesion()">
+            Cerrar sesión
+        </button>
+
+    </div>
+
+    <!-- Árbol izquierdo -->
+    <div class="arbol izquierda">
+        <div class="pino">
+            <div class="rama"></div>
+            <div class="rama"></div>
+            <div class="rama"></div>
+        </div>
+        <div class="tronco"></div>
+    </div>
+
+    <!-- Árbol derecho -->
+    <div class="arbol derecha">
+        <div class="pino">
+            <div class="rama"></div>
+            <div class="rama"></div>
+            <div class="rama"></div>
+        </div>
+        <div class="tronco"></div>
+    </div>
+
+    <script src="Foro SM.js"></script>
+
+</body>
+
+</html>

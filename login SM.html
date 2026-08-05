@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<HTml lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>login Small Adventure</title>
+
+    <link rel="stylesheet" href="login SM.css">
+</head>
+<body>
+
+    <div class="contenedor">
+
+<h1>Small Adventure</h1>
+
+    <h2>Iniciar Sesión</h2>
+
+    <form id="loginForm">
+
+        <label>Correo electrónico</label>
+
+        <input
+            type="email"
+            id="loginCorreo"
+            placeholder="Ingrese su correo"
+            required>
+
+        <label>Contraseña</label>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Ingrese su contraseña"
+            required>
+
+            
+        <button type="submit">
+            Iniciar Sesión
+        </button>
+    
+
+    </form>
+
+    <p class="enlace">
+        <a href="#" onclick="recuperarPassword()">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </p>
+
+    <p class="enlace">
+        ¿No tienes una cuenta?
+
+        <a href="registro SM.html" onclick="mostrarRegistro()">
+            Registrarse
+        </a>
+    </p>
+
+    </div>
+
+    <script src="login SM.js"></script>
+
+    </body>
+    </html>

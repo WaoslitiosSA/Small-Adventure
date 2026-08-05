@@ -1,0 +1,510 @@
+/* =========================================
+   RESET GENERAL
+========================================= */
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   CUERPO DE LA PÁGINA
+========================================= */
+
+body{
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+
+    background: linear-gradient(
+        to bottom,
+        #4fc3f7 0%,
+        #87ceeb 35%,
+        #bdefff 70%,
+        #dff7ff 100%
+    );
+}
+
+/* =========================================
+   PANTALLA DE BIENVENIDA
+========================================= */
+
+#bienvenida{
+    position: relative;
+    z-index: 1000;
+
+    max-width: 800px;
+    margin: 40px auto;
+
+    padding: 25px;
+
+    text-align: center;
+
+    background: rgba(255,255,255,.95);
+
+    border-radius: 20px;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+}
+
+#bienvenida p{
+    margin: 10px 0;
+}
+
+/* =========================================
+   BOTONES GENERALES
+========================================= */
+
+button{
+    background: #4facfe;
+    color: white;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    margin-top: 10px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: background .3s;
+}
+
+button:hover{
+    background: #2d8cff;
+}
+/* =========================================
+   BURBUJAS
+========================================= */
+
+.burbujas{
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 4;
+}
+
+.burbuja{
+    position: absolute;
+    bottom: -150px;
+
+    border-radius: 50%;
+
+    opacity: .5;
+
+    animation: subir 15s linear infinite;
+}
+
+.burbuja:nth-child(1){
+    width: 80px;
+    height: 80px;
+    left: 10%;
+    background: #ff6b6b;
+}
+
+.burbuja:nth-child(2){
+    width: 50px;
+    height: 50px;
+    left: 25%;
+    background: #ffd93d;
+    animation-duration: 12s;
+}
+
+.burbuja:nth-child(3){
+    width: 100px;
+    height: 100px;
+    left: 40%;
+    background: #6bcB77;
+    animation-duration: 18s;
+}
+
+.burbuja:nth-child(4){
+    width: 60px;
+    height: 60px;
+    left: 60%;
+    background: #4d96ff;
+}
+
+.burbuja:nth-child(5){
+    width: 120px;
+    height: 120px;
+    left: 80%;
+    background: #c77dff;
+    animation-duration: 20s;
+}
+
+/* =========================================
+   MONTAÑAS
+========================================= */
+
+.montanas{
+    position: fixed;
+    bottom: 100px;
+
+    width: 100%;
+
+    z-index: 2;
+}
+
+.montana{
+    position: absolute;
+
+    width: 0;
+    height: 0;
+
+    border-left: 550px solid transparent;
+    border-right: 550px solid transparent;
+    border-bottom: 750px solid #7d8fa3;
+}
+
+/* =========================================
+   BOSQUE
+========================================= */
+
+.bosque{
+    position: fixed;
+    bottom: 0;
+
+    display: flex;
+    justify-content: space-around;
+
+    width: 100%;
+
+    z-index: -2;
+}
+
+.pino-fondo{
+    position: relative;
+
+    width: 0;
+    height: 0;
+
+    border-left: 40px solid transparent;
+    border-right: 40px solid transparent;
+    border-bottom: 100px solid #1f6b1f;
+}
+
+.pino-fondo::before{
+    content: "";
+
+    position: absolute;
+
+    left: -50px;
+    top: 30px;
+
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 90px solid #228B22;
+}
+
+.pino-fondo::after{
+    content: "";
+
+    position: absolute;
+
+    left: -8px;
+    top: 95px;
+
+    width: 16px;
+    height: 35px;
+
+    background: #6b4423;
+}
+/* =========================================
+   PÁJAROS
+========================================= */
+
+.pajaro{
+    position: fixed;
+
+    font-size: 30px;
+    color: #222;
+
+    z-index: 1;
+
+    animation: volar 20s linear infinite;
+}
+
+.p1{
+    top: 120px;
+    animation-delay: 0s;
+}
+
+.p2{
+    top: 180px;
+    animation-delay: 5s;
+}
+
+.p3{
+    top: 250px;
+    animation-delay: 10s;
+}
+
+/* =========================================
+   NUBES
+========================================= */
+
+.nube{
+    position: fixed;
+
+    color: white;
+
+    font-size: 90px;
+
+    opacity: .8;
+
+    z-index: 0;
+}
+
+.n1{
+    top: 60px;
+    left: 5%;
+}
+
+.n2{
+    top: 120px;
+    right: 10%;
+}
+
+.n3{
+    top: 280px;
+    left: 20%;
+}
+
+/* =========================================
+   ÁRBOLES DECORATIVOS
+========================================= */
+
+.arbol{
+    position: fixed;
+    bottom: 0;
+
+    z-index: -1;
+}
+
+.arbol.izquierda{
+    left: 30px;
+}
+
+.arbol.derecha{
+    right: 30px;
+}
+
+.tronco{
+    width: 30px;
+    height: 130px;
+
+    margin: auto;
+
+    background: #6b4423;
+}
+
+.pino{
+    position: relative;
+
+    transform-origin: bottom center;
+
+    animation: viento 3s ease-in-out infinite;
+}
+
+.rama{
+    width: 0;
+    height: 0;
+
+    margin: auto;
+    margin-bottom: -20px;
+
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 70px solid #228B22;
+}
+
+.rama:nth-child(2){
+    border-left-width: 60px;
+    border-right-width: 60px;
+    border-bottom-width: 85px;
+}
+
+.rama:nth-child(3){
+    border-left-width: 70px;
+    border-right-width: 70px;
+    border-bottom-width: 100px;
+}
+
+/* =========================================
+   ANIMACIONES
+========================================= */
+
+@keyframes viento{
+    0%{
+        transform: rotate(-2deg);
+    }
+
+    50%{
+        transform: rotate(2deg);
+    }
+
+    100%{
+        transform: rotate(-2deg);
+    }
+}
+
+@keyframes volar{
+    from{
+        left: -100px;
+    }
+
+    to{
+        left: 110%;
+    }
+}
+
+@keyframes subir{
+    0%{
+        transform: translateY(0) rotate(0deg);
+        opacity: .5;
+    }
+
+    100%{
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+/* =========================================
+   CONTENEDOR DEL FORO
+========================================= */
+
+.contenedor{
+    position: relative;
+    z-index: 1000;
+
+    max-width: 800px;
+    margin: 40px auto;
+
+    padding: 25px;
+
+    background: rgba(255,255,255,.95);
+
+    border-radius: 20px;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+
+    text-align: center;
+}
+
+/* =========================================
+   TÍTULOS
+========================================= */
+
+h1{
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   COMENTARIOS
+========================================= */
+
+.comentario{
+    margin-top: 10px;
+    padding: 12px;
+
+    background: #f2f2f2;
+
+    border-left: 5px solid #4facfe;
+    border-radius: 8px;
+}
+
+/* =========================================
+   CAMPOS DE TEXTO
+========================================= */
+
+input,
+textarea{
+    width: 100%;
+
+    margin-top: 10px;
+    padding: 10px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    resize: vertical;
+}
+
+/* =========================================
+   BOTÓN CERRAR SESIÓN
+========================================= */
+
+#btnCerrar{
+    background: #b22222;
+}
+
+#btnCerrar:hover{
+    background: #8b0000;
+}
+
+/* =========================================
+   MENSAJE DE BIENVENIDA
+========================================= */
+
+#entradaUsuario{
+    display: inline-block;
+
+    margin: 20px auto;
+    padding: 15px 30px;
+
+    text-align: center;
+
+    font-size: 32px;
+    font-weight: bold;
+
+    color: #fff;
+
+    background: linear-gradient(135deg,#4facfe,#2d8cff);
+
+    border: 3px solid white;
+    border-radius: 20px;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+
+    text-shadow: 2px 2px 5px rgba(0,0,0,.3);
+}
+
+/* =========================================
+   MENÚ DEL FORO
+========================================= */
+
+#menuForo{
+    display: none;
+
+    position: relative;
+    z-index: 1000;
+
+    text-align: center;
+}
+
+#menuForo button{
+    margin: 5px;
+}
+
+/* =========================================
+   CONTENIDO DEL FORO
+========================================= */
+
+#contenidoForo{
+    display: none;
+
+    position: relative;
+    z-index: 1000;
+
+    width: 100%;
+}
