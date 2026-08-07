@@ -508,3 +508,39 @@ textarea{
 
     width: 100%;
 }
+
+/*==========================
+  NOTIFICACIONES
+==========================*/
+
+#toast{
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    min-width: 260px;
+    max-width: 350px;
+    background: #222;
+    color: white;
+    padding: 16px 20px;
+    border-left: 6px solid #2ecc71;
+    border-radius: 10px;
+    font-size: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0, 0.35);
+    opacity: 0;
+    transform: translateX(120%);
+    transition: .4s;
+    z-index:99999;
+}
+
+#toast.mostrar{
+    opacity:1;
+    transform: translateX(0);
+}
+
+#toast.error{
+    border-left-color: #e74c3c;
+}
+
+#toast.info{
+    border-left-color: #3498db;
+}

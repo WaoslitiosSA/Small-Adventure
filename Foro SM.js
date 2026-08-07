@@ -1,13 +1,50 @@
 // =========================================
+// MENSAJE DE BIENVENIDA
+// =========================================
+
+function mostrarToast(mensaje,tipo="ok"){
+    
+    const toast=document.getElementById("toast");
+    toast.textContent=mensaje;
+    toast.className="";
+    toast.classList.add("mostrar");
+    if(tipo==="error"){
+        toast.classList.add("error");
+    }
+
+
+if(tipo==="info"){
+    toast.classList.add("info");
+}
+
+setTimeout(function(){
+    toast.classList.remove("mostrar");
+},3000);
+}
+
+
+
+// =========================================
 // USUARIO ACTIVO
 // =========================================
 
 let usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
+let esAdmin = usuarioActivo && usuarioActivo.rol === "admin";
+
 if (usuarioActivo) {
 
-    document.getElementById("entradaUsuario").textContent =
-        "Bienvenido, " + usuarioActivo.nombre;
+    const usuarioTitulo = document.getElementById("entradaUsuario");
+
+    if (esAdmin) {
+        usuarioTitulo.innerHTML =
+        "👑" + usuarioActivo.nombre + " <span style='color:gold;'>(Administrador)</span>";
+    
+    } else {
+
+        usuarioTitulo.textContent =
+        "Bienvenido " + usuarioActivo.nombre;
+    }
 
     document.getElementById("bienvenidaUsuario").textContent =
         "Hola " + usuarioActivo.nombre + ", disfruta del foro.";
@@ -17,8 +54,6 @@ if (usuarioActivo) {
 // =========================================
 // VARIABLES DEL FORO
 // =========================================
-
-let esAdmin = false;
 
 let categoriaActual = "general";
 
@@ -91,31 +126,6 @@ function entrarForo() {
 }
 
 // =========================================
-// MODO ADMINISTRADOR
-// =========================================
-
-function iniciarAdmin() {
-
-    let clave = prompt("Ingrese la contraseña de administrador:");
-
-    if (clave === "SmallAdventure2026") {
-
-        esAdmin = true;
-
-        alert("Sesión de administrador iniciada.");
-
-        actualizarBotonesEliminar();
-
-        document.getElementById("btnAdmin").style.display = "none";
-
-    } else {
-
-        alert("Contraseña incorrecta.");
-
-    }
-
-}
-// =========================================
 // AGREGAR COMENTARIOS
 // =========================================
 
@@ -129,7 +139,7 @@ function agregarComentario() {
 
     if (mensaje === "") {
 
-        alert("Escribe un comentario.");
+        mostrarToast("Escribe un comentario.","error");
 
         return;
 

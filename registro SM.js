@@ -2,6 +2,30 @@
 .getElementById("registroForm")
 .addEventListener("submit", registrar);
 
+// =========================================
+// MENSAJE DE BIENVENIDA
+// =========================================
+
+function mostrarToast(mensaje,tipo="ok"){
+    
+    const toast=document.getElementById("toast");
+    toast.textContent=mensaje;
+    toast.className="";
+    toast.classList.add("mostrar");
+    if(tipo==="error"){
+        toast.classList.add("error");
+    }
+
+
+if(tipo==="info"){
+    toast.classList.add("info");
+}
+
+setTimeout(function(){
+    toast.classList.remove("mostrar");
+},3000);
+}
+
 function registrar(e){
 
     e.preventDefault();
@@ -20,7 +44,7 @@ function registrar(e){
 
     if(password!==confirmar){
 
-        alert("Las contraseñas no coinciden.");
+        mostrarToast("Las contraseñas no coinciden." , "error");
 
         return;
 
@@ -37,7 +61,7 @@ function registrar(e){
 
     if(existe){
 
-        alert("Ese correo ya está registrado.");
+        mostrarToast("Ese correo ya está registrado." , "error");
 
         return;
 
@@ -49,7 +73,9 @@ function registrar(e){
 
         nombre:nombre,
 
-        password:password
+        password:password,
+
+        rol: "usuario"
 
     };
 
@@ -71,8 +97,12 @@ function registrar(e){
 
     );
 
-    alert("Registro exitoso.");
+    mostrarToast("Registro exitoso.");
 
-    window.location.href = "index.html"
+    setTimeout(function(){
+        window.location.href="index.html";
 
+    },1200);
+    
+    return;
 }

@@ -2,6 +2,66 @@ document
 .getElementById("loginForm")
 .addEventListener("submit", iniciarSesion);
 
+//=========================================
+// CREAR ADMINISTRADOR SI NO EXISTE
+//=========================================
+
+function crearAdministrador() {
+
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    let existeAdmin = usuarios.some(function(usuario) {
+        return usuario.rol === "admin";
+    });
+
+    if (!existeAdmin) {
+
+        usuarios.push({
+
+            correo: "EdwinBrochacho@smalladventure.com",
+
+            nombre: "ErwinAD",
+
+            password: "SmallAdventure2026",
+
+            rol: "admin"
+
+        });
+
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+        console.log("Administrador creado.");
+
+    }
+
+}
+
+crearAdministrador();
+
+// =========================================
+// MENSAJE DE BIENVENIDA
+// =========================================
+
+function mostrarToast(mensaje,tipo="ok"){
+    
+    const toast=document.getElementById("toast");
+    toast.textContent=mensaje;
+    toast.className="";
+    toast.classList.add("mostrar");
+    if(tipo==="error"){
+        toast.classList.add("error");
+    }
+
+
+if(tipo==="info"){
+    toast.classList.add("info");
+}
+
+setTimeout(function(){
+    toast.classList.remove("mostrar");
+},3000);
+}
+
 function iniciarSesion(e){
 
     e.preventDefault();
@@ -17,7 +77,6 @@ function iniciarSesion(e){
 
     let usuario = usuarios.find(function(u){
 
-        console.log(u.correo, u.password);
 
         return u.correo===correo &&
                u.password===password;
@@ -31,17 +90,20 @@ function iniciarSesion(e){
             JSON.stringify(usuario)
     );
 
-        alert("Bienvenido " + usuario.nombre);
+        mostrarToast("Bienvenido " + usuario.nombre);
+        setTimeout(function(){
+            window.location.href="Foro SM.html"
 
-        window.location.href = "Foro SM.html"
+        },1200);
+
+        return;
+
+    }else{
+
+        mostrarToast("Correo o contraseña incorrectos. ", "error")
 
     }
-
-    else{
-
-        alert("Correo o contraseña incorrectos.");
-
-    }
+}
 
     
 function recuperarPassword(){
@@ -60,7 +122,7 @@ function recuperarPassword(){
 
     if(!usuario){
 
-        alert("No existe una cuenta registrada con ese correo.");
+        mostrarToast("No existe una cuenta registrada con ese correo." , "error");
 
         return;
 
@@ -80,7 +142,7 @@ function recuperarPassword(){
 
     if(nuevaPassword !== confirmar){
 
-        alert("Las contraseñas no coinciden.");
+        mostrarToast("Las contraseñas no coinciden." , "error");
 
         return;
 
@@ -90,10 +152,10 @@ function recuperarPassword(){
 
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-    alert("Contraseña actualizada correctamente.");
+    mostrarToast("Contraseña actualizada correctamente.");
 
 }
 
-}
+
 
 
