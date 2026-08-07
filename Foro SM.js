@@ -253,6 +253,6 @@ function cerrarSesion() {
 
     localStorage.removeItem("usuarioActivo");
 
-    window.location.href = "login SM.html";
+    window.location.href = "index.html";
 
 }

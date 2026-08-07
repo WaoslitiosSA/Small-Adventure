@@ -73,6 +73,6 @@ function registrar(e){
 
     alert("Registro exitoso.");
 
-    window.location.href = "login SM.html"
+    window.location.href = "index.html"
 
 }
