@@ -1,158 +1,377 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
 
-    display:flex;
+/* =========================================================
+   CUERPO
+   ========================================================= */
 
-    justify-content:center;
+body {
+    min-height: 100vh;
 
-    align-items:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    height:100vh;
+    padding: 20px;
 
-    background:linear-gradient(135deg,#4facfe,#00f2fe);
+    color: #f5f2ea;
 
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(255, 138, 31, 0.12),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(255, 69, 103, 0.05),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #08070b,
+            #100c14,
+            #0b0910
+        );
 }
 
-.contenedor{
 
-    width:400px;
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
 
-    background:white;
+.contenedor {
+    position: relative;
 
-    padding:35px;
+    width: min(400px, 100%);
 
-    border-radius:15px;
+    padding: 35px;
 
-    box-shadow:0px 10px 25px rgba(0,0,0,.25);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(36, 29, 40, 0.98),
+            rgba(17, 14, 21, 0.98)
+        );
 
+    border: 1px solid rgba(255, 138, 31, 0.5);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.65),
+        0 0 25px rgba(255, 138, 31, 0.08);
+
+    animation: aparecer 0.6s ease;
 }
 
-h1{
 
-    color: #00a86b;
+/* =========================================================
+   DETALLE LUMINOSO SUPERIOR
+   ========================================================= */
 
+.contenedor::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 15%;
+
+    width: 70%;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #ffd43b,
+        #ff8a1f,
+        transparent
+    );
+
+    box-shadow:
+        0 0 12px rgba(255, 180, 30, 0.5);
 }
 
-h2{
 
-    text-align:center;
+/* =========================================================
+   TÍTULO
+   ========================================================= */
 
-    margin-bottom:25px;
+h1 {
+    text-align: center;
 
+    color: #ffd43b;
+
+    font-size: 32px;
+
+    margin-bottom: 25px;
+
+    text-shadow:
+        0 0 12px rgba(255, 212, 59, 0.3);
 }
 
-label{
 
-    display:block;
+/* =========================================================
+   ETIQUETAS
+   ========================================================= */
 
-    margin-top:15px;
+label {
+    display: block;
 
+    margin-top: 15px;
+
+    color: #d7d1d8;
+
+    font-size: 14px;
 }
 
-input{
 
-    width:100%;
+/* =========================================================
+   CAMPOS DE TEXTO
+   ========================================================= */
 
-    padding:12px;
+input {
+    width: 100%;
 
-    margin-top:6px;
+    padding: 12px;
 
-    border:1px solid #ccc;
+    margin-top: 7px;
 
-    border-radius:8px;
+    color: #f5f2ea;
 
-    font-size:15px;
+    background: #100d13;
 
+    border: 1px solid rgba(255, 138, 31, 0.3);
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
-button{
 
-    width:100%;
-
-    padding:12px;
-
-    margin-top:25px;
-
-    background:#4facfe;
-
-    color:white;
-
-    border:none;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-    font-size:16px;
-
+input::placeholder {
+    color: #77717b;
 }
 
-button:hover{
 
-    background:#2b90f5;
+input:focus {
+    background: #151118;
 
+    border-color: #ffd43b;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 212, 59, 0.08),
+        0 0 15px rgba(255, 138, 31, 0.12);
 }
 
-.enlace{
 
-    margin-top:18px;
+/* =========================================================
+   BOTÓN REGISTRARSE
+   ========================================================= */
 
-    text-align:center;
+button {
+    width: 100%;
 
+    padding: 13px;
+
+    margin-top: 25px;
+
+    color: #17120b;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffd43b,
+            #ff9f1c
+        );
+
+    border: 1px solid #ffd43b;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
 }
 
-.enlace a{
 
-    color:#2b90f5;
+button:hover {
+    transform: translateY(-2px);
 
-    text-decoration:none;
+    filter: brightness(1.08);
 
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(255, 180, 30, 0.35);
 }
 
-.enlace a:hover{
 
-    text-decoration:underline;
-
+button:active {
+    transform: translateY(0);
 }
 
-/*==========================
-  NOTIFICACIONES
-==========================*/
 
-#toast{
+/* =========================================================
+   TEXTO INFERIOR
+   ========================================================= */
+
+.contenedor > p {
+    margin-top: 18px;
+
+    text-align: center;
+
+    color: #aaa3ad;
+
+    font-size: 14px;
+}
+
+
+.contenedor > p a {
+    color: #ffd43b;
+
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        text-shadow 0.2s ease;
+}
+
+
+.contenedor > p a:hover {
+    color: #ff9f1c;
+
+    text-shadow:
+        0 0 8px rgba(255, 159, 28, 0.5);
+}
+
+
+/* =========================================================
+   NOTIFICACIONES / TOAST
+   ========================================================= */
+
+#toast {
     position: fixed;
+
     top: 25px;
     right: 25px;
+
     min-width: 260px;
     max-width: 350px;
-    background: #222;
-    color: white;
+
     padding: 16px 20px;
-    border-left: 6px solid #2ecc71;
+
+    color: #f5f2ea;
+
+    background:
+        linear-gradient(
+            145deg,
+            #241d28,
+            #151118
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 5px solid #2ecc71;
+
     border-radius: 10px;
+
     font-size: 16px;
-    box-shadow: 0 5px 20px rgba(0,0,0, 0.35);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55);
+
     opacity: 0;
+
     transform: translateX(120%);
-    transition: .4s;
-    z-index:99999;
+
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
+
+    z-index: 99999;
 }
 
-#toast.mostrar{
-    opacity:1;
+
+#toast.mostrar {
+    opacity: 1;
+
     transform: translateX(0);
 }
 
-#toast.error{
-    border-left-color: #e74c3c;
+
+#toast.error {
+    border-left-color: #ff4567;
 }
 
-#toast.info{
-    border-left-color: #3498db;
+
+#toast.info {
+    border-left-color: #ffd43b;
+}
+
+
+/* =========================================================
+   ANIMACIÓN DE ENTRADA
+   ========================================================= */
+
+@keyframes aparecer {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 450px) {
+
+    .contenedor {
+        padding: 25px 20px;
+    }
+
+
+    h1 {
+        font-size: 28px;
+    }
+
+
+    #toast {
+        left: 15px;
+        right: 15px;
+
+        min-width: auto;
+    }
 }

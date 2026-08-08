@@ -69,14 +69,32 @@ function registrar(e){
 
     let nuevoUsuario={
 
+        id: "usuario_" + Date.now(),
+
         correo:correo,
 
         nombre:nombre,
 
         password:password,
 
-        rol: "usuario"
+        rol: "usuario",
 
+        perfil: {
+
+            avatar: "",
+
+            color: ""
+        
+        },
+
+        preferencias: {
+
+            silenciados: [],
+
+            ignorados: [],
+
+            bloqueados: []
+        }
     };
 
     usuarios.push(nuevoUsuario);

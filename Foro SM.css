@@ -1,159 +1,304 @@
-/* =========================================
+/* =========================================================
    RESET GENERAL
-========================================= */
+   ========================================================= */
 
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* =========================================
-   CUERPO DE LA PÁGINA
-========================================= */
 
-body{
-    font-family: Arial, sans-serif;
+/* =========================================================
+   CUERPO DE LA PÁGINA
+   ========================================================= */
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
 
-    background: linear-gradient(
-        to bottom,
-        #4fc3f7 0%,
-        #87ceeb 35%,
-        #bdefff 70%,
-        #dff7ff 100%
-    );
+    color: #f5f2ea;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(255, 138, 31, 0.10),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 15% 80%,
+            rgba(255, 212, 59, 0.05),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #08070b 0%,
+            #100c14 45%,
+            #0b0910 100%
+        );
 }
 
-/* =========================================
-   PANTALLA DE BIENVENIDA
-========================================= */
 
-#bienvenida{
+/* =========================================================
+   PANTALLA DE BIENVENIDA
+   ========================================================= */
+
+#bienvenida {
     position: relative;
     z-index: 1000;
 
-    max-width: 800px;
-    margin: 40px auto;
+    width: min(800px, calc(100% - 40px));
+    margin: 50px auto;
 
-    padding: 25px;
+    padding: 35px;
 
     text-align: center;
 
-    background: rgba(255,255,255,.95);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(36, 29, 40, 0.97),
+            rgba(20, 17, 24, 0.97)
+        );
 
-    border-radius: 20px;
+    border: 1px solid rgba(255, 138, 31, 0.55);
+    border-radius: 18px;
 
-    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.65),
+        0 0 25px rgba(255, 138, 31, 0.08);
+
+    animation: aparecer 0.7s ease;
 }
 
-#bienvenida p{
-    margin: 10px 0;
+
+/* Línea luminosa superior */
+
+#bienvenida::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 12%;
+
+    width: 76%;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #ffd43b,
+        #ff8a1f,
+        transparent
+    );
+
+    box-shadow: 0 0 12px rgba(255, 138, 31, 0.7);
 }
 
-/* =========================================
+
+/* Título de bienvenida */
+
+#bienvenida h1 {
+    color: #ffd43b;
+
+    font-size: clamp(28px, 4vw, 42px);
+
+    margin-bottom: 20px;
+
+    text-shadow:
+        0 0 10px rgba(255, 212, 59, 0.35),
+        0 3px 8px rgba(0, 0, 0, 0.8);
+}
+
+
+/* Texto */
+
+#bienvenida p {
+    margin: 12px 0;
+
+    color: #d7d1d8;
+
+    line-height: 1.6;
+}
+
+
+/* Reglas */
+
+#bienvenida p:nth-of-type(n + 2) {
+    text-align: left;
+
+    padding: 10px 14px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    border-left: 2px solid rgba(255, 138, 31, 0.65);
+
+    border-radius: 5px;
+}
+
+
+/* =========================================================
    BOTONES GENERALES
-========================================= */
+   ========================================================= */
 
-button{
-    background: #4facfe;
-    color: white;
-
-    border: none;
-
-    padding: 12px 20px;
+button {
+    position: relative;
 
     margin-top: 10px;
+    padding: 12px 22px;
 
+    color: #17120b;
+
+    background: linear-gradient(
+        135deg,
+        #ffd43b,
+        #ff9f1c
+    );
+
+    border: 1px solid #ffd43b;
     border-radius: 8px;
+
+    font-size: 15px;
+    font-weight: bold;
 
     cursor: pointer;
 
-    transition: background .3s;
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.35),
+        0 0 0 rgba(255, 212, 59, 0);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
 }
 
-button:hover{
-    background: #2d8cff;
-}
-/* =========================================
-   BURBUJAS
-========================================= */
 
-.burbujas{
+button:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.08);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.45),
+        0 0 15px rgba(255, 180, 30, 0.35);
+}
+
+
+button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   FONDO AMBIENTAL
+   ========================================================= */
+
+.burbujas {
     position: fixed;
-    top: 0;
-    left: 0;
+
+    inset: 0;
 
     width: 100%;
     height: 100%;
 
-    z-index: 4;
+    z-index: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
 }
 
-.burbuja{
+
+.burbuja {
     position: absolute;
     bottom: -150px;
 
     border-radius: 50%;
 
-    opacity: .5;
+    opacity: 0.12;
 
-    animation: subir 15s linear infinite;
+    filter: blur(1px);
+
+    animation: subir 18s linear infinite;
 }
 
-.burbuja:nth-child(1){
+
+.burbuja:nth-child(1) {
     width: 80px;
     height: 80px;
     left: 10%;
-    background: #ff6b6b;
+
+    background: #ff4567;
 }
 
-.burbuja:nth-child(2){
+
+.burbuja:nth-child(2) {
     width: 50px;
     height: 50px;
     left: 25%;
-    background: #ffd93d;
-    animation-duration: 12s;
+
+    background: #ffd43b;
+
+    animation-duration: 14s;
 }
 
-.burbuja:nth-child(3){
+
+.burbuja:nth-child(3) {
     width: 100px;
     height: 100px;
     left: 40%;
-    background: #6bcB77;
-    animation-duration: 18s;
-}
 
-.burbuja:nth-child(4){
-    width: 60px;
-    height: 60px;
-    left: 60%;
-    background: #4d96ff;
-}
+    background: #ff8a1f;
 
-.burbuja:nth-child(5){
-    width: 120px;
-    height: 120px;
-    left: 80%;
-    background: #c77dff;
     animation-duration: 20s;
 }
 
-/* =========================================
-   MONTAÑAS
-========================================= */
 
-.montanas{
-    position: fixed;
-    bottom: 100px;
+.burbuja:nth-child(4) {
+    width: 60px;
+    height: 60px;
+    left: 60%;
 
-    width: 100%;
+    background: #ff4567;
 
-    z-index: 2;
+    animation-duration: 16s;
 }
 
-.montana{
+
+.burbuja:nth-child(5) {
+    width: 120px;
+    height: 120px;
+    left: 80%;
+
+    background: #ffd43b;
+
+    animation-duration: 22s;
+}
+
+
+/* =========================================================
+   MONTAÑAS
+   ========================================================= */
+
+.montanas {
+    position: fixed;
+
+    bottom: 0;
+
+    width: 100%;
+    height: 35vh;
+
+    z-index: 0;
+
+    opacity: 0.35;
+
+    pointer-events: none;
+}
+
+
+.montana {
     position: absolute;
 
     width: 0;
@@ -161,15 +306,19 @@ button:hover{
 
     border-left: 550px solid transparent;
     border-right: 550px solid transparent;
-    border-bottom: 750px solid #7d8fa3;
+    border-bottom: 500px solid #17131c;
+
+    filter: drop-shadow(0 -5px 15px rgba(255, 138, 31, 0.04));
 }
 
-/* =========================================
-   BOSQUE
-========================================= */
 
-.bosque{
+/* =========================================================
+   BOSQUE
+   ========================================================= */
+
+.bosque {
     position: fixed;
+
     bottom: 0;
 
     display: flex;
@@ -177,10 +326,15 @@ button:hover{
 
     width: 100%;
 
-    z-index: -2;
+    z-index: 0;
+
+    opacity: 0.35;
+
+    pointer-events: none;
 }
 
-.pino-fondo{
+
+.pino-fondo {
     position: relative;
 
     width: 0;
@@ -188,10 +342,11 @@ button:hover{
 
     border-left: 40px solid transparent;
     border-right: 40px solid transparent;
-    border-bottom: 100px solid #1f6b1f;
+    border-bottom: 100px solid #17151a;
 }
 
-.pino-fondo::before{
+
+.pino-fondo::before {
     content: "";
 
     position: absolute;
@@ -201,10 +356,11 @@ button:hover{
 
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
-    border-bottom: 90px solid #228B22;
+    border-bottom: 90px solid #121015;
 }
 
-.pino-fondo::after{
+
+.pino-fondo::after {
     content: "";
 
     position: absolute;
@@ -215,106 +371,135 @@ button:hover{
     width: 16px;
     height: 35px;
 
-    background: #6b4423;
+    background: #17131a;
 }
-/* =========================================
-   PÁJAROS
-========================================= */
 
-.pajaro{
+
+/* =========================================================
+   PÁJAROS
+   ========================================================= */
+
+.pajaro {
     position: fixed;
 
-    font-size: 30px;
-    color: #222;
+    font-size: 24px;
+
+    color: #ffd43b;
+
+    opacity: 0.12;
 
     z-index: 1;
 
-    animation: volar 20s linear infinite;
+    pointer-events: none;
+
+    animation: volar 25s linear infinite;
 }
 
-.p1{
+
+.p1 {
     top: 120px;
     animation-delay: 0s;
 }
 
-.p2{
+
+.p2 {
     top: 180px;
-    animation-delay: 5s;
+    animation-delay: 7s;
 }
 
-.p3{
+
+.p3 {
     top: 250px;
-    animation-delay: 10s;
+    animation-delay: 14s;
 }
 
-/* =========================================
-   NUBES
-========================================= */
 
-.nube{
+/* =========================================================
+   NUBES
+   ========================================================= */
+
+.nube {
     position: fixed;
 
-    color: white;
+    color: #ffffff;
 
     font-size: 90px;
 
-    opacity: .8;
+    opacity: 0.025;
 
     z-index: 0;
+
+    pointer-events: none;
 }
 
-.n1{
+
+.n1 {
     top: 60px;
     left: 5%;
 }
 
-.n2{
+
+.n2 {
     top: 120px;
     right: 10%;
 }
 
-.n3{
+
+.n3 {
     top: 280px;
     left: 20%;
 }
 
-/* =========================================
-   ÁRBOLES DECORATIVOS
-========================================= */
 
-.arbol{
+/* =========================================================
+   ÁRBOLES DECORATIVOS
+   ========================================================= */
+
+.arbol {
     position: fixed;
+
     bottom: 0;
 
-    z-index: -1;
+    z-index: 1;
+
+    opacity: 0.55;
+
+    pointer-events: none;
 }
 
-.arbol.izquierda{
+
+.arbol.izquierda {
     left: 30px;
 }
 
-.arbol.derecha{
+
+.arbol.derecha {
     right: 30px;
 }
 
-.tronco{
+
+.tronco {
     width: 30px;
     height: 130px;
 
     margin: auto;
 
-    background: #6b4423;
+    background: #241913;
+
+    border-radius: 3px;
 }
 
-.pino{
+
+.pino {
     position: relative;
 
     transform-origin: bottom center;
 
-    animation: viento 3s ease-in-out infinite;
+    animation: viento 4s ease-in-out infinite;
 }
 
-.rama{
+
+.rama {
     width: 0;
     height: 0;
 
@@ -323,224 +508,556 @@ button:hover{
 
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
-    border-bottom: 70px solid #228B22;
+    border-bottom: 70px solid #171d19;
 }
 
-.rama:nth-child(2){
+
+.rama:nth-child(2) {
     border-left-width: 60px;
     border-right-width: 60px;
     border-bottom-width: 85px;
 }
 
-.rama:nth-child(3){
+
+.rama:nth-child(3) {
     border-left-width: 70px;
     border-right-width: 70px;
     border-bottom-width: 100px;
 }
 
-/* =========================================
-   ANIMACIONES
-========================================= */
 
-@keyframes viento{
-    0%{
+/* =========================================================
+   CONTENEDOR DEL FORO
+   ========================================================= */
+
+.contenedor {
+    position: relative;
+
+    z-index: 1000;
+
+    width: min(850px, calc(100% - 40px));
+
+    margin: 35px auto;
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(31, 26, 35, 0.98),
+            rgba(17, 14, 21, 0.98)
+        );
+
+    border: 1px solid rgba(255, 138, 31, 0.45);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.6),
+        inset 0 1px rgba(255, 255, 255, 0.03);
+
+    text-align: center;
+
+    animation: aparecer 0.5s ease;
+}
+
+
+/* =========================================================
+   MENSAJE DE USUARIO
+   ========================================================= */
+
+#entradaUsuario {
+    position: relative;
+
+    z-index: 1000;
+
+    display: inline-block;
+
+    margin: 25px auto 5px;
+    padding: 12px 25px;
+
+    color: #ffd43b;
+
+    background: rgba(20, 17, 24, 0.85);
+
+    border: 1px solid rgba(255, 212, 59, 0.45);
+
+    border-radius: 10px;
+
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: bold;
+
+    text-shadow:
+        0 0 12px rgba(255, 212, 59, 0.35),
+        0 3px 8px rgba(0, 0, 0, 0.8);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+
+/* =========================================================
+   TÍTULOS
+   ========================================================= */
+
+h1,
+h2,
+h3 {
+    color: #ffd43b;
+
+    text-shadow:
+        0 0 10px rgba(255, 212, 59, 0.25),
+        0 3px 6px rgba(0, 0, 0, 0.7);
+}
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+h2 {
+    margin-bottom: 20px;
+
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   MENÚ DEL FORO
+   ========================================================= */
+
+#menuForo {
+    position: relative;
+
+    z-index: 1000;
+
+    display: none;
+
+    width: min(850px, calc(100% - 40px));
+
+    margin: 25px auto 0;
+
+    padding: 14px;
+
+    background: rgba(20, 17, 24, 0.96);
+
+    border: 1px solid rgba(255, 138, 31, 0.4);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+
+#menuForo button {
+    margin: 4px;
+
+    background: #1f1a22;
+
+    color: #f5f2ea;
+
+    border: 1px solid rgba(255, 138, 31, 0.5);
+
+    box-shadow: none;
+}
+
+
+#menuForo button:hover {
+    color: #17120b;
+
+    background: linear-gradient(
+        135deg,
+        #ffd43b,
+        #ff9f1c
+    );
+
+    border-color: #ffd43b;
+
+    box-shadow:
+        0 0 15px rgba(255, 180, 30, 0.25);
+}
+
+
+/* =========================================================
+   CONTENIDO DEL FORO
+   ========================================================= */
+
+#contenidoForo {
+    display: none;
+
+    position: relative;
+
+    z-index: 1000;
+
+    width: min(850px, calc(100% - 40px));
+
+    margin: 25px auto;
+}
+
+
+/* =========================================================
+   SECCIONES DEL FORO
+   ========================================================= */
+
+#general,
+#espanol,
+#ingles,
+#portugues {
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 25, 34, 0.98),
+            rgba(17, 14, 21, 0.98)
+        );
+
+    border: 1px solid rgba(255, 138, 31, 0.35);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.55);
+
+    animation: aparecer 0.35s ease;
+}
+
+
+/* =========================================================
+   COMENTARIOS
+   ========================================================= */
+
+.comentario {
+    margin-top: 12px;
+
+    padding: 16px;
+
+    text-align: left;
+
+    color: #e8e2e8;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(40, 34, 45, 0.9),
+            rgba(25, 21, 29, 0.9)
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    border-left: 3px solid #ff8a1f;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.comentario:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(255, 138, 31, 0.45);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+.comentario strong {
+    color: #ffd43b;
+}
+
+
+/* =========================================================
+   CAMPOS DE TEXTO
+   ========================================================= */
+
+input,
+textarea {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 12px 14px;
+
+    color: #f5f2ea;
+
+    background: #100d13;
+
+    border: 1px solid rgba(255, 138, 31, 0.3);
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+
+    resize: vertical;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+input::placeholder,
+textarea::placeholder {
+    color: #77717b;
+}
+
+
+input:focus,
+textarea:focus {
+    background: #151118;
+
+    border-color: #ffd43b;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 212, 59, 0.08),
+        0 0 15px rgba(255, 138, 31, 0.12);
+}
+
+
+/* =========================================================
+   BOTÓN CERRAR SESIÓN
+   ========================================================= */
+
+#btnCerrar {
+    background: linear-gradient(
+        135deg,
+        #ff4567,
+        #b92745
+    );
+
+    color: white;
+
+    border-color: #ff4567;
+}
+
+
+#btnCerrar:hover {
+    background: linear-gradient(
+        135deg,
+        #ff5c78,
+        #d12d4d
+    );
+
+    box-shadow:
+        0 0 18px rgba(255, 69, 103, 0.25);
+}
+
+
+/* =========================================================
+   NOTIFICACIONES / TOAST
+   ========================================================= */
+
+#toast {
+    position: fixed;
+
+    top: 25px;
+    right: 25px;
+
+    min-width: 260px;
+    max-width: 350px;
+
+    padding: 16px 20px;
+
+    color: #f5f2ea;
+
+    background:
+        linear-gradient(
+            145deg,
+            #241d28,
+            #151118
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 5px solid #2ecc71;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55);
+
+    opacity: 0;
+
+    transform: translateX(120%);
+
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
+
+    z-index: 99999;
+}
+
+
+#toast.mostrar {
+    opacity: 1;
+
+    transform: translateX(0);
+}
+
+
+#toast.error {
+    border-left-color: #ff4567;
+}
+
+
+#toast.info {
+    border-left-color: #ffd43b;
+}
+
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes viento {
+    0% {
         transform: rotate(-2deg);
     }
 
-    50%{
+    50% {
         transform: rotate(2deg);
     }
 
-    100%{
+    100% {
         transform: rotate(-2deg);
     }
 }
 
-@keyframes volar{
-    from{
+
+@keyframes volar {
+    from {
         left: -100px;
     }
 
-    to{
+    to {
         left: 110%;
     }
 }
 
-@keyframes subir{
-    0%{
+
+@keyframes subir {
+    0% {
         transform: translateY(0) rotate(0deg);
-        opacity: .5;
+        opacity: 0.12;
     }
 
-    100%{
+    100% {
         transform: translateY(-120vh) rotate(360deg);
         opacity: 0;
     }
 }
-/* =========================================
-   CONTENEDOR DEL FORO
-========================================= */
 
-.contenedor{
-    position: relative;
-    z-index: 1000;
 
-    max-width: 800px;
-    margin: 40px auto;
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-    padding: 25px;
+@media (max-width: 700px) {
 
-    background: rgba(255,255,255,.95);
+    #bienvenida,
+    .contenedor,
+    #menuForo,
+    #contenidoForo {
+        width: calc(100% - 24px);
+    }
 
-    border-radius: 20px;
 
-    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    #bienvenida {
+        padding: 25px 18px;
+    }
 
-    text-align: center;
+
+    #bienvenida h1 {
+        font-size: 28px;
+    }
+
+
+    #menuForo button {
+        width: calc(50% - 12px);
+    }
+
+
+    #general,
+    #espanol,
+    #ingles,
+    #portugues {
+        padding: 18px;
+    }
+
+
+    #entradaUsuario {
+        font-size: 25px;
+    }
+
+
+    .arbol {
+        transform: scale(0.7);
+        transform-origin: bottom;
+    }
+
+
+    .arbol.izquierda {
+        left: -20px;
+    }
+
+
+    .arbol.derecha {
+        right: -20px;
+    }
 }
 
-/* =========================================
-   TÍTULOS
-========================================= */
 
-h1{
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
+@media (max-width: 450px) {
 
-/* =========================================
-   COMENTARIOS
-========================================= */
+    #menuForo button {
+        width: 100%;
+        margin: 4px 0;
+    }
 
-.comentario{
-    margin-top: 10px;
-    padding: 12px;
 
-    background: #f2f2f2;
+    button {
+        width: 100%;
+    }
 
-    border-left: 5px solid #4facfe;
-    border-radius: 8px;
-}
 
-/* =========================================
-   CAMPOS DE TEXTO
-========================================= */
+    .contenedor {
+        padding: 18px;
+    }
 
-input,
-textarea{
-    width: 100%;
 
-    margin-top: 10px;
-    padding: 10px;
+    #toast {
+        left: 15px;
+        right: 15px;
 
-    border: 1px solid #ccc;
-    border-radius: 8px;
-
-    resize: vertical;
-}
-
-/* =========================================
-   BOTÓN CERRAR SESIÓN
-========================================= */
-
-#btnCerrar{
-    background: #b22222;
-}
-
-#btnCerrar:hover{
-    background: #8b0000;
-}
-
-/* =========================================
-   MENSAJE DE BIENVENIDA
-========================================= */
-
-#entradaUsuario{
-    display: inline-block;
-
-    margin: 20px auto;
-    padding: 15px 30px;
-
-    text-align: center;
-
-    font-size: 32px;
-    font-weight: bold;
-
-    color: #fff;
-
-    background: linear-gradient(135deg,#4facfe,#2d8cff);
-
-    border: 3px solid white;
-    border-radius: 20px;
-
-    box-shadow: 0 8px 20px rgba(0,0,0,.25);
-
-    text-shadow: 2px 2px 5px rgba(0,0,0,.3);
-}
-
-/* =========================================
-   MENÚ DEL FORO
-========================================= */
-
-#menuForo{
-    display: none;
-
-    position: relative;
-    z-index: 1000;
-
-    text-align: center;
-}
-
-#menuForo button{
-    margin: 5px;
-}
-
-/* =========================================
-   CONTENIDO DEL FORO
-========================================= */
-
-#contenidoForo{
-    display: none;
-
-    position: relative;
-    z-index: 1000;
-
-    width: 100%;
-}
-
-/*==========================
-  NOTIFICACIONES
-==========================*/
-
-#toast{
-    position: fixed;
-    top: 25px;
-    right: 25px;
-    min-width: 260px;
-    max-width: 350px;
-    background: #222;
-    color: white;
-    padding: 16px 20px;
-    border-left: 6px solid #2ecc71;
-    border-radius: 10px;
-    font-size: 16px;
-    box-shadow: 0 5px 20px rgba(0,0,0, 0.35);
-    opacity: 0;
-    transform: translateX(120%);
-    transition: .4s;
-    z-index:99999;
-}
-
-#toast.mostrar{
-    opacity:1;
-    transform: translateX(0);
-}
-
-#toast.error{
-    border-left-color: #e74c3c;
-}
-
-#toast.info{
-    border-left-color: #3498db;
+        min-width: auto;
+    }
 }

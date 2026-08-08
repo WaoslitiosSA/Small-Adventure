@@ -22,32 +22,63 @@ setTimeout(function(){
 },3000);
 }
 
-
-
 // =========================================
 // USUARIO ACTIVO
 // =========================================
 
-let usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+let usuarioActivo =
+    JSON.parse(localStorage.getItem("usuarioActivo"));
 
-let esAdmin = usuarioActivo && usuarioActivo.rol === "admin";
+
+// =========================================
+// COMPROBAR SESIÓN
+// =========================================
+
+if (!usuarioActivo) {
+
+    window.location.href = "index.html";
+
+}
+
+
+// =========================================
+// COMPROBAR ROL
+// =========================================
+
+let esAdmin =
+    usuarioActivo && usuarioActivo.rol === "admin";
+
+
+// =========================================
+// MOSTRAR INFORMACIÓN DEL USUARIO
+// =========================================
 
 if (usuarioActivo) {
 
-    const usuarioTitulo = document.getElementById("entradaUsuario");
+    const usuarioTitulo =
+        document.getElementById("entradaUsuario");
+
 
     if (esAdmin) {
+
         usuarioTitulo.innerHTML =
-        "👑" + usuarioActivo.nombre + " <span style='color:gold;'>(Administrador)</span>";
-    
+            "👑" +
+            usuarioActivo.nombre +
+            " <span style='color:gold;'>(Administrador)</span>";
+
     } else {
 
         usuarioTitulo.textContent =
-        "Bienvenido " + usuarioActivo.nombre;
+            "Bienvenido " +
+            usuarioActivo.nombre;
+
     }
 
+
     document.getElementById("bienvenidaUsuario").textContent =
-        "Hola " + usuarioActivo.nombre + ", disfruta del foro.";
+        "Hola " +
+        usuarioActivo.nombre +
+        ", disfruta del foro.";
 
 }
 
@@ -148,10 +179,17 @@ function agregarComentario() {
     let comentarios = JSON.parse(localStorage.getItem("comentarios")) || [];
 
     comentarios.push({
+        id: "comentario_001",
+
+        usuarioID: "usurio_001",
 
         usuario: nombre,
+
         mensaje: mensaje,
-        categoria: categoriaActual
+
+        categoria: categoriaActual,
+
+        fecha: "2026-08-08T10:30:00"
 
     });
 

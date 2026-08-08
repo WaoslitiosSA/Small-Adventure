@@ -105,57 +105,158 @@ function iniciarSesion(e){
     }
 }
 
-    
-function recuperarPassword(){
+// =========================================
+// RECUPERACIÓN DE CONTRASEÑA
+// =========================================
 
-    let correo = prompt("Ingrese el correo con el que se registró:");
+const enlaceRecuperar = document.getElementById("enlaceRecuperar");
+const recuperacionPassword = document.getElementById("recuperacionPassword");
+const cancelarRecuperacion = document.getElementById("cancelarRecuperacion");
+const guardarNuevaPassword = document.getElementById("guardarNuevaPassword");
 
-    if(correo == null){
+
+// MOSTRAR FORMULARIO DE RECUPERACIÓN
+
+enlaceRecuperar.addEventListener("click", function(e){
+
+    e.preventDefault();
+
+    recuperacionPassword.classList.add("mostrar");
+
+});
+
+
+// CANCELAR RECUPERACIÓN
+
+cancelarRecuperacion.addEventListener("click", function(){
+
+    recuperacionPassword.classList.remove("mostrar");
+
+    document.getElementById("recuperarCorreo").value = "";
+    document.getElementById("nuevaPassword").value = "";
+    document.getElementById("confirmarPassword").value = "";
+
+});
+
+
+// CAMBIAR CONTRASEÑA
+
+guardarNuevaPassword.addEventListener("click", function(){
+
+    let correo =
+        document.getElementById("recuperarCorreo").value.trim();
+
+    let nuevaPassword =
+        document.getElementById("nuevaPassword").value.trim();
+
+    let confirmarPassword =
+        document.getElementById("confirmarPassword").value.trim();
+
+
+    // COMPROBAR CAMPOS VACÍOS
+
+    if(
+        correo === "" ||
+        nuevaPassword === "" ||
+        confirmarPassword === ""
+    ){
+
+        mostrarToast(
+            "Completa todos los campos.",
+            "error"
+        );
+
         return;
+
     }
 
-    correo = correo.trim();
 
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    // OBTENER USUARIOS
 
-    let usuario = usuarios.find(u => u.correo === correo );
+    let usuarios =
+        JSON.parse(localStorage.getItem("usuarios")) || [];
+
+
+    // BUSCAR USUARIO
+
+    let usuario = usuarios.find(function(u){
+
+        return u.correo === correo;
+
+    });
+
+
+    // COMPROBAR SI EXISTE
 
     if(!usuario){
 
-        mostrarToast("No existe una cuenta registrada con ese correo." , "error");
+        mostrarToast(
+            "No existe una cuenta registrada con ese correo.",
+            "error"
+        );
 
         return;
 
     }
 
-    let nuevaPassword = prompt("Ingrese la nueva contraseña:");
 
-    if(nuevaPassword == null){
-        return;
-    }
+    // COMPROBAR CONTRASEÑAS
 
-    let confirmar = prompt("Confirme la nueva contraseña:");
+    if(nuevaPassword !== confirmarPassword){
 
-    if(confirmar == null){
-        return;
-    }
-
-    if(nuevaPassword !== confirmar){
-
-        mostrarToast("Las contraseñas no coinciden." , "error");
+        mostrarToast(
+            "Las contraseñas no coinciden.",
+            "error"
+        );
 
         return;
 
     }
+
+
+    // COMPROBAR LONGITUD
+
+    if(nuevaPassword.length < 6){
+
+        mostrarToast(
+            "La contraseña debe tener mínimo 6 caracteres.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // ACTUALIZAR CONTRASEÑA
 
     usuario.password = nuevaPassword;
 
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-    mostrarToast("Contraseña actualizada correctamente.");
+    // GUARDAR USUARIOS
 
-}
+    localStorage.setItem(
+        "usuarios",
+        JSON.stringify(usuarios)
+    );
 
 
+    // CERRAR FORMULARIO
+
+    recuperacionPassword.classList.remove("mostrar");
 
 
+    // LIMPIAR CAMPOS
+
+    document.getElementById("recuperarCorreo").value = "";
+    document.getElementById("nuevaPassword").value = "";
+    document.getElementById("confirmarPassword").value = "";
+
+
+    // MOSTRAR MENSAJE
+
+    mostrarToast(
+        "Contraseña actualizada correctamente."
+    );
+
+});

@@ -1,64 +1,158 @@
 <!DOCTYPE html>
-<HTml lang="es">
+<html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <title>login Small Adventure</title>
 
     <link rel="stylesheet" href="login SM.css">
+
 </head>
+
 <body>
 
     <div class="contenedor">
 
-<h1>Small Adventure</h1>
+        <h1>Small Adventure</h1>
 
-    <h2>Iniciar Sesión</h2>
+        <h2>Iniciar Sesión</h2>
 
-    <form id="loginForm">
 
-        <label>Correo electrónico</label>
+        <!-- =========================================
+             FORMULARIO DE LOGIN
+             ========================================= -->
 
-        <input
-            type="email"
-            id="loginCorreo"
-            placeholder="Ingrese su correo"
-            required>
+        <form id="loginForm">
 
-        <label>Contraseña</label>
+            <label>Correo electrónico</label>
 
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Ingrese su contraseña"
-            required>
+            <input
+                type="email"
+                id="loginCorreo"
+                placeholder="Ingrese su correo"
+                required>
 
-            
-        <button type="submit">
-            Iniciar Sesión
-        </button>
-    
 
-    </form>
+            <label>Contraseña</label>
 
-    <p class="enlace">
-        <a href="#" onclick="recuperarPassword()">
-            ¿Olvidaste tu contraseña?
-        </a>
-    </p>
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Ingrese su contraseña"
+                required>
 
-    <p class="enlace">
-        ¿No tienes una cuenta?
 
-        <a href="registro SM.html" onclick="mostrarRegistro()">
-            Registrarse
-        </a>
-    </p>
+            <button type="submit">
+                Iniciar Sesión
+            </button>
 
-    <div id="toast"></div>
+        </form>
+
+
+        <!-- =========================================
+             RECUPERAR CONTRASEÑA
+             ========================================= -->
+
+        <p class="enlace">
+
+            <a href="#" id="enlaceRecuperar">
+                ¿Olvidaste tu contraseña?
+            </a>
+
+        </p>
+
+
+        <div
+            id="recuperacionPassword"
+            class="recuperacion-password">
+
+            <h3>Recuperar contraseña</h3>
+
+            <p>
+                Ingresa tu correo y establece una nueva contraseña.
+            </p>
+
+
+            <label for="recuperarCorreo">
+                Correo electrónico
+            </label>
+
+            <input
+                type="email"
+                id="recuperarCorreo"
+                placeholder="Ingrese su correo">
+
+
+            <label for="nuevaPassword">
+                Nueva contraseña
+            </label>
+
+            <input
+                type="password"
+                id="nuevaPassword"
+                placeholder="Ingrese una nueva contraseña">
+
+
+            <label for="confirmarPassword">
+                Confirmar contraseña
+            </label>
+
+            <input
+                type="password"
+                id="confirmarPassword"
+                placeholder="Confirme la nueva contraseña">
+
+
+            <div class="botones-recuperacion">
+
+                <button
+                    type="button"
+                    id="cancelarRecuperacion">
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="guardarNuevaPassword">
+
+                    Cambiar contraseña
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             REGISTRO
+             ========================================= -->
+
+        <p class="enlace">
+
+            ¿No tienes una cuenta?
+
+            <a
+                href="registro SM.html"
+                onclick="mostrarRegistro()">
+
+                Registrarse
+
+            </a>
+
+        </p>
+
+        <div id="toast"></div>
 
     </div>
 
     <script src="login SM.js"></script>
 
-    </body>
-    </html>
+</body>
+
+</html>
