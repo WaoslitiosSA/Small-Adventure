@@ -8,37 +8,102 @@
     box-sizing: border-box;
 }
 
+/* =========================================================
+   SISTEMA DE TEMAS — SMALL ADVENTURE
+   ========================================================= */
+
+/* 🌙 MODO OSCURO */
+:root {
+    --bg-main: #08070b;
+    --bg-secondary: #100c14;
+    --bg-panel: #17131c;
+    --bg-card: #241d28;
+
+    --primary: #ffd43b;
+    --secondary: #ff8a1c;
+    --accent: #ff4567;
+
+    --text-main: #f5f2ea;
+    --text-secondary: #aaa3ad;
+    --text-muted: #77717b;
+
+    --border: rgba(255, 138, 31, 0.45);
+    --border-strong: rgba(255, 138, 31, 0.65);
+
+    --shadow: rgba(0, 0, 0, 0.60);
+    --shadow-soft: rgba(0, 0, 0, 0.35);
+
+    --input-bg: #100d13;
+    --hover-bg: #1f1a22;
+}
+
+
+/* ☀️ MODO CLARO */
+[data-tema="claro"] {
+    --bg-main: #eaf4ff;
+    --bg-secondary: #dceeff;
+    --bg-panel: #f5faff;
+    --bg-card: #ffffff;
+
+    --primary: #2477d4;
+    --secondary: #1557a6;
+    --accent: #ff8a1c;
+
+    --text-main: #172b4d;
+    --text-secondary: #53657d;
+    --text-muted: #718096;
+
+    --border: rgba(36, 119, 212, 0.35);
+    --border-strong: rgba(36, 119, 212, 0.55);
+
+    --shadow: rgba(32, 75, 120, 0.18);
+    --shadow-soft: rgba(32, 75, 120, 0.10);
+
+    --input-bg: #ffffff;
+    --hover-bg: #e6f2ff;
+}
 
 /* =========================================================
-   CUERPO DE LA PÁGINA
+   CUERPO PRINCIPAL
    ========================================================= */
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
 
-    color: #f5f2ea;
+    padding: 20px;
+
+    color: var(--text-main);
 
     background:
         radial-gradient(
-            circle at 50% 0%,
-            rgba(255, 138, 31, 0.10),
+            circle at 50% 10%,
+            color-mix(
+                in srgb,
+                var(--secondary) 12%,
+                transparent
+            ),
             transparent 35%
         ),
         radial-gradient(
-            circle at 15% 80%,
-            rgba(255, 212, 59, 0.05),
+            circle at 20% 80%,
+            color-mix(
+                in srgb,
+                var(--primary) 5%,
+                transparent
+            ),
             transparent 30%
         ),
         linear-gradient(
             135deg,
-            #08070b 0%,
-            #100c14 45%,
-            #0b0910 100%
+            var(--bg-main),
+            var(--bg-secondary),
+            var(--bg-main)
         );
-}
 
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+}
 
 /* =========================================================
    PANTALLA DE BIENVENIDA
@@ -525,9 +590,8 @@ button:active {
     border-bottom-width: 100px;
 }
 
-
 /* =========================================================
-   CONTENEDOR DEL FORO
+   CONTENEDOR PRINCIPAL DEL FORO
    ========================================================= */
 
 .contenedor {
@@ -544,23 +608,27 @@ button:active {
     background:
         linear-gradient(
             145deg,
-            rgba(31, 26, 35, 0.98),
-            rgba(17, 14, 21, 0.98)
+            var(--bg-panel),
+            var(--bg-secondary)
         );
 
-    border: 1px solid rgba(255, 138, 31, 0.45);
+    border: 1px solid var(--border);
 
     border-radius: 14px;
 
     box-shadow:
-        0 15px 40px rgba(0, 0, 0, 0.6),
-        inset 0 1px rgba(255, 255, 255, 0.03);
+        0 15px 40px var(--shadow),
+        inset 0 1px rgba(255, 255, 255, 0.04);
 
     text-align: center;
 
     animation: aparecer 0.5s ease;
-}
 
+    transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
 
 /* =========================================================
    MENSAJE DE USUARIO
@@ -574,27 +642,37 @@ button:active {
     display: inline-block;
 
     margin: 25px auto 5px;
+
     padding: 12px 25px;
 
-    color: #ffd43b;
+    color: var(--primary);
 
-    background: rgba(20, 17, 24, 0.85);
+    background: var(--bg-card);
 
-    border: 1px solid rgba(255, 212, 59, 0.45);
+    border: 1px solid var(--border-strong);
 
     border-radius: 10px;
 
     font-size: clamp(24px, 4vw, 34px);
+
     font-weight: bold;
 
     text-shadow:
-        0 0 12px rgba(255, 212, 59, 0.35),
-        0 3px 8px rgba(0, 0, 0, 0.8);
+        0 0 12px color-mix(
+            in srgb,
+            var(--primary) 35%,
+            transparent
+        );
 
     box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.4);
-}
+        0 8px 25px var(--shadow-soft);
 
+    transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
 
 /* =========================================================
    TÍTULOS
@@ -603,13 +681,20 @@ button:active {
 h1,
 h2,
 h3 {
-    color: #ffd43b;
+    color: var(--primary);
 
     text-shadow:
-        0 0 10px rgba(255, 212, 59, 0.25),
-        0 3px 6px rgba(0, 0, 0, 0.7);
-}
+        0 0 10px color-mix(
+            in srgb,
+            var(--primary) 25%,
+            transparent
+        ),
+        0 3px 6px var(--shadow);
 
+    transition:
+        color 0.3s ease,
+        text-shadow 0.3s ease;
+}
 
 h1 {
     text-align: center;
@@ -651,35 +736,51 @@ h2 {
         0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* =========================================================
+   BOTONES DEL MENÚ DEL FORO
+   ========================================================= */
 
 #menuForo button {
     margin: 4px;
 
-    background: #1f1a22;
+    background: var(--bg-card);
 
-    color: #f5f2ea;
+    color: var(--text-main);
 
-    border: 1px solid rgba(255, 138, 31, 0.5);
+    border: 1px solid var(--border);
 
-    box-shadow: none;
+    box-shadow:
+        0 4px 10px var(--shadow-soft);
+
+    transition:
+        color 0.25s ease,
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
 }
 
 
 #menuForo button:hover {
-    color: #17120b;
+    color: var(--bg-main);
 
     background: linear-gradient(
         135deg,
-        #ffd43b,
-        #ff9f1c
+        var(--primary),
+        var(--secondary)
     );
 
-    border-color: #ffd43b;
+    border-color: var(--primary);
 
     box-shadow:
-        0 0 15px rgba(255, 180, 30, 0.25);
-}
+        0 0 15px color-mix(
+            in srgb,
+            var(--primary) 30%,
+            transparent
+        );
 
+    transform: translateY(-2px);
+}
 
 /* =========================================================
    CONTENIDO DEL FORO
@@ -697,7 +798,6 @@ h2 {
     margin: 25px auto;
 }
 
-
 /* =========================================================
    SECCIONES DEL FORO
    ========================================================= */
@@ -711,23 +811,27 @@ h2 {
     background:
         linear-gradient(
             145deg,
-            rgba(30, 25, 34, 0.98),
-            rgba(17, 14, 21, 0.98)
+            var(--bg-card),
+            var(--bg-panel)
         );
 
-    border: 1px solid rgba(255, 138, 31, 0.35);
+    border: 1px solid var(--border);
 
     border-radius: 14px;
 
     box-shadow:
-        0 15px 35px rgba(0, 0, 0, 0.55);
+        0 15px 35px var(--shadow);
 
     animation: aparecer 0.35s ease;
+
+    transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-
 /* =========================================================
-   COMENTARIOS
+   TARJETAS DE COMENTARIOS
    ========================================================= */
 
 .comentario {
@@ -737,30 +841,41 @@ h2 {
 
     text-align: left;
 
-    color: #e8e2e8;
+    color: var(--text-main);
 
     background:
         linear-gradient(
             145deg,
-            rgba(40, 34, 45, 0.9),
-            rgba(25, 21, 29, 0.9)
+            var(--bg-card),
+            var(--bg-secondary)
         );
 
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
 
-    border-left: 3px solid #ff8a1f;
+    border-left: 3px solid var(--secondary);
 
     border-radius: 9px;
 
     box-shadow:
-        0 5px 15px rgba(0, 0, 0, 0.25);
+        0 5px 15px var(--shadow-soft);
 
     transition:
         transform 0.2s ease,
+        color 0.3s ease,
+        background 0.3s ease,
         border-color 0.2s ease,
         box-shadow 0.2s ease;
 }
 
+
+.comentario:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--border-strong);
+
+    box-shadow:
+        0 8px 20px var(--shadow);
+}
 
 .comentario:hover {
     transform: translateY(-2px);
@@ -776,12 +891,10 @@ h2 {
     color: #ffd43b;
 }
 
-
 /* =========================================================
    CAMPOS DE TEXTO
    ========================================================= */
 
-input,
 textarea {
     width: 100%;
 
@@ -789,11 +902,11 @@ textarea {
 
     padding: 12px 14px;
 
-    color: #f5f2ea;
+    color: var(--text-main);
 
-    background: #100d13;
+    background: var(--input-bg);
 
-    border: 1px solid rgba(255, 138, 31, 0.3);
+    border: 1px solid var(--border);
 
     border-radius: 8px;
 
@@ -805,29 +918,37 @@ textarea {
     resize: vertical;
 
     transition:
+        color 0.3s ease,
+        background 0.3s ease,
         border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+        box-shadow 0.2s ease;
 }
 
 
 input::placeholder,
 textarea::placeholder {
-    color: #77717b;
+    color: var(--text-muted);
 }
 
 
 input:focus,
 textarea:focus {
-    background: #151118;
+    background: var(--input-bg);
 
-    border-color: #ffd43b;
+    border-color: var(--primary);
 
     box-shadow:
-        0 0 0 2px rgba(255, 212, 59, 0.08),
-        0 0 15px rgba(255, 138, 31, 0.12);
+        0 0 0 2px color-mix(
+            in srgb,
+            var(--primary) 8%,
+            transparent
+        ),
+        0 0 15px color-mix(
+            in srgb,
+            var(--secondary) 12%,
+            transparent
+        );
 }
-
 
 /* =========================================================
    BOTÓN CERRAR SESIÓN
