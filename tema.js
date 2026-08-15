@@ -36,12 +36,12 @@ function aplicarTema() {
         if (temaGuardado === "oscuro") {
 
             botonTema.textContent =
-                "☀️ Modo claro";
+                "🌙";
 
         } else {
 
             botonTema.textContent =
-                "🌙 Modo oscuro";
+                "☀️";
 
         }
 

@@ -179,9 +179,9 @@ function agregarComentario() {
     let comentarios = JSON.parse(localStorage.getItem("comentarios")) || [];
 
     comentarios.push({
-        id: "comentario_001",
+        id: "comentario_" + Date.now(),
 
-        usuarioID: "usurio_001",
+        usuarioID: usuarioActivo.id,
 
         usuario: nombre,
 
@@ -189,7 +189,7 @@ function agregarComentario() {
 
         categoria: categoriaActual,
 
-        fecha: "2026-08-08T10:30:00"
+        fecha: new Date().toISOString()
 
     });
 
@@ -206,8 +206,13 @@ function agregarComentario() {
     nuevo.className = "comentario";
 
     nuevo.innerHTML =
-        "<strong>" + nombre + ":</strong> " + mensaje;
-
+    "<strong class='nombre-usuario' data-usuario-id='" +
+    usuarioActivo.id +
+    "'>" +
+    nombre +
+    "</strong>: " +
+    mensaje;
+    
     if (esAdmin) {
 
         let boton = document.createElement("button");
@@ -304,3 +309,121 @@ function cerrarSesion() {
     window.location.href = "index.html";
 
 }
+
+// =========================================
+// MENÚ DE USUARIO
+// =========================================
+
+document.addEventListener("click", function (event) {
+
+    if (event.target.classList.contains("nombre-usuario")) {
+
+        let usuarioID = event.target.dataset.usuarioId;
+
+        let usuarios =
+            JSON.parse(localStorage.getItem("usuarios")) || [];
+
+        let usuarioSeleccionado =
+            usuarios.find(function (usuario) {
+
+                return usuario.id === usuarioID;
+
+            });
+
+        if (!usuarioSeleccionado) {
+            return;
+        }
+
+        let menu = document.createElement("div");
+
+        menu.className = "menu-usuario";
+
+menu.innerHTML = `
+    <div class="accion-ver-perfil">👤 Ver perfil</div>
+    <div>💬 Chatear</div>
+    <div>🔇 Silenciar</div>
+    <div>🚫 Bloquear</div>
+`;
+
+let botonVerPerfil =
+    menu.querySelector(".accion-ver-perfil");
+
+botonVerPerfil.addEventListener("click", function () {
+
+    let perfil = document.getElementById("perfilUsuario");
+
+    let avatar = document.getElementById("avatarPerfil");
+
+    let nombre = document.getElementById("nombrePerfil");
+
+    let id = document.getElementById("idPerfil");
+
+    let rol = document.getElementById("rolPerfil");
+
+    avatar.textContent =
+        usuarioSeleccionado.nombre.charAt(0).toUpperCase();
+
+    nombre.textContent =
+        usuarioSeleccionado.nombre;
+
+    id.textContent =
+        usuarioSeleccionado.id;
+
+    if (usuarioSeleccionado.rol === "admin") {
+
+        rol.textContent = "Administrador";
+
+    } else {
+
+        rol.textContent = "Usuario";
+
+    }
+
+    perfil.style.display = "block";
+
+    menu.remove();
+
+});
+        
+        document.body.appendChild(menu);
+
+        menu.style.position = "fixed";
+        menu.style.left = event.clientX + "px";
+        menu.style.top = event.clientY + "px";
+        menu.style.zIndex = "9999";
+
+        // Cerrar el menú al hacer clic fuera de él
+    setTimeout(function () {
+
+    document.addEventListener("click", function cerrarMenu(event) {
+
+        if (!menu.contains(event.target)) {
+
+            menu.remove();
+
+            document.removeEventListener("click", cerrarMenu);
+        }
+
+    });
+
+}, 0);
+
+    }
+
+});
+
+// =========================================
+// CERRAR PERFIL DE USUARIO
+// =========================================
+
+document.addEventListener("click", function (event) {
+
+    if (event.target.closest("#cerrarPerfil")) {
+
+        let perfil = document.getElementById("perfilUsuario");
+
+        perfil.style.display = "none";
+
+    }
+
+});
