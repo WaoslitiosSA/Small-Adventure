@@ -24,6 +24,8 @@ function crearAdministrador() {
 
             password: "SmallAdventure2026",
 
+            id: "usuario_4392712150125",
+
             rol: "admin"
 
         });
