@@ -1,0 +1,5157 @@
+.aclaracion-regla {
+    font-family: 'Orbitron', sans-serif; 
+    font-style: italic;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   RESET GENERAL
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   SISTEMA DE TEMAS — SMALL ADVENTURE
+   ========================================================= */
+
+/* 🌙 MODO OSCURO */
+:root {
+    --bg-main: #08070b;
+    --bg-secondary: #100c14;
+    --bg-panel: #17131c;
+    --bg-card: #241d28;
+
+    --primary: #ffd43b;
+    --secondary: #ff8a1c;
+    --accent: #ff4567;
+
+    --text-main: #f5f2ea;
+    --text-secondary: #aaa3ad;
+    --text-muted: #77717b;
+
+    --border: rgba(255, 138, 31, 0.45);
+    --border-strong: rgba(255, 138, 31, 0.65);
+
+    --shadow: rgba(0, 0, 0, 0.60);
+    --shadow-soft: rgba(0, 0, 0, 0.35);
+
+    --input-bg: #100d13;
+    --hover-bg: #1f1a22;
+}
+
+/* ☀️ MODO CLARO */
+[data-tema="claro"] {
+    --bg-main: #dcecff;
+    --bg-secondary: #c9e1fa;
+    --bg-panel: #f7fbff;
+    --bg-card: #ffffff;
+
+    --primary: #2563a8;
+    --secondary: #e27a19;
+    --accent: #f0a52b;
+
+    --text-main: #172b3f;
+    --text-secondary: #536b80;
+    --text-muted: #71879a;
+
+    --border: rgba(37, 99, 168, 0.28);
+    --border-strong: rgba(37, 99, 168, 0.48);
+
+    --shadow: rgba(33, 74, 110, 0.20);
+    --shadow-soft: rgba(33, 74, 110, 0.10);
+
+    --input-bg: #ffffff;
+    --hover-bg: #e8f3ff;
+}
+
+/* =========================================================
+   CUERPO PRINCIPAL
+   ========================================================= */
+
+body {
+    min-height: 100vh;
+
+    padding: 20px;
+
+    color: var(--text-main);
+
+    background: var(--bg-main);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+/* =========================================
+   PARALLAX
+   ========================================= */
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+
+    top: -5%;
+    left: -5%;
+
+    width: 110%;
+    height: 110%;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    transform: translate(
+        var(--parallax-x, 0px),
+        var(--parallax-y, 0px)
+    );
+
+    transition:
+        opacity 0.8s ease,
+        transform 0.35s ease-out;
+
+    z-index: -2;
+    pointer-events: none;
+}
+
+
+/* =========================================
+   PARALLAX — OSCURO
+   ========================================= */
+
+body::before {
+    background-image: url("../assets/fondos/parallax-foro.jpeg");
+
+    opacity: 1;
+}
+
+
+/* =========================================
+   PARALLAX — CLARO
+   ========================================= */
+
+body::after {
+    background-image: url("../assets/fondos/parallax-foro-claro.png");
+
+    opacity: 0;
+}
+
+
+/* =========================================
+   CAMBIO AL MODO CLARO
+   ========================================= */
+
+html[data-tema="claro"] body::before {
+    opacity: 0;
+}
+
+html[data-tema="claro"] body::after {
+    opacity: 1;
+}
+
+/* =========================================================
+   PANTALLA DE BIENVENIDA
+   ========================================================= */
+
+#bienvenida {
+    width: min(800px, calc(100% - 40px));
+    margin: 50px auto;
+    padding: 35px;
+    background:
+        linear-gradient(
+            145deg,
+            var(--bg-card),
+            var(--bg-secondary)
+        );
+
+    border-radius: 14px;
+}
+
+/* Línea luminosa superior */
+
+#bienvenida::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 12%;
+
+    width: 76%;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--primary),
+            var(--secondary),
+            transparent
+        );
+
+    box-shadow:
+        0 0 12px var(--border-strong);
+}
+
+
+/* Título de bienvenida */
+
+#bienvenida h1 {
+    color: var(--primary);
+
+    font-size: clamp(28px, 4vw, 42px);
+
+    margin-bottom: 20px;
+
+    text-shadow:
+        0 0 10px var(--border-strong),
+        0 3px 8px var(--shadow);
+}
+
+
+/* Texto */
+
+#bienvenida p {
+    margin: 12px 0;
+
+    color: var(--text-main);
+
+    line-height: 1.6;
+}
+
+
+/* Reglas */
+
+#bienvenida p:nth-of-type(n + 2) {
+    text-align: left;
+
+    padding: 10px 14px;
+
+    background: var(--hover-bg);
+
+    border-left: 2px solid var(--border-strong);
+
+    border-radius: 5px;
+}
+
+/* =========================================================
+   BOTONES GENERALES
+   ========================================================= */
+
+button {
+    position: relative;
+
+    margin: 10px;
+
+    padding: 12px 22px;
+
+    color: var(--bg-main);
+
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+);
+
+    border: 1px solid #ffd43b;
+    border-radius: 8px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.35),
+        0 0 0 rgba(255, 212, 59, 0);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+
+}
+
+
+
+button:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.08);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.45),
+        0 0 15px rgba(255, 180, 30, 0.35);
+}
+
+
+button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   FONDO AMBIENTAL
+   ========================================================= */
+
+.burbujas {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+}
+
+
+.burbuja {
+    position: absolute;
+    bottom: -150px;
+
+    border-radius: 50%;
+
+    opacity: 0.12;
+
+    filter: blur(1px);
+
+    animation: subir 18s linear infinite;
+}
+
+
+.burbuja:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    left: 10%;
+
+    background: #ff4567;
+}
+
+
+.burbuja:nth-child(2) {
+    width: 50px;
+    height: 50px;
+    left: 25%;
+
+    background: #ffd43b;
+
+    animation-duration: 14s;
+}
+
+
+.burbuja:nth-child(3) {
+    width: 100px;
+    height: 100px;
+    left: 40%;
+
+    background: #ff8a1f;
+
+    animation-duration: 20s;
+}
+
+
+.burbuja:nth-child(4) {
+    width: 60px;
+    height: 60px;
+    left: 60%;
+
+    background: #ff4567;
+
+    animation-duration: 16s;
+}
+
+
+.burbuja:nth-child(5) {
+    width: 120px;
+    height: 120px;
+    left: 80%;
+
+    background: #ffd43b;
+
+    animation-duration: 22s;
+}
+
+
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL DEL FORO
+   ========================================================= */
+
+.contenedor {
+
+    box-sizing: border-box;
+
+    position: relative;
+
+    z-index: 1000;
+
+    width: min(850px, calc(100% - 40px));
+
+    margin: 35px auto;
+
+    padding: 25px;
+    
+    text-align: center;
+
+    animation: aparecer 0.5s ease;
+
+    transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* =========================================================
+   MENSAJE DE USUARIO
+   ========================================================= */
+
+#entradaUsuario {
+    position: relative;
+
+    z-index: 1000;
+
+    display: inline-block;
+
+    margin: 25px auto 5px;
+
+    padding: 12px 25px;
+
+    color: var(--primary);
+
+    background: var(--bg-card);
+
+    border: 1px solid var(--border-strong);
+
+    border-radius: 10px;
+
+    font-size: clamp(24px, 4vw, 34px);
+
+    font-weight: bold;
+
+    text-shadow:
+        0 0 12px color-mix(
+            in srgb,
+            var(--primary) 35%,
+            transparent
+        );
+
+    box-shadow:
+        0 8px 25px var(--shadow-soft);
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* =========================================================
+   TÍTULOS
+   ========================================================= */
+
+h1,
+h2,
+h3 {
+    color: var(--primary);
+
+    text-shadow:
+        0 0 10px color-mix(
+            in srgb,
+            var(--primary) 25%,
+            transparent
+        ),
+        0 3px 6px var(--shadow);
+
+    transition:
+        color 0.3s ease,
+        text-shadow 0.3s ease;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+h2 {
+    margin-bottom: 20px;
+
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   MENÚ DEL FORO
+   ========================================================= */
+
+#menuForo {
+    position: relative;
+
+    z-index: 1000;
+
+    display: none;
+
+    width: min(850px, calc(100% - 40px));
+
+    margin: 25px auto 0;
+
+    padding: 14px;
+
+}
+
+/* =========================================================
+   BOTONES DEL MENÚ DEL FORO
+   ========================================================= */
+
+#menuForo button {
+    margin: 4px;
+
+    background: var(--bg-card);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 4px 10px var(--shadow-soft);
+
+    transition:
+        color 0.25s ease,
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+#menuForo button:hover {
+    color: var(--bg-main);
+
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 15px color-mix(
+            in srgb,
+            var(--primary) 30%,
+            transparent
+        );
+
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   CONTENIDO DEL FORO
+   ========================================================= */
+
+#contenidoForo {
+    display: none;
+
+    position: relative;
+
+    z-index: 1000;
+
+    width: min(850px, calc(100% - 40px));
+
+    margin: 25px auto;
+}
+
+/* =========================================================
+   SECCIONES DEL FORO
+   ========================================================= */
+
+#general,
+#espanol,
+#ingles,
+#portugues {
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--bg-card),
+            var(--bg-panel)
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 35px var(--shadow);
+
+    animation: aparecer 0.35s ease;
+
+    transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* =========================================================
+   TARJETAS DE COMENTARIOS
+   ========================================================= */
+
+.comentario {
+    padding: 15px 15px;
+
+    margin-bottom: 15px;
+
+    color: var(--text-main);
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--bg-card),
+            var(--bg-panel)
+        );
+
+    border: 1px solid var(--border);
+
+    border-left: 4px solid var(--primary);
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 6px 18px var(--shadow-soft);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER DE COMENTARIO
+   ========================================================= */
+
+.comentario:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 8px 22px var(--shadow),
+        0 0 12px color-mix(
+            in srgb,
+            var(--primary) 18%,
+            transparent
+        );
+}
+
+/* =========================================================
+   NOMBRE DEL USUARIO EN EL COMENTARIO
+   ========================================================= */
+
+.comentario strong {
+    color: var(--primary);
+
+    font-weight: bold;
+
+    transition:
+        color 0.3s ease,
+        text-shadow 0.3s ease;
+}
+
+/* =========================================================
+   CAMPOS DE TEXTO
+   ========================================================= */
+
+textarea {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 12px 14px;
+
+    color: var(--text-main);
+
+    background: var(--input-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+
+    resize: vertical;
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted);
+}
+
+
+input:focus,
+textarea:focus {
+    background: var(--input-bg);
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px color-mix(
+            in srgb,
+            var(--primary) 8%,
+            transparent
+        ),
+        0 0 15px color-mix(
+            in srgb,
+            var(--secondary) 12%,
+            transparent
+        );
+}
+
+/* =========================================================
+   NOTIFICACIONES / TOAST
+   ========================================================= */
+
+#toast {
+    position: fixed;
+
+    top: 25px;
+    right: 25px;
+
+    min-width: 260px;
+    max-width: 350px;
+
+    padding: 16px 20px;
+
+    color: #f5f2ea;
+
+    background:
+        linear-gradient(
+            145deg,
+            #241d28,
+            #151118
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 5px solid #2ecc71;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55);
+
+    opacity: 0;
+
+    transform: translateX(120%);
+
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
+
+    z-index: 99999;
+}
+
+
+#toast.mostrar {
+    opacity: 1;
+
+    transform: translateX(0);
+}
+
+
+#toast.error {
+    border-left-color: #ff4567;
+}
+
+
+#toast.info {
+    border-left-color: #ffd43b;
+}
+
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes viento {
+    0% {
+        transform: rotate(-2deg);
+    }
+
+    50% {
+        transform: rotate(2deg);
+    }
+
+    100% {
+        transform: rotate(-2deg);
+    }
+}
+
+
+@keyframes volar {
+    from {
+        left: -100px;
+    }
+
+    to {
+        left: 110%;
+    }
+}
+
+
+@keyframes subir {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.12;
+    }
+
+    100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* =========================================================
+   BOTÓN CAMBIO DE TEMA
+   ========================================================= */
+
+#botonTema {
+    position: fixed;
+
+    top: 15px;
+    left: 15px;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--bg-card);
+
+    color: var(--primary);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 20px;
+    line-height: 1;
+
+    box-shadow:
+        0 5px 15px var(--shadow-soft);
+
+    z-index: 9999;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+#botonTema:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 18px var(--shadow),
+        0 0 12px color-mix(
+            in srgb,
+            var(--primary) 25%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   CLICK
+   ========================================================= */
+
+#botonTema:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+
+    /* =====================================================
+    BIENVENIDA / REGLAS — CELULAR
+    ===================================================== */
+
+    #bienvenida {
+    width: 100%;
+    max-width: 100%;
+    margin: 25px auto;
+    padding: 22px 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--bg-card),
+            var(--bg-secondary)
+        );
+
+    border-radius: 14px;
+    }
+
+
+    #bienvenida h1 {
+        font-size: clamp(24px, 8vw, 32px);
+
+        line-height: 1.2;
+
+        margin-bottom: 18px;
+    }
+
+
+    #bienvenida p {
+        font-size: 15px;
+
+        line-height: 1.55;
+
+        margin-bottom: 12px;
+    }
+
+
+    #bienvenida .aclaracion-regla {
+        font-size: 14px;
+
+        line-height: 1.5;
+
+        padding: 10px;
+    }
+
+
+    #bienvenida button {
+        width: 100%;
+
+        min-height: 48px;
+
+        margin-top: 12px;
+
+        font-size: 15px;
+    }
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        padding: 8px;
+    }
+
+    .contenedor {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 12px;
+        border-radius: 0;
+    }
+
+
+    /* =====================================================
+       LAYOUT PRINCIPAL DEL FORO — CELULAR
+       ===================================================== */
+
+    #layoutForo {
+        display: grid;
+
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+
+        width: 100%;
+        height: auto;
+
+        padding: 0;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+       ZONA CENTRAL
+       ===================================================== */
+
+    #zonaCentralForo {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* =====================================================
+       PANEL DE NOTIFICACIONES
+       ===================================================== */
+
+    #panelLateralNotificaciones {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+
+        padding: 8px 0;
+    }
+
+
+    #panelNotificaciones {
+        width: 100%;
+        max-height: 350px;
+
+        overflow-y: auto;
+    }
+
+
+    /* =====================================================
+       MENÚ DEL FORO
+       ===================================================== */
+
+    #menuForo {
+        width: 100%;
+        max-width: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 8px;
+
+        margin: 15px 0;
+    }
+
+
+    #menuForo button {
+        width: 100%;
+
+        min-height: 44px;
+
+        padding: 11px 12px;
+
+        font-size: 15px;
+    }
+
+
+    /* =====================================================
+       CONTENIDO
+       ===================================================== */
+
+    #contenidoForo {
+        width: 100%;
+        max-width: 100%;
+
+        margin: 15px 0;
+    }
+
+
+    #general,
+    #espanol,
+    #ingles,
+    #portugues {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 18px 14px;
+    }
+
+
+    /* =====================================================
+       COMENTARIOS
+       ===================================================== */
+
+    .comentario {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 13px 14px;
+
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+
+    /* =====================================================
+       TEXTAREA
+       ===================================================== */
+
+    textarea {
+        width: 100%;
+        max-width: 100%;
+
+        min-height: 100px;
+
+        font-size: 16px;
+    }
+
+
+    /* =====================================================
+       BOTONES
+       ===================================================== */
+
+    button {
+        min-height: 44px;
+    }
+
+    /* =====================================================
+    LAYOUT DEL FORO — CELULAR
+    ===================================================== */
+
+    #layoutForo {
+        grid-template-columns: 1fr;
+        gap: 12px;
+
+        width: 100%;
+        height: auto;
+
+        padding: 0 10px;
+    }
+
+
+    /* Zona principal del foro */
+
+    #zonaCentralForo {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* Panel de notificaciones */
+
+    #panelLateralNotificaciones {
+        width: 100%;
+        height: auto;
+
+        padding: 10px 0;
+    }
+
+
+    /* Lista/contenido de notificaciones */
+
+    #panelNotificaciones {
+        width: 100%;
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+    #menuForo {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #menuForo button {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    #general,
+    #espanol,
+    #ingles,
+    #portugues {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #general,
+    #espanol,
+    #ingles,
+    #portugues {
+        padding: 18px 14px;
+        border-radius: 12px;
+    }
+
+    .comentario {
+        width: 100%;
+        max-width: 100%;
+        padding: 13px 14px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    textarea {
+        width: 100%;
+        max-width: 100%;
+        min-height: 100px;
+        font-size: 16px;
+    }
+
+    button {
+        min-height: 44px;
+    }
+
+    /* =====================================================
+    AJUSTE VISUAL EXTRA — CELULAR
+    ===================================================== */
+
+    #bienvenida {
+        width: calc(100% - 20px);
+        margin: 20px auto;
+        padding: 22px 16px;
+    }
+
+    #bienvenida h1 {
+        font-size: clamp(24px, 8vw, 32px);
+    }
+
+    #bienvenida p {
+        font-size: 15px;
+        line-height: 1.55;
+    }
+
+    #contenidoForo {
+        width: 100%;
+        max-width: none;
+        margin: 15px auto;
+    }
+
+    #general,
+    #espanol,
+    #ingles,
+    #portugues {
+        padding: 18px 14px;
+    }
+
+    #listaUsuarios {
+        width: 100%;
+    }
+
+    #usuariosDisponibles {
+        width: 100%;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    #zonaCentralForo {
+    min-width: 0;
+    }
+
+    #panelLateralNotificaciones {
+        min-width: 0;
+    }
+
+    .contenedor {
+        width: 94%;
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 22px;
+    }
+
+    #menuForo {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    #menuForo button {
+        flex: 1 1 180px;
+        min-height: 44px;
+        padding: 10px 14px;
+        font-size: 15px;
+    }
+
+    #general,
+    #espanol,
+    #ingles,
+    #portugues {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .comentario {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px 18px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    textarea {
+        width: 100%;
+        max-width: 100%;
+        min-height: 110px;
+        font-size: 16px;
+    }
+
+    #layoutForo {
+        grid-template-columns: minmax(0, 1fr) 240px;
+        gap: 12px;
+    }
+}
+
+/* =========================================================
+   MENÚ DE USUARIO
+   ========================================================= */
+
+.menu-usuario {
+    position: fixed;
+
+    min-width: 180px;
+    max-width: 220px;
+
+    padding: 8px;
+
+    background: var(--bg-card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 10px 25px var(--shadow);
+
+    z-index: 9999;
+
+    animation: aparecer 0.2s ease;
+}
+
+
+/* =========================================================
+   OPCIONES DEL MENÚ
+   ========================================================= */
+
+.menu-usuario div {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    margin: 2px 0;
+
+    color: var(--text-main);
+
+    background: transparent;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.menu-usuario div:hover {
+    color: var(--bg-main);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    transform: translateX(2px);
+}
+
+/* =========================================================
+   MENÚ DE USUARIO — CELULAR
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .menu-usuario {
+        min-width: 160px;
+        max-width: calc(100vw - 20px);
+
+        padding: 6px;
+
+        border-radius: 9px;
+    }
+
+    #layoutForo {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 12px;
+    padding: 0 10px;
+    }
+
+    #zonaCentralForo {
+    width: 100%;
+    }
+
+    #panelLateralNotificaciones {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+    }
+
+    #panelNotificaciones {
+        max-height: 350px;
+    }
+
+    .menu-usuario div {
+        padding: 10px;
+
+        font-size: 14px;
+
+        white-space: nowrap;
+    }
+}
+
+/* =========================================================
+   MENÚ DE USUARIO — TABLET
+   ========================================================= */
+
+@media (min-width: 601px) and (max-width: 900px) {
+
+    .menu-usuario {
+        min-width: 170px;
+        max-width: 220px;
+
+        padding: 7px;
+
+        border-radius: 10px;
+    }
+
+    .menu-usuario div {
+        padding: 10px 12px;
+
+        font-size: 14px;
+
+        white-space: nowrap;
+    }
+}
+
+/* =========================================================
+   PERFIL DE USUARIO
+   ========================================================= */
+
+.perfil-usuario {
+    position: fixed;
+
+    inset: 0;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    z-index: 10000;
+}
+
+
+/* =========================================================
+   CENTRAR PERFIL CUANDO ESTÁ VISIBLE
+   ========================================================= */
+
+.perfil-usuario[style*="display: block"] {
+    display: flex !important;
+}
+
+/* =========================================================
+   CONTENIDO DEL PERFIL
+   ========================================================= */
+
+.perfil-contenido {
+    position: relative;
+
+    width: min(360px, 100%);
+
+    padding: 30px 25px;
+
+    text-align: center;
+
+    background: var(--bg-card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 50px var(--shadow);
+
+    animation: aparecer 0.25s ease;
+}
+
+/* =========================================================
+   CERRAR PERFIL
+   ========================================================= */
+
+#cerrarPerfil {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 34px;
+    height: 34px;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: var(--text-muted);
+
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 50%;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+#cerrarPerfil:hover {
+    color: var(--bg-main);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    transform: rotate(90deg);
+}
+
+/* =========================================================
+   AVATAR DEL PERFIL
+   ========================================================= */
+
+.avatar-perfil {
+    width: 90px;
+    height: 90px;
+
+    margin: 5px auto 15px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: var(--bg-main);
+
+    background:transparent;
+
+    border: 3px solid var(--primary);
+
+    border-radius: 50%;
+
+    font-size: 36px;
+    font-weight: bold;
+
+    box-shadow:
+        0 0 0 5px var(--glow),
+        0 0 25px var(--glow);
+
+    text-transform: uppercase;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* Efecto visual al pasar sobre el avatar */
+
+.avatar-perfil:hover {
+    transform: scale(1.05);
+
+    box-shadow:
+        0 0 0 6px var(--glow),
+        0 0 30px var(--glow);
+}
+
+
+/* =========================================================
+   ENCABEZADO — NOMBRE DEL USUARIO
+   ========================================================= */
+
+#nombrePerfil {
+    margin: 0 0 22px;
+
+    color: var(--text-main);
+
+    font-size: 26px;
+    font-weight: bold;
+
+    text-align: center;
+
+    letter-spacing: 0.5px;
+
+    text-shadow:
+        0 0 10px var(--glow);
+}
+
+/* =========================================================
+   INFORMACIÓN FINAL DEL PERFIL
+   ========================================================= */
+
+.perfil-contenido p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 10px 0;
+    padding: 10px 12px;
+
+    color: var(--text-muted);
+
+    background: var(--bg-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    text-align: left;
+}
+
+
+.perfil-contenido p span {
+    color: var(--text-main);
+
+    font-weight: bold;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   ID
+   ========================================================= */
+
+#idPerfil {
+    color: var(--primary);
+
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   ROL
+   ========================================================= */
+
+#rolPerfil {
+    padding: 4px 9px;
+
+    color: var(--bg-main);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   DESTACAR EL ID
+   ========================================================= */
+
+#idPerfil {
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   DESTACAR EL ROL
+   ========================================================= */
+
+#rolPerfil {
+    padding: 3px 8px;
+
+    color: var(--bg-main);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    border-radius: 5px;
+
+    font-size: 13px;
+}
+
+/* =========================================================
+   PERFIL DE USUARIO — CELULAR
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .perfil-usuario {
+        padding: 15px;
+    }
+
+    #bienvenida {
+    width: calc(100% - 20px);
+    margin: 25px auto;
+    padding: 22px 16px;
+    border-radius: 14px;
+    }
+
+    #bienvenida h1 {
+        font-size: clamp(24px, 8vw, 32px);
+    }
+
+    #bienvenida p {
+        font-size: 14px;
+    }
+
+    .perfil-contenido {
+        width: 100%;
+        max-width: 340px;
+
+        padding: 28px 20px;
+
+        border-radius: 14px;
+    }
+
+    .avatar-perfil {
+        width: 78px;
+        height: 78px;
+
+        margin-bottom: 14px;
+
+        font-size: 32px;
+    }
+
+    #nombrePerfil {
+        font-size: 23px;
+
+        margin-bottom: 18px;
+    }
+
+    .perfil-contenido p {
+        padding: 9px 10px;
+
+        font-size: 13px;
+
+        gap: 10px;
+    }
+
+    #rolPerfil {
+        font-size: 12px;
+    }
+
+    #cerrarPerfil {
+        width: 34px;
+        height: 34px;
+
+        top: 9px;
+        right: 9px;
+    }
+}
+
+/* =========================================================
+   PERFIL DE USUARIO — TABLET
+   ========================================================= */
+
+@media (min-width: 601px) and (max-width: 900px) {
+
+    .perfil-usuario {
+        padding: 20px;
+    }
+
+    .perfil-contenido {
+        width: 90%;
+        max-width: 360px;
+
+        padding: 30px 25px;
+    }
+
+    .avatar-perfil {
+        width: 85px;
+        height: 85px;
+
+        font-size: 34px;
+    }
+
+    
+
+    #nombrePerfil {
+        font-size: 25px;
+    }
+
+    .perfil-contenido p {
+        font-size: 14px;
+    }
+}
+
+/* =========================================================
+   INTERFAZ DE EIDTAR PERFIL
+   ========================================================= */
+
+   #editarPerfil{
+    width: 100%;
+        min-height: 44px;
+
+        padding: 10px 12px;
+
+        margin: 20px 10px 20px 1px;
+
+        font-size: 14px;
+   }
+   #nuevoAvatar{
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    white-space: nowrap;
+   }
+   #biografiaPerfil{
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    white-space: nowrap;
+   }
+   #nuevaBiografia{
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    white-space: nowrap;
+   }
+   #nuevoColor{
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    white-space: nowrap;
+   }
+   #guardarBiografia{
+    width: 70%;
+        min-height: 44px;
+
+        padding: 10px 12px;
+
+        margin: 20px 10px 20px 1px;
+
+        font-size: 14px;
+   }
+   #avatarPerfil{
+    border-radius: 30px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    white-space: nowrap;
+   }
+
+   .avatar-perfil img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* =========================================
+   IMÁGENES DE LOS MENSAJES
+   ========================================= */
+
+.imagen-mensaje {
+
+    display: block;
+
+    max-width: 100%;
+
+    max-height: 400px;
+
+    width: auto;
+
+    height: auto;
+
+    object-fit: contain;
+
+    margin-top: 8px;
+
+}
+
+/* =========================================
+   PERFIL DEL USUARIO ACTIVO
+   ========================================= */
+
+#usuarioActivoPerfil {
+
+    position: fixed;
+
+    top: 20px;
+    right: 25px;
+
+    z-index: 1000;
+
+}
+
+#avatarUsuarioActivo {
+
+    width: 60px;
+    height: 60px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+}
+
+#avatarUsuarioActivo {
+
+    transition: transform 0.25s ease;
+
+}
+
+#avatarUsuarioActivo:hover {
+
+    transform: scale(1.15);
+
+}
+
+/* =========================================
+   MENÚ DEL USUARIO
+   ========================================= */
+
+#menuUsuario {
+
+    display: none;
+
+    position: absolute;
+
+    top: 70px;
+    right: 0;
+
+    width: 190px;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background: white;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+
+    text-align: center;
+
+}
+
+/* Nombre del usuario */
+
+#nombreUsuarioMenu {
+
+    margin: 5px 0 12px;
+
+    font-weight: bold;
+
+}
+
+/* Botones */
+
+#menuUsuario button {
+
+    width: 100%;
+
+    margin-top: 6px;
+
+    padding: 8px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+}
+
+#usuarioActivoPerfil {
+
+    position: fixed;
+
+    top: 20px;
+    right: 25px;
+
+    z-index: 9999;
+
+}
+
+#menuUsuario {
+
+    z-index: 10000;
+
+}
+
+/* =========================================
+   MENÚ DE ACCIONES DEL USUARIO
+   ========================================= */
+
+#menuAccionesUsuario {
+
+    display: none;
+
+    position: fixed;
+
+    width: 190px;
+
+    padding: 10px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+
+    z-index: 10000;
+
+}
+
+
+/* =========================================
+   BOTONES DEL MENÚ
+   ========================================= */
+
+#menuAccionesUsuario button {
+
+    display: block;
+
+    width: 100%;
+
+    margin: 5px 0;
+
+    padding: 9px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    text-align: left;
+
+}
+
+/* =========================================
+   LISTA DE USUARIOS
+   ========================================= */
+
+#listaUsuarios {
+
+    margin-bottom: 25px;
+
+    padding: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--bg-card),
+            var(--bg-panel)
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 25px var(--shadow-soft);
+
+    text-align: left;
+}
+
+/* =========================================
+   LISTA DE USUARIOS
+   ========================================= */
+
+#listaUsuarios {
+
+    margin-bottom: 25px;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--bg-card),
+            var(--bg-panel)
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 25px var(--shadow-soft);
+}
+
+
+#listaUsuarios h3 {
+
+    margin: 0 0 18px;
+
+    color: var(--primary);
+
+    font-size: 20px;
+
+    text-align: center;
+}
+
+
+/* =========================================
+   CONTENEDOR DE TARJETAS
+   ========================================= */
+
+#usuariosDisponibles {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(190px, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+/* =========================================
+   TARJETA DE USUARIO
+   ========================================= */
+
+.tarjeta-usuario {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    background:
+        var(--bg-main);
+
+    border: 1px solid var(--border);
+
+    border-left:
+        4px solid var(--color-usuario, var(--primary));
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 10px var(--shadow-soft);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* =========================================
+   CHAT PRIVADO
+   ========================================= */
+
+   #chatPrivado {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+/* =========================================
+   CONTENEDOR DEL CHAT
+   ========================================= */
+
+.chat-privado-contenido {
+
+    width: min(
+        500px,
+        calc(100% - 30px)
+    );
+
+    height: min(
+        650px,
+        calc(100% - 40px)
+    );
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background:
+        var(--bg-card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 15px 40px var(--shadow);
+}
+
+
+/* =========================================
+   CABECERA
+   ========================================= */
+
+.chat-privado-cabecera {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    color:
+        var(--bg-main);
+}
+
+
+/* Nombre del usuario */
+
+.chat-privado-cabecera > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+#chatPrivadoNombre {
+
+    font-size: 17px;
+
+    font-weight: bold;
+}
+
+
+/* Botón cerrar */
+
+#cerrarChatPrivado {
+
+    margin: 0;
+
+    padding: 5px 9px;
+
+    color:
+        var(--bg-main);
+
+    background:
+        transparent;
+
+    border:
+        1px solid transparent;
+
+    box-shadow: none;
+
+    font-size: 18px;
+}
+
+
+#cerrarChatPrivado:hover {
+
+    background:
+        rgba(255, 255, 255, 0.15);
+
+    border-color:
+        rgba(255, 255, 255, 0.3);
+
+    transform: none;
+}
+
+
+/* =========================================
+   AVATAR DEL CHAT
+   ========================================= */
+
+#chatPrivadoAvatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        var(--bg-main);
+
+    border-radius: 50%;
+}
+
+
+#chatPrivadoAvatar img {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* =========================================
+   ZONA DE MENSAJES
+   ========================================= */
+
+.mensajes-privados {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 18px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    background:
+        var(--bg-main);
+}
+
+
+/* =========================================
+   ZONA PARA ESCRIBIR
+   ========================================= */
+
+.chat-privado-escritura {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 12px;
+
+    background:
+        var(--bg-card);
+
+    border-top:
+        1px solid var(--border);
+}
+
+
+#mensajePrivado {
+
+    flex: 1;
+
+    margin: 0;
+
+    padding: 11px 14px;
+
+    color:
+        var(--text-main);
+
+    background:
+        var(--bg-main);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 10px;
+
+    outline: none;
+
+    font-size: 14px;
+}
+
+
+#mensajePrivado:focus {
+
+    border-color:
+        var(--primary);
+
+    box-shadow:
+        0 0 0 2px
+        var(--shadow-soft);
+}
+
+
+/* Botón enviar */
+
+#enviarMensajePrivado {
+
+    margin: 0;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+}
+
+/* =========================================
+   EFECTO AL PASAR EL MOUSE
+   ========================================= */
+
+.tarjeta-usuario:hover {
+
+    transform:
+        translateY(-3px);
+
+    background:
+        var(--bg-panel);
+
+    border-color:
+        var(--color-usuario, var(--primary));
+
+    box-shadow:
+        0 7px 18px var(--shadow);
+}
+
+
+/* =========================================
+   AVATAR
+   ========================================= */
+
+.avatar-usuario {
+
+    width: 55px;
+
+    height: 55px;
+
+    min-width: 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        var(--color-usuario, var(--primary));
+
+    border-radius: 50%;
+
+    border:
+        2px solid
+        var(--color-usuario, var(--primary));
+
+    color:
+        var(--bg-main);
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 3px 10px var(--shadow-soft);
+}
+
+
+.avatar-usuario img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* =========================================
+   INFORMACIÓN DEL USUARIO
+   ========================================= */
+
+.informacion-usuario {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.informacion-usuario h4 {
+
+    margin: 0;
+
+    color:
+        var(--text-main);
+
+    font-size: 15px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.informacion-usuario span {
+
+    color:
+        var(--text-secondary);
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   ADAPTACIÓN PARA PANTALLAS PEQUEÑAS
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    #usuariosDisponibles {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+/* HOVER */
+
+#usuariosDisponibles button:hover {
+
+    color: var(--bg-main);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 15px var(--shadow);
+}
+
+
+/* CLICK */
+
+#usuariosDisponibles button:active {
+
+    transform: translateY(0);
+
+}
+
+/* =========================================
+   BURBUJAS DE CHAT PRIVADO
+   ========================================= */
+
+.mensaje-privado {
+    max-width: 75%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.mensaje-privado strong {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+.mensaje-privado span {
+    font-size: 14px;
+}
+
+/* MENSAJES DEL OTRO USUARIO */
+
+.mensaje-otro {
+    align-self: flex-start;
+    background:
+        var(--bg-card);
+    border:
+        1px solid var(--border);
+    border-bottom-left-radius: 4px;
+}
+
+/* MIS MENSAJES */
+
+.mensaje-mio {
+    align-self: flex-end;
+    background:
+        var(--primary);
+    color:
+        var(--bg-main);
+    border-bottom-right-radius: 4px;
+}
+
+.mensaje-mio strong {
+    color:
+        var(--bg-main);
+}
+
+/* =========================================
+   PANEL DE ADMINISTRACIÓN
+   ========================================= */
+
+#panelAdmin {
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    padding: 15px;
+
+    color: var(--text-main);
+
+    background: transparent;
+
+    border: none;
+
+    box-shadow: none;
+}
+
+/* =========================================================
+   TÍTULO DEL PANEL
+   ========================================================= */
+
+#panelAdmin h2 {
+
+    margin-top: 0;
+    margin-bottom: 20px;
+
+    color: var(--text-main);
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   BOTÓN VER REPORTES
+   ========================================================= */
+
+#btnMostrarReportes {
+
+    display: block;
+
+    margin-bottom: 40px;
+
+    padding: 10px 20px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: var(--bg-main);
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    box-shadow:
+        0 3px 8px var(--shadow-soft);
+
+}
+
+
+#btnMostrarReportes:hover {
+
+    background: var(--secondary);
+
+}
+
+/* =========================================
+   LISTA DE REPORTES
+   ========================================= */
+
+#listaReportes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+
+    flex: 0 0 auto;
+
+    max-height: none;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    background: transparent;
+
+    border: none;
+
+    box-shadow: none;
+}
+
+/* Cuando existen reportes, se convierte en panel */
+
+#listaReportes:not(:empty) {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    background: var(--bg-panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 12px var(--shadow-soft);
+}
+
+/* =========================================================
+   TARJETA DE REPORTE
+   ========================================================= */
+
+.tarjeta-reporte {
+
+    padding: 20px;
+
+    background: var(--bg-card);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 3px 10px var(--shadow-soft);
+
+}
+
+
+/* =========================================================
+   TÍTULO DEL REPORTE
+   ========================================================= */
+
+.tarjeta-reporte h3 {
+
+    margin-top: 0;
+    margin-bottom: 15px;
+
+    color: var(--primary);
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN DEL REPORTE
+   ========================================================= */
+
+.tarjeta-reporte p {
+
+    margin: 7px 0;
+
+    color: var(--text-secondary);
+
+    line-height: 1.4;
+
+}
+
+
+.tarjeta-reporte strong {
+
+    color: var(--text-main);
+
+}
+
+
+/* =========================================================
+   ESTADO DEL REPORTE
+   ========================================================= */
+
+.estado-reporte {
+
+    color: var(--primary);
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.acciones-reporte {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.acciones-reporte button {
+
+    padding: 8px 14px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition:
+        background 0.2s,
+        transform 0.2s;
+
+}
+
+
+/* =========================================================
+   VER MENSAJE
+   ========================================================= */
+
+.btn-ver-mensaje {
+
+    background: var(--hover-bg);
+
+    color: var(--text-main);
+
+}
+
+
+.btn-ver-mensaje:hover {
+
+    background: var(--secondary);
+
+    color: var(--bg-main);
+
+}
+
+
+/* =========================================================
+   RESOLVER
+   ========================================================= */
+
+.btn-resolver-reporte {
+
+    background: var(--primary);
+
+    color: var(--bg-main);
+
+}
+
+
+.btn-resolver-reporte:hover {
+
+    background: var(--secondary);
+
+}
+
+
+/* =========================================================
+   DESCARTAR
+   ========================================================= */
+
+.btn-descartar-reporte {
+
+    background: var(--accent);
+
+    color: white;
+
+}
+
+
+.btn-descartar-reporte:hover {
+
+    background: var(--secondary);
+
+}
+
+
+/* =========================================================
+   MENSAJE REPORTADO
+   ========================================================= */
+
+.mensaje-reportado {
+
+    outline: 3px solid var(--secondary);
+
+    box-shadow:
+        0 0 15px var(--secondary);
+
+}
+
+/* =========================================================
+   BOTONES DEL PANEL DE ADMINISTRACIÓN
+   ========================================================= */
+
+.botones-panel-admin {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+
+    width: 100%;
+
+}
+
+
+/* =========================================================
+   BOTÓN CERRAR REPORTES
+   ========================================================= */
+
+#btnCerrarReportes {
+
+    margin-bottom: 40px;
+
+    padding: 10px 20px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--hover-bg);
+
+    color: var(--text-main);
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+}
+
+
+#btnCerrarReportes:hover {
+
+    background: var(--secondary);
+
+    color: var(--bg-main);
+
+}
+#btnSilenciarPerfil {
+ margin: 20px 90px;
+}
+
+/* =========================================================
+   MODAL DE REPORTE — ADAPTADO AL SISTEMA DE TEMAS
+   ========================================================= */
+
+.modal-reporte {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 20000;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+
+}
+
+
+/* =========================================================
+   CONTENIDO DEL MODAL
+   ========================================================= */
+
+.modal-reporte-contenido {
+
+    width: 450px;
+
+    max-width: 90%;
+
+    padding: 25px;
+
+    background: var(--bg-panel);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 10px 30px var(--shadow);
+
+    box-sizing: border-box;
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.modal-reporte-contenido h2 {
+
+    margin-top: 0;
+
+    margin-bottom: 10px;
+
+    color: var(--primary);
+
+}
+
+
+/* =========================================================
+   TEXTO EXPLICATIVO
+   ========================================================= */
+
+.texto-reporte {
+
+    margin-bottom: 20px;
+
+    line-height: 1.5;
+
+    color: var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   ETIQUETAS
+   ========================================================= */
+
+.modal-reporte-contenido label {
+
+    display: block;
+
+    margin-top: 15px;
+
+    margin-bottom: 7px;
+
+    font-weight: bold;
+
+    color: var(--text-main);
+
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+#motivoReporte {
+
+    width: 100%;
+
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    background: var(--input-bg);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+}
+
+
+/* =========================================================
+   DESCRIPCIÓN
+   ========================================================= */
+
+#descripcionReporte {
+
+    width: 100%;
+
+    min-height: 120px;
+
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    resize: vertical;
+
+    font-family: inherit;
+
+    background: var(--input-bg);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+}
+
+
+/* =========================================================
+   ENFOQUE DE LOS CAMPOS
+   ========================================================= */
+
+#motivoReporte:focus,
+#descripcionReporte:focus {
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px var(--shadow-soft);
+
+}
+
+
+/* =========================================================
+   CONTADOR
+   ========================================================= */
+
+.contador-reporte {
+
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: var(--text-muted);
+
+}
+
+/* =========================================================
+   CERRAR MODAL DE REPORTE
+   ========================================================= */
+
+#cerrarModalReporte {
+
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 34px;
+    height: 34px;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    color: var(--text-muted);
+
+    background: transparent;
+
+    border: 1px solid transparent;
+
+    border-radius: 50%;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#cerrarModalReporte:hover {
+
+    color: var(--bg-main);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    transform: rotate(90deg);
+}
+
+/* =========================================================
+   CONTENEDOR DE BOTONES
+   ========================================================= */
+
+.botones-reporte {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.botones-reporte button {
+
+    padding: 10px 18px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    background: var(--bg-card);
+
+    color: var(--text-main);
+
+}
+
+
+/* =========================================================
+   HOVER DE BOTONES
+   ========================================================= */
+
+.botones-reporte button:hover {
+
+    background: var(--hover-bg);
+
+}
+
+
+/* =========================================================
+   BOTÓN ENVIAR
+   ========================================================= */
+
+#enviarReporte {
+
+    background: var(--primary);
+
+    color: var(--bg-main);
+
+    border-color: var(--primary);
+
+}
+
+
+/* =========================================================
+   HOVER ENVIAR
+   ========================================================= */
+
+#enviarReporte:hover {
+
+    background: var(--secondary);
+
+    color: var(--text-main);
+
+}
+
+/* =========================================================
+   NOTIFICACIONES — ESTADO LEÍDA / NO LEÍDA
+   ========================================================= */
+
+/* NOTIFICACIÓN NORMAL */
+.notificacion {
+    padding: 12px 14px;
+    margin-bottom: 10px;
+
+    background: var(--bg-card);
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   NOTIFICACIÓN NO LEÍDA
+   ========================================================= */
+
+.notificacion-no-leida {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px var(--shadow-soft);
+
+    cursor: pointer;
+}
+
+
+/* INDICADOR VISUAL DE NO LEÍDA */
+.notificacion-no-leida::before {
+    content: "●";
+
+    margin-right: 8px;
+
+    color: var(--primary);
+
+    font-size: 12px;
+}
+
+
+/* EFECTO AL PASAR EL MOUSE */
+.notificacion-no-leida:hover {
+    background: var(--hover-bg);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   TEXTO
+   ========================================================= */
+
+.notificacion strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--primary);
+
+    text-transform: capitalize;
+}
+
+
+.notificacion p {
+    margin: 5px 0;
+
+    color: var(--text-main);
+
+    line-height: 1.4;
+}
+
+
+.notificacion small {
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+/* =========================================================
+   BOTÓN DE NOTIFICACIONES
+   ========================================================= */
+
+.boton-notificaciones {
+    position: relative;
+
+    width: 45px;
+    height: 45px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: var(--bg-card);
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.boton-notificaciones:hover {
+    background: var(--hover-bg);
+
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   CONTADOR DE NOTIFICACIONES
+   ========================================================= */
+
+.contador-notificaciones {
+    position: absolute;
+
+    top: px;
+    left: 720px;
+
+    min-width: 24px;
+    height: 24px;
+
+    padding: 0 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    background: var(--accent);
+    color: white;
+
+    border: 2px solid var(--bg-main);
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+
+    pointer-events: none;
+}
+
+/* =========================================
+   MODAL DE MODERACIÓN
+   ADAPTABLE A LOS TEMAS
+========================================= */
+
+.modal-moderacion {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    z-index: 9999;
+
+}
+
+
+/* =========================================
+   CONTENIDO DEL MODAL
+========================================= */
+
+.modal-moderacion-contenido {
+
+    width: 500px;
+    max-width: 90%;
+
+    padding: 30px;
+
+    border-radius: 15px;
+
+    background: var(--bg-panel);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 10px 30px var(--shadow);
+
+    position: relative;
+
+}
+
+
+/* =========================================
+   BOTÓN CERRAR
+========================================= */
+
+.cerrar-modal-moderacion {
+
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.cerrar-modal-moderacion:hover {
+
+    color: var(--accent);
+
+    transform: scale(1.1);
+
+}
+
+
+/* =========================================
+   TEXTO DEL MODAL
+========================================= */
+
+#infoReporteModeracion {
+
+    color: var(--text-secondary);
+
+    margin-top: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+
+/* =========================================
+   OPCIONES DE MODERACIÓN
+========================================= */
+
+.opciones-moderacion {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+.opcion-moderacion {
+
+    width: 100%;
+
+    padding: 12px 15px;
+
+    border-radius: 8px;
+
+    border: 1px solid var(--border);
+
+    background: var(--bg-card);
+
+    color: var(--text-main);
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.opcion-moderacion:hover {
+
+    background: var(--hover-bg);
+
+    border-color: var(--border-strong);
+
+    transform: translateX(3px);
+
+}
+
+
+/* =========================================
+   BOTONES INFERIORES
+========================================= */
+
+.botones-moderacion {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 25px;
+
+}
+
+
+.botones-moderacion button {
+
+    padding: 10px 18px;
+
+    border-radius: 8px;
+
+    border: 1px solid var(--border);
+
+    background: var(--bg-card);
+
+    color: var(--text-main);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.botones-moderacion button:hover {
+
+    background: var(--hover-bg);
+
+    border-color: var(--border-strong);
+
+}
+
+
+/* =========================================
+   BOTÓN APLICAR
+========================================= */
+
+#aplicarModeracion {
+
+    background: var(--primary);
+
+    color: var(--bg-main);
+
+    border-color: var(--primary);
+
+}
+
+
+#aplicarModeracion:hover {
+
+    background: var(--secondary);
+
+    border-color: var(--secondary);
+
+}
+
+
+/* =========================================
+   BOTÓN APLICAR DESACTIVADO
+========================================= */
+
+#aplicarModeracion:disabled {
+
+    opacity: 0.45;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+}
+
+/* =========================================
+   OPCIÓN DE MODERACIÓN SELECCIONADA
+========================================= */
+
+.opcion-moderacion.seleccionada {
+
+    border-color: var(--primary);
+
+    background: var(--hover-bg);
+
+    box-shadow:
+        0 0 0 2px var(--primary);
+
+}
+
+/* =========================================
+   FORMULARIO CREAR ADMINISTRADOR
+   ========================================= */
+
+#formularioCrearAdministrador {
+    width: 100%;
+
+    margin-top: 0;
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    background: var(--bg-panel);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 12px var(--shadow-soft);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* =========================================
+   BOTONES CREAR ADMINISTRADOR
+   ========================================= */
+
+.botones-crear-admin {
+    display: flex;
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin-top: 20px;
+}
+
+.botones-crear-admin button {
+    flex: 1;
+}
+
+/* =========================================
+   TÍTULO
+   ========================================= */
+
+#formularioCrearAdministrador h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0 0 22px 0;
+
+    color: var(--primary);
+
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   ETIQUETAS
+   ========================================= */
+
+#formularioCrearAdministrador label {
+    display: block;
+
+    margin-top: 16px;
+    margin-bottom: 7px;
+
+    color: var(--text-secondary);
+
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   CAMPOS
+   ========================================= */
+
+#formularioCrearAdministrador input {
+    display: block;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    background: var(--input-bg);
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 1rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+/* =========================================
+   CAMPO SELECCIONADO
+   ========================================= */
+
+#formularioCrearAdministrador input:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px var(--border);
+}
+
+
+/* =========================================
+   PLACEHOLDER
+   ========================================= */
+
+#formularioCrearAdministrador input::placeholder {
+    color: var(--text-muted);
+}
+
+
+/* =========================================
+   CONTENEDOR DE BOTONES
+   ========================================= */
+
+.botones-crear-admin {
+    display: flex;
+
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+
+/* =========================================
+   BOTONES
+   ========================================= */
+
+.botones-crear-admin button {
+    padding: 10px 18px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================
+   CANCELAR
+   ========================================= */
+
+#cancelarCrearAdministrador {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+
+/* HOVER CANCELAR */
+
+#cancelarCrearAdministrador:hover {
+    background: var(--hover-bg);
+
+    color: var(--text-main);
+
+    border-color: var(--border-strong);
+}
+
+
+/* =========================================
+   CREAR ADMINISTRADOR
+   ========================================= */
+
+#guardarCrearAdministrador {
+    background: var(--primary);
+    color: var(--bg-main);
+
+    border-color: var(--primary);
+}
+
+
+/* HOVER CREAR */
+
+#guardarCrearAdministrador:hover {
+    background: var(--secondary);
+
+    border-color: var(--secondary);
+
+    box-shadow:
+        0 4px 12px var(--shadow-soft);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   CLICK
+   ========================================= */
+
+.botones-crear-admin button:active {
+    transform: translateY(0);
+}
+
+/* =========================================
+   ACLARACIONES DE LAS REGLAS
+   ========================================= */
+
+.aclaracion-regla {
+    margin-left: 20px;
+    padding: 10px 14px;
+
+    color: var(--text-secondary);
+
+    background: var(--bg-secondary);
+
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+
+    font-size: 0.92rem;
+    font-style: serif;
+    line-height: 1.5;
+
+    box-shadow: 0 2px 6px var(--shadow-soft);
+
+    font-family: 'Orbitron', sans-serif;
+}
+
+#btnCrearAdministrador{
+    margin-bottom: 40px
+    
+}
+
+/* =========================================
+   CONTENEDOR DEL HISTORIAL
+   ========================================= */
+
+#historialModeraciones {
+    flex: 1;
+
+    min-height: 0;
+
+    width: 100%;
+
+    margin-top: 0;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    background: var(--bg-panel);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px var(--shadow-soft);
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+#historialModeraciones h3 {
+
+    margin-top: 0;
+
+    margin-bottom: 20px;
+
+    color: var(--primary);
+
+}
+
+/* =========================================
+   LISTA DEL HISTORIAL
+   ========================================= */
+
+#listaHistorialModeraciones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    flex: 1;
+    min-height: 0;
+
+    max-height: none;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 5px;
+}
+
+/* =========================================================
+   TARJETA DE MODERACIÓN
+   ========================================================= */
+
+.tarjeta-moderacion {
+
+    padding: 18px;
+
+    background: var(--bg-card);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    box-sizing: border-box;
+
+    transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+}
+
+
+/* =========================================================
+   EFECTO AL PASAR EL MOUSE
+   ========================================================= */
+
+.tarjeta-moderacion:hover {
+
+    background: var(--hover-bg);
+
+    border-color: var(--border-strong);
+
+    transform: translateY(-2px);
+
+}
+
+
+/* =========================================================
+   TÍTULO DE LA TARJETA
+   ========================================================= */
+
+.tarjeta-moderacion h4 {
+
+    margin-top: 0;
+
+    margin-bottom: 15px;
+
+    color: var(--primary);
+
+    font-size: 17px;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+   ========================================================= */
+
+.tarjeta-moderacion p {
+
+    margin: 7px 0;
+
+    line-height: 1.4;
+
+    color: var(--text-main);
+
+}
+
+
+/* =========================================================
+   ETIQUETAS
+   ========================================================= */
+
+.tarjeta-moderacion strong {
+
+    color: var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   FECHA
+   ========================================================= */
+
+.tarjeta-moderacion p:last-child {
+
+    margin-top: 15px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+
+}
+#btnMostrarHistorialModeraciones{
+    margin-bottom: 40px
+}
+
+/* =========================================
+   RESPUESTAS ANIDADAS
+   ========================================= */
+
+.respuestas {
+    margin-left: 28px;
+    padding-left: 18px;
+
+    border-left: 2px solid var(--border);
+
+    margin-top: 10px;
+}
+
+/* =========================================
+   SEPARACIÓN ENTRE RESPUESTAS
+   ========================================= */
+
+.respuestas > .comentario {
+    margin-bottom: 12px;
+}
+
+/* =========================================
+   NIVELES MÁS PROFUNDOS
+   ========================================= */
+
+.respuestas .respuestas {
+    margin-left: 24px;
+    padding-left: 16px;
+
+    border-left-color: var(--border-strong);
+}
+
+/* =========================================
+   BOTÓN X RESPUESTAS
+   ========================================= */
+
+.boton-respuestas {
+    display: block;
+
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+    padding: 4px 0;
+
+    background: none;
+    border: none;
+
+    color: var(--primary);
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+/* =========================================
+   HOVER DEL BOTÓN
+   ========================================= */
+
+.boton-respuestas:hover {
+    color: var(--secondary);
+    opacity: 0.85;
+}
+
+/* =========================================================
+   PANEL FLOTANTE DE ESCRITURA
+   ========================================================= */
+
+.panel-escritura {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: min(360px, calc(100vw - 20px));
+
+    background: var(--bg-panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 25px var(--shadow);
+
+    overflow: hidden;
+
+    z-index: 1000;
+}
+
+/* =========================================================
+   CABECERA DEL PANEL
+   ========================================================= */
+
+.cabecera-panel-escritura {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 14px;
+
+    background: var(--bg-secondary);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--text-main);
+
+    font-weight: 600;
+
+    cursor: grab;
+
+    user-select: none;
+}
+
+.cabecera-panel-escritura:active {
+    cursor: grabbing;
+}
+
+/* =========================================================
+   CABECERA EN MODO RESPUESTA
+   ========================================================= */
+
+.cabecera-panel-escritura.modo-respuesta {
+    background: var(--secondary);
+
+    color: var(--text-main);
+
+    border-bottom-color: var(--secondary);
+}
+
+/* =========================================================
+   TEXTO DE RESPUESTA
+   ========================================================= */
+
+.cabecera-panel-escritura.modo-respuesta span {
+    font-weight: 700;
+}
+
+/* =========================================================
+   BOTÓN MINIMIZAR
+   ========================================================= */
+
+#botonMinimizarEscritura {
+    background: none;
+
+    border: none;
+
+    color: var(--text-secondary);
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    padding: 0 5px;
+}
+
+#botonMinimizarEscritura:hover {
+    color: var(--primary);
+}
+
+/* =========================================================
+   ÁREA DE TEXTO
+   ========================================================= */
+
+#panelEscritura #mensaje {
+    width: calc(100% - 24px);
+
+    min-height: 100px;
+
+    margin: 12px;
+
+    box-sizing: border-box;
+
+    background: var(--input-bg);
+
+    color: var(--text-main);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 10px;
+
+    resize: vertical;
+}
+
+/* =========================================================
+   SELECCIÓN DE IMAGEN
+   ========================================================= */
+
+#panelEscritura #imagenMensaje {
+    width: calc(100% - 24px);
+
+    margin: 0 12px 12px;
+
+    box-sizing: border-box;
+
+    color: var(--text-main);
+
+    background: var(--input-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 7px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   BOTÓN INTERNO DE SELECCIONAR ARCHIVO
+   ========================================================= */
+
+#panelEscritura #imagenMensaje::file-selector-button {
+    background: var(--secondary);
+
+    color: var(--text-main);
+
+    border: none;
+
+    border-radius: 6px;
+
+    padding: 7px 12px;
+
+    margin-right: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+/* =========================================================
+   HOVER DEL BOTÓN DE ARCHIVO
+   ========================================================= */
+
+#panelEscritura #imagenMensaje::file-selector-button:hover {
+    background: var(--primary);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   BOTÓN PUBLICAR
+   ========================================================= */
+
+#panelEscritura > button:last-child {
+    width: calc(100% - 24px);
+
+    margin: 0 12px 12px;
+
+    padding: 9px;
+
+    background: var(--primary);
+
+    color: var(--bg-main);
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+#panelEscritura > button:last-child:hover {
+    background: var(--secondary);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   PANEL DE ESCRITURA MINIMIZADO
+   ========================================================= */
+
+.panel-escritura-minimizado {
+    width: 240px;
+}
+
+/* Ocultar el contenido cuando está minimizado */
+.panel-escritura-minimizado #mensaje,
+.panel-escritura-minimizado #imagenMensaje,
+.panel-escritura-minimizado > button:last-child {
+    display: none;
+}
+
+/* =========================================================
+   BOTÓN CANCELAR RESPUESTA
+   ========================================================= */
+
+#botonCancelarRespuesta {
+    width: calc(100% - 24px);
+
+    margin: 0 12px 12px;
+
+    padding: 8px;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+#botonCancelarRespuesta:hover {
+    background: var(--hover-bg);
+
+    color: var(--text-main);
+
+    border-color: var(--border-strong);
+}
+
+/* =========================================
+   FORMULARIO CREAR ADMINISTRADOR
+   ========================================= */
+
+#formularioCrearAdministrador {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px var(--shadow-soft);
+    text-align: center;
+}
+
+#formularioCrearAdministrador h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+#formularioCrearAdministrador input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 10px 0;
+    padding: 11px 12px;
+    background: var(--input-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+#formularioCrearAdministrador input::placeholder {
+    color: var(--text-muted);
+}
+
+#formularioCrearAdministrador input:focus {
+    border-color: var(--primary);
+    box-shadow:
+        0 0 0 3px color-mix(
+            in srgb,
+            var(--primary) 18%,
+            transparent
+        );
+}
+
+/* =========================================
+   BOTONES CREAR ADMINISTRADOR
+   ========================================= */
+
+.botones-crear-admin {
+    display: flex;
+    flex-direction: row;
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin-top: 20px;
+
+    box-sizing: border-box;
+}
+
+.botones-crear-admin button {
+    flex: 1 1 50%;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#guardarCrearAdministrador {
+    background: var(--primary);
+    color: var(--bg-main);
+    border-color: var(--primary);
+}
+
+#guardarCrearAdministrador:hover {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    transform: translateY(-1px);
+}
+
+#cancelarCrearAdministrador {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+#cancelarCrearAdministrador:hover {
+    background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--secondary)
+);
+    color: var(--text-main);
+    border-color: var(--border-strong);
+}
+
+.botones-traduccion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.botones-traduccion button {
+    padding: 5px 10px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.botones-traduccion button:hover {
+    background: var(--hover-bg);
+    color: var(--primary);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+}
+
+.traduccion-mensaje {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--primary);
+    border-radius: 7px;
+    text-align: left;
+}
+
+.titulo-traduccion {
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.cabecera-traduccion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.cabecera-traduccion .titulo-traduccion {
+    margin-bottom: 0;
+}
+
+.boton-cerrar-traduccion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+
+    border: 1px solid var(--border);
+    background: var(--bg-panel);
+    color: var(--text-main);
+
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+
+    padding: 0;
+    margin: 0;
+
+    cursor: pointer;
+    border-radius: 5px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.boton-cerrar-traduccion:hover {
+    background: var(--hover-bg);
+    color: var(--accent);
+    border-color: var(--border-strong);
+}
+
+
+.texto-traduccion {
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.boton-cerrar-traduccion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+
+    padding: 0;
+    margin: 0;
+
+    cursor: pointer;
+    border-radius: 5px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.boton-cerrar-traduccion:hover {
+    background: var(--hover-bg);
+    color: var(--accent);
+}
+
+/* =========================================
+   BUSCADOR DE USUARIOS
+   ========================================= */
+
+#contenedorBusquedaUsuarios {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#buscadorUsuarios {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 11px 14px;
+
+    color: var(--text-main);
+    background: var(--input-bg);
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#buscadorUsuarios::placeholder {
+    color: var(--text-muted);
+}
+
+#buscadorUsuarios:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px
+        color-mix(
+            in srgb,
+            var(--primary) 15%,
+            transparent
+        );
+}
+
+.sin-resultados-usuarios {
+    padding: 15px;
+
+    color: var(--text-muted);
+
+    text-align: center;
+}
+
+/* =========================================================
+   BUSCADOR DE USUARIOS
+   ========================================================= */
+
+#buscadorUsuarios {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   SELECTOR DE CAMPO
+   ========================================================= */
+
+#campoBusquedaUsuarios {
+    height: 40px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background-color: var(--input-bg);
+    color: var(--text-main);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#campoBusquedaUsuarios:hover {
+    border-color: var(--border-strong);
+}
+
+#campoBusquedaUsuarios:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px
+        var(--shadow-soft);
+}
+
+
+/* =========================================================
+   OPCIONES DEL SELECTOR
+   ========================================================= */
+
+#campoBusquedaUsuarios option {
+    background-color: var(--bg-panel);
+    color: var(--text-main);
+}
+
+
+/* =========================================================
+   CAMPO DE TEXTO
+   ========================================================= */
+
+#textoBusquedaUsuarios {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 40px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background-color: var(--input-bg);
+    color: var(--text-main);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#textoBusquedaUsuarios::placeholder {
+    color: var(--text-muted);
+}
+
+#textoBusquedaUsuarios:hover {
+    border-color: var(--border-strong);
+}
+
+#textoBusquedaUsuarios:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px
+        var(--shadow-soft);
+}
+
+
+/* =========================================================
+   BOTÓN BUSCAR
+   ========================================================= */
+
+#botonBuscarUsuarios {
+    height: 40px;
+
+    padding: 0 16px;
+
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+
+    background-color: var(--secondary);
+    color: var(--text-main);
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 8px
+        var(--shadow-soft);
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+#botonBuscarUsuarios:hover {
+    background-color: var(--primary);
+
+    box-shadow:
+        0 4px 10px
+        var(--shadow);
+}
+
+#botonBuscarUsuarios:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        0 2px 5px
+        var(--shadow-soft);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #buscadorUsuarios {
+        flex-direction: column;
+        align-items: stretch;
+        background-color: var(--primary);
+    }
+
+    #campoBusquedaUsuarios,
+    #textoBusquedaUsuarios,
+    #botonBuscarUsuarios {
+        width: 100%;
+    }
+
+}
+
+/* =========================================
+   LAYOUT PRINCIPAL DEL FORO
+   ========================================= */
+
+#layoutForo {
+    display: grid;
+
+    grid-template-columns: minmax(0, 1fr) 280px;
+
+    gap: 15px;
+
+    width: 100%;
+    height: calc(100vh - 140px);
+
+    box-sizing: border-box;
+
+    padding: 0 15px;
+}
+
+/* =========================================
+   PANEL ADMINISTRACIÓN — IZQUIERDA
+   ========================================= */
+
+#panelAdmin {
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 15px;
+
+    color: var(--text-main);
+}
+
+/* =========================================
+   ZONA CENTRAL DEL FORO
+   ========================================= */
+
+#zonaCentralForo {
+    min-width: 0;
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+/* =========================================
+   COLUMNA DE NOTIFICACIONES
+   ========================================= */
+
+#panelLateralNotificaciones {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    padding: 15px;
+
+    color: var(--text-main);
+
+    background: transparent;
+
+    border: none;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* =========================================
+   CONTENIDO DE NOTIFICACIONES
+   ========================================= */
+
+#panelNotificaciones {
+    flex: 1;
+
+    min-height: 0;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 15px;
+
+    color: var(--text-main);
+
+    background: var(--bg-panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px var(--shadow-soft);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* =========================================
+   BOTÓN DE NOTIFICACIONES
+   ========================================= */
+
+#btnNotificaciones {
+    width: 100%;
+    box-sizing: border-box;
+
+    margin-bottom: 12px;
+}

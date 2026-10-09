@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Foro Small Adventure</title>
-    <link rel="stylesheet" href="Foro SM.css">
+    <link rel="stylesheet" href="css/Foro SM.css">
 </head>
 
 <body>
@@ -13,32 +13,6 @@
         <h3 id="entradaUsuario"></h3>
     </div>
 
-    <!-- Pájaros -->
-    <div class="pajaro p1">🕊</div>
-    <div class="pajaro p2">🕊</div>
-    <div class="pajaro p3">🕊</div>
-
-    <!-- Nubes -->
-    <div class="nube n1">☁</div>
-    <div class="nube n2">☁</div>
-    <div class="nube n3">☁</div>
-
-    <!-- Montañas -->
-    <div class="montanas">
-        <div class="montana m1"></div>
-        <div class="montana m2"></div>
-        <div class="montana m3"></div>
-    </div>
-
-    <!-- Bosque -->
-    <div class="bosque">
-        <div class="pino-fondo"></div>
-        <div class="pino-fondo"></div>
-        <div class="pino-fondo"></div>
-        <div class="pino-fondo"></div>
-        <div class="pino-fondo"></div>
-        <div class="pino-fondo"></div>
-    </div>
 
     <!-- Burbujas -->
     <div class="burbujas">
@@ -59,10 +33,39 @@
         <p>Antes de participar en el foro, por favor lee las siguientes reglas:</p>
 
         <p>1. Respeta a todos los miembros de la comunidad.</p>
-        <p>2. No publiques contenido ofensivo o inapropiado.</p>
-        <p>3. No hagas spam ni publicidad no autorizada.</p>
-        <p>4. Mantén las conversaciones relacionadas con Small Adventure.</p>
-        <p>5. Sigue las indicaciones de los administradores.</p>
+
+<p class="aclaracion-regla">
+    Si un administrador se da cuenta de que eres grosero,
+    te reportará y te sancionará con:
+    <br>
+    bloquear, eliminar mensaje y/o una advertencia.
+</p>
+
+<p>2. No publiques contenido ofensivo o inapropiado.</p>
+
+<p class="aclaracion-regla">
+    Del mismo caso, un administrador te reportará y tendrás
+    las siguientes posibles sanciones:
+    <br>
+    silenciar, eliminar mensaje, advertencia y/o eliminación de cuenta.
+</p>
+
+<p>3. No hagas spam ni publicidad no autorizada.</p>
+
+<p class="aclaracion-regla">
+    Porque se te podría sancionar de las siguientes maneras:
+    <br>
+    silenciar por 5 horas, bloquear por 72 horas y/o una advertencia.
+</p>
+
+<p>4. Mantén las conversaciones relacionadas con Small Adventure.</p>
+
+<p>5. Sigue las indicaciones de los administradores.</p>
+
+<p class="aclaracion-regla">
+    De caso contrario, al llegar a las 10 advertencias,
+    tu cuenta será eliminada.
+</p>
 
         <button onclick="entrarForo()">
             Aceptar y entrar al foro
@@ -70,103 +73,485 @@
 
     </div>
 
-        <!-- Menú del foro -->
-    <div id="menuForo">
+<!-- =========================================
+     ESTRUCTURA PRINCIPAL DEL FORO
+     ========================================= -->
 
-        <button onclick="mostrarGeneral()">
-            Información General
-        </button>
+<div id="layoutForo">
 
-        <button onclick="mostrarEspanol()">
-            Español
-        </button>
+    <!-- =========================================
+         PANEL DE ADMINISTRACIÓN — IZQUIERDA
+         ========================================= -->
 
-        <button onclick="mostrarIngles()">
-            Inglés
-        </button>
+    <div
+        id="panelAdmin"
+        style="display: none;"
+    >
 
-        <button onclick="mostrarPortugues()">
-            Portugués
-        </button>
+        <div class="botones-panel-admin">
+
+            <button id="btnMostrarReportes">
+                Ver reportes
+            </button>
+
+            <button id="btnCerrarReportes">
+                Cerrar reportes
+            </button>
+
+            <button id="btnMostrarHistorialModeraciones">
+                Ver historial de moderaciones
+            </button>
+
+            <button id="btnCrearAdministrador">
+                Crear administrador
+            </button>
+
+        </div>
+
+
+        <!-- =========================================
+             LISTA DE REPORTES
+             ========================================= -->
+
+        <div id="listaReportes">
+
+            <!-- Los reportes aparecerán aquí -->
+
+        </div>
+
+
+        <!-- =========================================
+             HISTORIAL DE MODERACIONES
+             ========================================= -->
+
+        <div
+            id="historialModeraciones"
+            style="display: none;"
+        >
+
+            <h3>
+                Historial de moderaciones
+            </h3>
+
+            <div id="listaHistorialModeraciones">
+
+                <!-- Las moderaciones aparecerán aquí -->
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             FORMULARIO PARA CREAR ADMINISTRADOR
+             ========================================= -->
+
+        <div
+            id="formularioCrearAdministrador"
+            style="display: none;"
+        >
+
+            <h3>
+                Crear administrador
+            </h3>
+
+            <label for="nuevoAdminNombre">
+                Nombre de usuario
+            </label>
+
+            <input
+                type="text"
+                id="nuevoAdminNombre"
+                placeholder="Nombre de usuario"
+            >
+
+            <label for="nuevoAdminCorreo">
+                Correo electrónico
+            </label>
+
+            <input
+                type="email"
+                id="nuevoAdminCorreo"
+                placeholder="Correo electrónico"
+            >
+
+            <label for="nuevoAdminPassword">
+                Contraseña
+            </label>
+
+            <input
+                type="password"
+                id="nuevoAdminPassword"
+                placeholder="Contraseña"
+            >
+
+            <div class="botones-crear-admin">
+
+                <button
+                    id="cancelarCrearAdministrador"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    id="guardarCrearAdministrador"
+                    type="button"
+                >
+                    Crear administrador
+                </button>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <!-- Contenido del foro -->
-    <div id="contenidoForo">
 
-        <!-- Información General -->
-        <div id="general" style="display: none;">
+    <!-- =========================================
+         ZONA CENTRAL DEL FORO
+         ========================================= -->
 
-            <h2>Información General</h2>
+    <div id="zonaCentralForo">
 
-            <div id="comentariosGeneral">
+        <!-- Menú del foro -->
 
-                <div class="comentario">
-                    Bienvenidos al foro.
+        <div id="menuForo">
+
+            <button onclick="mostrarGeneral()">
+                Información General
+            </button>
+
+            <button onclick="mostrarEspanol()">
+                Español
+            </button>
+
+            <button onclick="mostrarIngles()">
+                Inglés
+            </button>
+
+            <button onclick="mostrarPortugues()">
+                Portugués
+            </button>
+
+            
+
+        </div>
+
+
+        <!-- =========================================
+             CONTENIDO DEL FORO
+             ========================================= -->
+
+        <div id="contenidoForo">
+
+            <!-- =========================================
+                 LISTA DE USUARIOS
+                 ========================================= -->
+
+            <div id="listaUsuarios">
+
+                <h3>
+                    Usuarios
+                </h3>
+
+                <!-- =========================================
+                     BUSCADOR DE USUARIOS
+                     ========================================= -->
+
+                <div id="buscadorUsuarios">
+
+                    <select id="campoBusquedaUsuarios">
+
+                        <option value="nombre">
+                            Nombre
+                        </option>
+
+                        <option value="correo">
+                            Correo
+                        </option>
+
+                        <option value="id">
+                            ID
+                        </option>
+
+                        <option value="rol">
+                            Rol
+                        </option>
+
+                    </select>
+
+                    <input
+                        type="text"
+                        id="textoBusquedaUsuarios"
+                        placeholder="Buscar usuario..."
+                        maxlength="100"
+                    >
+
+                    <button
+                        type="button"
+                        id="botonBuscarUsuarios"
+                    >
+                        Buscar
+                    </button>
+
                 </div>
 
-            </div>
 
-        </div>
+                <!-- =========================================
+                     RESULTADOS
+                     ========================================= -->
 
-        <!-- Foro Español -->
-        <div id="espanol" style="display: none;">
-
-            <h2>Foro Español</h2>
-
-            <div id="comentariosEspanol">
-
-                <p style="color:red; font-size:30px;">
-                    FUNCIONA ESPAÑOL
-                </p>
+                <div id="usuariosDisponibles"></div>
 
             </div>
 
-        </div>
 
-        <!-- Foro Inglés -->
-        <div id="ingles" style="display: none;">
+            <!-- =========================================
+                 INFORMACIÓN GENERAL
+                 ========================================= -->
 
-            <h2>English Forum</h2>
+            <div
+                id="general"
+                style="display: none;"
+            >
 
-            <div id="comentariosIngles"></div>
+                <h2>
+                    Información General
+                </h2>
 
-        </div>
+                <div id="comentariosGeneral"></div>
 
-        <!-- Foro Portugués -->
-        <div id="portugues" style="display: none;">
+            </div>
 
-            <h2>Fórum Português</h2>
 
-            <div id="comentariosPortugues"></div>
+            <!-- =========================================
+                 FORO ESPAÑOL
+                 ========================================= -->
 
-        </div>
+            <div
+                id="espanol"
+                style="display: none;"
+            >
 
-        <!-- Comentarios generales -->
-        <div id="comentarios">
+                <h2>
+                    Foro Español
+                </h2>
 
-            <div class="comentario">
-                <strong>Explorador123:</strong>
-                ¡Bienvenidos al foro!
+                <div id="comentariosEspanol"></div>
+
+            </div>
+
+
+            <!-- =========================================
+                 FORO INGLÉS
+                 ========================================= -->
+
+            <div
+                id="ingles"
+                style="display: none;"
+            >
+
+                <h2>
+                    English Forum
+                </h2>
+
+                <div id="comentariosIngles"></div>
+
+            </div>
+
+
+            <!-- =========================================
+                 FORO PORTUGUÉS
+                 ========================================= -->
+
+            <div
+                id="portugues"
+                style="display: none;"
+            >
+
+                <h2>
+                    Fórum Português
+                </h2>
+
+                <div id="comentariosPortugues"></div>
+
             </div>
 
         </div>
 
     </div>
 
-    <!-- Caja para escribir comentarios -->
-    <div class="contenedor">
 
-<button type="button" id="botonTema" onclick="cambiarTema()">☀️ Modo claro</button>
+    <!-- =========================================
+         PANEL DE NOTIFICACIONES — DERECHA
+         ========================================= -->
 
-        <textarea id="mensaje" placeholder="Escribe tu comentario aquí..."></textarea>
-        <button onclick="agregarComentario()">
+    <aside id="panelLateralNotificaciones">
+
+        <button
+                id="btnNotificaciones"
+                type="button"
+            >
+                🔔 Notificaciones
+
+                <span
+                    id="contadorNotificaciones"
+                    class="contador-notificaciones"
+                    style="display: none;"
+                >
+                    0
+                </span>
+            </button>
+
+        <div
+            id="panelNotificaciones"
+            style="display: none;"
+        >
+
+            <h3>
+                🔔 Notificaciones
+            </h3>
+
+            <div id="listaNotificaciones"></div>
+
+        </div>
+
+    </aside>
+
+</div>
+   
+    <!-- Perfil del usuario activo -->
+<div id="usuarioActivoPerfil">
+
+    <img
+        id="avatarUsuarioActivo"
+        src="assets/avatars/the_traveler.jpeg"
+        alt="Foto de perfil"
+    >
+
+    <!-- Menú del usuario -->
+    <div id="menuUsuario">
+
+        <p id="nombreUsuarioMenu">
+            Usuario
+        </p>
+
+        <button id="btnVerPerfil">
+            👤 Ver perfil
+        </button>
+
+        <button id="btnEditarPerfil">
+            ⚙️ Editar perfil
+        </button>
+
+        <button
+        id="btnCerrarSesionMenu"
+        type="button"
+        onclick="cerrarSesion()"
+        >
+        🚪 Cerrar sesión
+        </button>
+
+        <button id="btnCerrarMenuUsuario">
+            ✖️ Cerrar
+        </button>
+
+    </div>
+
+</div>
+    
+  <!-- =========================================
+     CAJA PARA ESCRIBIR COMENTARIOS
+     ========================================= -->
+
+<div
+    class="contenedor"
+    id="contenedorMensajes"
+    style="display: none;"
+>
+
+    <!-- =========================================
+         BOTÓN DE TEMA
+         ========================================= -->
+
+    <button
+        type="button"
+        id="botonTema"
+        onclick="cambiarTema()"
+    >
+        ☀️ Modo claro
+    </button>
+
+    <!-- =========================================
+         PANEL FLOTANTE PARA ESCRIBIR
+         ========================================= -->
+
+    <div
+        id="panelEscritura"
+        class="panel-escritura"
+    >
+
+        <!-- Zona que posteriormente podremos arrastrar -->
+        <div
+            id="cabeceraPanelEscritura"
+            class="cabecera-panel-escritura"
+        >
+            <span>
+                Escribir comentario
+            </span>
+
+            <button
+                type="button"
+                id="botonMinimizarEscritura"
+            >
+                −
+            </button>
+        </div>
+
+        <!-- =========================================
+             TEXTO
+             ========================================= -->
+
+        <textarea
+            id="mensaje"
+            placeholder="Escribe tu comentario aquí..."
+        ></textarea>
+
+        <!-- =========================================
+             IMAGEN
+             ========================================= -->
+
+        <input
+            type="file"
+            id="imagenMensaje"
+            accept="image/*"
+        >
+
+        <!-- =========================================
+             PUBLICAR
+             ========================================= -->
+
+        <button
+            type="button"
+            id="botonPublicarComentario"
+            onclick="agregarComentario()"
+        >
             Publicar comentario
         </button>
 
-        <button  id="btnCerrar"  onclick="cerrarSesion()">
-            Cerrar sesión
+        <button
+            type="button"
+            id="botonCancelarRespuesta"
+        >
+            Cancelar respuesta
         </button>
+
+    </div>
+
+</div>
+
+
 
     </div>
 
@@ -192,35 +577,533 @@
 
     <div id="toast"></div>
 
-    <script src="Foro SM.js"></script>
-    <script src="tema.js"></script>
+    <script src="js/Foro SM.js"></script>
+    <script src="js/tema.js"></script>
+    <script src="js/parallax.js"></script>
 
 <!-- PERFIL DE USUARIO -->
+
 <div id="perfilUsuario" class="perfil-usuario" style="display: none;">
 
-    <div class="perfil-contenido">
 
-        <button id="cerrarPerfil" type="button">
+<div class="perfil-contenido">
+
+    <button id="cerrarPerfil" type="button">
+        ✕
+    </button>
+
+    <div id="avatarPerfil" class="avatar-perfil">
+    </div>
+
+    <h2 id="nombrePerfil">
+    </h2>
+
+    <p>
+        ID:
+        <span id="idPerfil"></span>
+    </p>
+
+    <p>
+        Rol:
+        <span id="rolPerfil"></span>
+    </p>
+
+    <p>
+        Biografía:
+        <span id="biografiaPerfil"></span>
+    </p>
+
+    <button id="editarPerfil" type="button">
+        Editar perfil
+    </button>
+
+    <button id="btnSilenciarPerfil" type="button">
+        🔇 Silenciar
+    </button>
+
+
+    <!-- =========================================
+         FORMULARIO DE EDICIÓN
+         ========================================= -->
+
+    <div
+        id="formularioEditarPerfil"
+        style="display: none;"
+    >
+
+        <label for="nuevoAvatar">
+            Avatar
+        </label>
+
+        <select id="nuevoAvatar">
+
+            <option value="assets/avatars/predeterminado.jpeg">
+                Predeterminado
+            </option>
+
+            <option value="assets/avatars/caballero.jpeg">
+                Caballero
+            </option>
+
+            <option value="assets/avatars/guerrera.jpeg">
+                Guerrera
+            </option>
+
+            <option value="assets/avatars/arquero.jpeg">
+                Arquero
+            </option>
+
+            <option value="assets/avatars/mago.jpeg">
+                Mago
+            </option>
+
+            <option value="assets/avatars/slim.jpeg">
+                Slime
+            </option>
+
+            <option value="assets/avatars/fantasma_con_armadura.jpeg">
+                Fantasma con armadura
+            </option>
+
+            <option value="assets/avatars/goblin_guerrero.jpeg">
+                Goblin guerrero
+            </option>
+
+            <option value="assets/avatars/esqueleto_guerrero.jpeg">
+                Esqueleto guerrero
+            </option>
+
+            <option value="assets/avatars/goblin_elite.jpeg">
+                Goblin elite
+            </option>
+
+            <option value="assets/avatars/esqueleto_elite.jpeg">
+                Esqueleto elite
+            </option>
+
+            <option value="assets/avatars/caballero_elite.jpeg">
+                Caballero elite
+            </option>
+
+            <option value="assets/avatars/lancer.jpeg">
+                Lancer
+            </option>
+
+            <option value="assets/avatars/necromántico.jpeg">
+                Necromático
+            </option>
+
+            <option value="assets/avatars/goblin.jpeg">
+                Goblin
+            </option>
+
+            <option value="assets/avatars/goblin_lider.jpeg">
+                Goblin líder
+            </option>
+
+            <option value="assets/avatars/curandera.jpeg">
+                Curandera
+            </option>
+
+            <option value="assets/avatars/esqueleto.jpeg">
+                Esqueleto
+            </option>
+
+            <option value="assets/avatars/esqueleto_arquero.jpeg">
+                Esqueleto arquero
+            </option>
+
+            <option value="assets/avatars/soldado.jpeg">
+                Soldado
+            </option>
+
+            <option value="assets/avatars/lobo_tanque.jpeg">
+                Lobo tanque
+            </option>
+
+            <option value="assets/avatars/lobo.jpeg">
+                Lobo
+            </option>
+
+            <option value="assets/avatars/the_traveler.jpeg">
+                THE TRAVELER
+            </option>
+
+            <option value="assets/avatars/La plaga.jpg">
+                La plaga
+            </option>
+
+            <option value="assets/avatars/michifu.jpeg">
+                Michifu
+            </option>
+
+            <option value="assets/avatars/Ravok.jpeg">
+                Ravok
+            </option>
+
+        </select>
+
+
+        <label for="nuevaBiografia">
+            Biografía
+        </label>
+
+        <br>
+
+        <textarea
+            id="nuevaBiografia"
+            placeholder="Escribe tu biografía..."
+        ></textarea>
+
+        <br>
+
+
+        <label for="nuevoColor">
+            <br>
+            Color del perfil
+        </label>
+
+        <select id="nuevoColor">
+
+            <option value="blue">
+                Azul
+            </option>
+
+            <option value="green">
+                Verde
+            </option>
+
+            <option value="purple">
+                Morado
+            </option>
+
+            <option value="orange">
+                Naranja
+            </option>
+
+            <option value="red">
+                Rojo
+            </option>
+
+            <option value="yellow">
+                Amarillo
+            </option>
+
+        </select>
+
+
+        <button
+            id="guardarBiografia"
+            type="button"
+        >
+            Guardar cambios
+        </button>
+
+    </div>
+
+</div>
+</div>
+
+<!-- =========================================
+     MENÚ DE ACCIONES DEL USUARIO
+     ========================================= -->
+
+<div id="menuAccionesUsuario">
+
+    <button id="accionVerPerfil" type="button">
+        👤 Ver perfil
+    </button>
+
+    <button id="accionMensaje" type="button">
+        💬 Mensaje
+    </button>
+
+    <button id="accionSilenciar" type="button">
+        🔇 Silenciar
+    </button>
+
+    <button id="accionBloquear" type="button">
+        🚫 Bloquear
+    </button>
+
+    <button id="accionReportar" type="button">
+        ⚠️ Reportar
+    </button>
+</div>
+
+<!-- =========================================
+     MODAL DE REPORTE
+========================================= -->
+
+<div
+    id="modalReporte"
+    class="modal-reporte"
+    style="display: none;"
+>
+
+    <div class="modal-reporte-contenido">
+
+        <button
+            id="cerrarModalReporte"
+            type="button"
+            class="cerrar-modal-reporte"
+        >
             ✕
         </button>
 
-        <div id="avatarPerfil" class="avatar-perfil">
+        <h2>Reportar contenido</h2>
+
+        <p class="texto-reporte">
+            Ayuda a mantener la comunidad segura y respetuosa.
+            Indica el motivo del reporte y proporciona una
+            breve descripción.
+        </p>
+
+        <!-- RAZÓN -->
+
+        <label for="motivoReporte">
+            Razón del reporte
+        </label>
+
+        <select id="motivoReporte">
+
+            <option value="">
+                Selecciona una razón
+            </option>
+
+            <option value="Contenido inapropiado">
+                Contenido inapropiado
+            </option>
+
+            <option value="Spam">
+                Spam
+            </option>
+
+            <option value="Acoso o comportamiento ofensivo">
+                Acoso o comportamiento ofensivo
+            </option>
+
+            <option value="Información engañosa">
+                Información engañosa
+            </option>
+
+            <option value="Incumplimiento de las normas">
+                Incumplimiento de las normas
+            </option>
+
+            <option value="Otro">
+                Otro
+            </option>
+
+        </select>
+
+        <!-- DESCRIPCIÓN -->
+
+        <label for="descripcionReporte">
+            Descripción
+        </label>
+
+        <textarea
+            id="descripcionReporte"
+            placeholder="Explica brevemente por qué consideras que este contenido debe ser revisado..."
+            maxlength="500"
+        ></textarea>
+
+        <p class="contador-reporte">
+            Máximo 500 caracteres.
+        </p>
+
+        <!-- BOTONES -->
+
+        <div class="botones-reporte">
+
+            <button
+                id="cancelarReporte"
+                type="button"
+            >
+                Cancelar
+            </button>
+
+            <button
+                id="enviarReporte"
+                type="button"
+            >
+                Enviar reporte
+            </button>
+
         </div>
 
-        <h2 id="nombrePerfil">
+    </div>
+
+</div>
+
+<!-- =========================================
+     MODAL DE MODERACIÓN
+========================================= -->
+
+<div
+    id="modalModeracion"
+    class="modal-moderacion"
+    style="display: none;"
+>
+
+    <div class="modal-moderacion-contenido">
+
+        <button
+            id="cerrarModalModeracion"
+            type="button"
+            class="cerrar-modal-moderacion"
+        >
+            ✕
+        </button>
+
+
+        <h2>
+            Resolver reporte
         </h2>
 
-        <p>
-            ID:
-            <span id="idPerfil"></span>
+
+        <p id="infoReporteModeracion">
+            Selecciona una consecuencia para este reporte.
         </p>
 
-        <p>
-            Rol:
-            <span id="rolPerfil"></span>
-        </p>
+
+        <div class="opciones-moderacion">
+
+            <button
+                type="button"
+                class="opcion-moderacion"
+                data-accion="mensaje_eliminado"
+            >
+                🗑️ Eliminar mensaje
+            </button>
+
+
+            <button
+                type="button"
+                class="opcion-moderacion"
+                data-accion="usuario_silenciado"
+            >
+                🔇 Silenciar 5 horas
+            </button>
+
+
+            <button
+                type="button"
+                class="opcion-moderacion"
+                data-accion="advertencia"
+            >
+                ⚠️ Advertencia
+            </button>
+
+
+            <button
+                type="button"
+                class="opcion-moderacion"
+                data-accion="bloqueo_temporal"
+            >
+                🚫 Bloquear 72 horas
+            </button>
+
+            <button
+                type="button"
+                class="opcion-moderacion"
+                data-accion="usuario_eliminado"
+            >
+                🗑️ Eliminar usuario
+            </button>
+
+        </div>
+
+
+        <div class="botones-moderacion">
+
+            <button
+                id="cancelarModeracion"
+                type="button"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                id="aplicarModeracion"
+                type="button"
+                disabled
+            >
+                Aplicar moderación
+            </button>
+
+        </div>
 
     </div>
+
+</div>
+
+<!-- =========================================
+     CHAT PRIVADO
+     ========================================= -->
+
+<div
+    id="chatPrivado"
+    class="chat-privado"
+    style="display: none;"
+>
+
+    <div class="chat-privado-contenido">
+
+        <!-- CABECERA -->
+        <div class="chat-privado-cabecera">
+
+            <div>
+                <span id="chatPrivadoAvatar">
+                </span>
+
+                <span id="chatPrivadoNombre">
+                    Usuario
+                </span>
+            </div>
+
+            <button
+                id="cerrarChatPrivado"
+                type="button"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <!-- MENSAJES -->
+        <div
+            id="mensajesPrivados"
+            class="mensajes-privados"
+        >
+        </div>
+
+
+        <!-- ESCRIBIR MENSAJE -->
+        <div class="chat-privado-escritura">
+
+            <input
+                type="text"
+                id="mensajePrivado"
+                placeholder="Escribe un mensaje..."
+                autocomplete="off"
+            >
+
+            <button
+                id="enviarMensajePrivado"
+                type="button"
+            >
+                ➤
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 </div>
 

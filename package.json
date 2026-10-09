@@ -1,0 +1,21 @@
+{
+  "name": "small-adventure",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Foro SM.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/logattojoseph82-svg/Small-Adventure.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/logattojoseph82-svg/Small-Adventure/issues"
+  },
+  "homepage": "https://github.com/logattojoseph82-svg/Small-Adventure#readme"
+}

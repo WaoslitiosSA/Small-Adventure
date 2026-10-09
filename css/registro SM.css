@@ -35,30 +35,29 @@
     --hover-bg: #1f1a22;
 }
 
-
 /* ☀️ MODO CLARO */
 [data-tema="claro"] {
-    --bg-main: #eaf4ff;
-    --bg-secondary: #dceeff;
-    --bg-panel: #f5faff;
+    --bg-main: #dcecff;
+    --bg-secondary: #c9e1fa;
+    --bg-panel: #f7fbff;
     --bg-card: #ffffff;
 
-    --primary: #2477d4;
-    --secondary: #1557a6;
-    --accent: #ff8a1c;
+    --primary: #2563a8;
+    --secondary: #e27a19;
+    --accent: #f0a52b;
 
-    --text-main: #172b4d;
-    --text-secondary: #53657d;
-    --text-muted: #718096;
+    --text-main: #172b3f;
+    --text-secondary: #536b80;
+    --text-muted: #71879a;
 
-    --border: rgba(36, 119, 212, 0.35);
-    --border-strong: rgba(36, 119, 212, 0.55);
+    --border: rgba(37, 99, 168, 0.28);
+    --border-strong: rgba(37, 99, 168, 0.48);
 
-    --shadow: rgba(32, 75, 120, 0.18);
-    --shadow-soft: rgba(32, 75, 120, 0.10);
+    --shadow: rgba(33, 74, 110, 0.20);
+    --shadow-soft: rgba(33, 74, 110, 0.10);
 
     --input-bg: #ffffff;
-    --hover-bg: #e6f2ff;
+    --hover-bg: #e8f3ff;
 }
 
 /* =========================================================
