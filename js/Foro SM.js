@@ -6255,31 +6255,29 @@ function ocultarTodo() {
 // MOSTRAR / OCULTAR CAJA DE COMENTARIOS
 // =========================================
 
-function controlarCajaComentarios() {
 
-    const caja =
-        document.querySelector(".contenedor");
+function controlarCajaComentarios() {
+    const caja = document.getElementById("contenedorMensajes");
 
     if (!caja) {
+        console.error("No se encontró #contenedorMensajes");
         return;
     }
 
-    // Información General
-    // Solo administradores pueden publicar
+    // En Información General solo puede escribir el administrador.
+    const puedePublicar =
+        categoriaActual !== "general" || esAdmin === true;
 
-    if (
-        categoriaActual === "general" &&
-        !esAdmin
-    ) {
+    caja.style.display = puedePublicar ? "block" : "none";
 
-        caja.style.display = "none";
+    // Evitar que los controles sigan activos cuando se ocultan.
+    const entrada = document.getElementById("mensaje");
+    const archivo = document.getElementById("imagenMensaje");
+    const botonPublicar = document.getElementById("botonPublicarComentario");
 
-    } else {
-
-        caja.style.display = "block";
-
-    }
-
+    if (entrada) entrada.disabled = !puedePublicar;
+    if (archivo) archivo.disabled = !puedePublicar;
+    if (botonPublicar) botonPublicar.disabled = !puedePublicar;
 }
 
 function mostrarGeneral() {
@@ -7107,7 +7105,7 @@ async function traducirTexto(
 
         const respuesta =
             await fetch(
-                "http://127.0.0.1:5000/translate",
+                "http://small-adventure.onrender.com/translate",
                 {
                     method: "POST",
 

@@ -2,43 +2,6 @@ document
 .getElementById("loginForm")
 .addEventListener("submit", iniciarSesion);
 
-//=========================================
-// CREAR ADMINISTRADOR SI NO EXISTE
-//=========================================
-
-function crearAdministrador() {
-
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-
-    let existeAdmin = usuarios.some(function(usuario) {
-        return usuario.rol === "admin";
-    });
-
-    if (!existeAdmin) {
-
-        usuarios.push({
-
-            correo: "EdwinBrochacho@smalladventure.com",
-
-            nombre: "ErwinAD",
-
-            password: "SmallAdventure2026",
-
-            id: "usuario_4392712150125",
-
-            rol: "admin"
-
-        });
-
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-        console.log("Administrador creado.");
-
-    }
-
-}
-
-crearAdministrador();
 
 // =========================================
 // MENSAJE DE BIENVENIDA
