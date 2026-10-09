@@ -6463,13 +6463,15 @@ function entrarForo() {
             "panelAdmin"
         );
 
-    if (
-        panelAdmin &&
-        esAdmin
-    ) {
+        if (panelAdmin && esAdmin) {
+        panelAdmin.style.display = "block";
 
-        panelAdmin.style.display =
-            "block";
+        const layoutForo = document.getElementById("layoutForo");
+
+        if (layoutForo) {
+            layoutForo.classList.add("admin-activo");
+        }
+    }
 
         console.log(
             "Panel de administración mostrado."
@@ -6482,7 +6484,7 @@ function entrarForo() {
 
     cargarNotificacionesDesdeBD();
 
-}
+
 
 // =========================================
 // CREAR ADMINISTRADOR

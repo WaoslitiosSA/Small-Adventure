@@ -5155,3 +5155,79 @@ textarea:focus {
 
     margin-bottom: 12px;
 }
+
+
+/* =========================================
+   DISTRIBUCIÓN DEL FORO PARA ADMINISTRADORES
+   ========================================= */
+
+#layoutForo.admin-activo {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 280px)
+        minmax(0, 1fr)
+        minmax(220px, 260px);
+    align-items: start;
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#layoutForo.admin-activo > #panelAdmin {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    box-sizing: border-box;
+}
+
+#layoutForo.admin-activo > #zonaCentralForo {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#layoutForo.admin-activo > #panelLateralNotificaciones {
+    grid-column: 3;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1000px) {
+    #layoutForo.admin-activo {
+        grid-template-columns: minmax(0, 1fr) 240px;
+    }
+
+    #layoutForo.admin-activo > #panelAdmin {
+        grid-column: 1 / -1;
+        grid-row: auto;
+    }
+
+    #layoutForo.admin-activo > #zonaCentralForo {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    #layoutForo.admin-activo > #panelLateralNotificaciones {
+        grid-column: 2;
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    #layoutForo.admin-activo {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #layoutForo.admin-activo > #panelAdmin,
+    #layoutForo.admin-activo > #zonaCentralForo,
+    #layoutForo.admin-activo > #panelLateralNotificaciones {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
