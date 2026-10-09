@@ -5231,3 +5231,61 @@ textarea:focus {
         grid-row: auto;
     }
 }
+
+
+/* =========================================================
+   CORRECCIÓN DEFINITIVA DE ESPACIADO — PANEL ADMIN
+   ========================================================= */
+
+#layoutForo.admin-activo > #panelAdmin {
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+#layoutForo.admin-activo .botones-panel-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#layoutForo.admin-activo .botones-panel-admin button {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    height: auto;
+    margin: 0;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+}
+
+/* Elimina los márgenes especiales que separaban los botones */
+
+#layoutForo.admin-activo #btnMostrarReportes,
+#layoutForo.admin-activo #btnCerrarReportes {
+    margin: 0;
+}
+
+/* Evita que el contenido de administración ensanche la columna */
+
+#layoutForo.admin-activo #listaReportes,
+#layoutForo.admin-activo #historialModeraciones,
+#layoutForo.admin-activo #formularioCrearAdministrador {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
