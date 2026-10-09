@@ -230,7 +230,7 @@ async function cargarHistorialModeraciones() {
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/moderations?id_user=" +
+                "https://small-adventure.onrender.com/api/moderations?id_user=" +
                 usuarioActivo.id
             );
 
@@ -434,7 +434,7 @@ async function cargarReportes() {
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/reports?id_user=" +
+                "https://small-adventure.onrender.com/api/reports?id_user=" +
                 usuarioActivo.id
             );
 
@@ -621,7 +621,7 @@ async function cambiarEstadoReporte(
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/reports/" +
+                "https://small-adventure.onrender.com/api/reports/" +
                 idReporte,
                 {
                     method: "PUT",
@@ -738,7 +738,7 @@ async function verMensajeReportado(idMensaje) {
 
             const respuesta =
                 await fetch(
-                    "http://localhost:3000/api/messages?id_chan=" +
+                    "https://small-adventure.onrender.com/api/messages?id_chan=" +
                     canal.id
                 );
 
@@ -1059,7 +1059,7 @@ try {
 
     const respuestaAdvertencias =
         await fetch(
-            `http://localhost:3000/api/moderations/advertencias/${reporteModeracionActual.id_user_affe}`
+            `https://small-adventure.onrender.com/api/moderations/advertencias/${reporteModeracionActual.id_user_affe}`
         );
 
 
@@ -1472,7 +1472,7 @@ botonAplicarModeracion.addEventListener(
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/moderations",
+                        "https://small-adventure.onrender.com/api/moderations",
                         {
                             method: "POST",
 
@@ -1534,7 +1534,7 @@ botonAplicarModeracion.addEventListener(
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/moderations",
+                        "https://small-adventure.onrender.com/api/moderations",
                         {
                             method: "POST",
                             headers: {
@@ -1865,7 +1865,7 @@ async function cargarUsuariosSilenciados() {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/interactions/silenciados/" +
+            "https://small-adventure.onrender.com/api/interactions/silenciados/" +
             usuarioActivo.id
         );
 
@@ -1923,7 +1923,7 @@ async function comprobarSilencioModeracion() {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/interactions/silencio/" +
+            "https://small-adventure.onrender.com/api/interactions/silencio/" +
             usuarioActivo.id
         );
 
@@ -1991,7 +1991,7 @@ async function cargarUsuariosBloqueados() {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/interactions/bloqueados/" +
+            "https://small-adventure.onrender.com/api/interactions/bloqueados/" +
             usuarioActivo.id
         );
 
@@ -2077,7 +2077,7 @@ async function obtenerEstadoBloqueo(idUsuario) {
 
         const respuesta =
             await fetch(
-                `http://localhost:3000/api/interactions/bloqueados/${usuarioActivo.id}`
+                `https://small-adventure.onrender.com/api/interactions/bloqueados/${usuarioActivo.id}`
             );
 
         const datos =
@@ -2182,7 +2182,7 @@ async function cargarMensajesDesdeBD() {
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/messages?id_chan=" +
+                "https://small-adventure.onrender.com/api/messages?id_chan=" +
                 idCanal
             );
 
@@ -2248,7 +2248,7 @@ async function cargarNotificacionesDesdeBD() {
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/notifications/" +
+                "https://small-adventure.onrender.com/api/notifications/" +
                 usuarioActivo.id
             );
 
@@ -2796,7 +2796,7 @@ function mostrarMensajesDesdeBD(mensajes) {
             );
 
             imagen.src =
-                "http://localhost:3000/" +
+                "https://small-adventure.onrender.com/" +
                 mensaje.mens_image;
 
             imagen.alt =
@@ -3087,7 +3087,7 @@ async function cargarUsuariosDesdeBD() {
     try {
 
         const respuesta = await fetch(
-            'http://localhost:3000/api/users'
+            'https://small-adventure.onrender.com/api/users'
         );
 
         const datos =
@@ -3218,7 +3218,7 @@ async function buscarUsuariosDesdeBD(
         // =========================================
 
         const respuesta = await fetch(
-            'http://localhost:3000/api/users/search?' +
+            'https://small-adventure.onrender.com/api/users/search?' +
             parametros.toString()
         );
 
@@ -3538,7 +3538,7 @@ async function cargarMensajesPrivados(idConv) {
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/conversations/" +
+                "https://small-adventure.onrender.com/api/conversations/" +
                 idConv +
                 "/messages"
             );
@@ -3714,7 +3714,7 @@ document.addEventListener(
 
             const respuesta =
                 await fetch(
-                    "http://localhost:3000/api/conversations/" +
+                    "https://small-adventure.onrender.com/api/conversations/" +
                     conversacionPrivadaActual +
                     "/messages",
                     {
@@ -3805,7 +3805,7 @@ async function obtenerEstadoSilencio(idUsuario) {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/interactions/silenciados/" +
+            "https://small-adventure.onrender.com/api/interactions/silenciados/" +
             usuarioActivo.id
         );
 
@@ -3853,7 +3853,7 @@ async function mostrarPerfil(idUsuario) {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/profiles/" + idUsuario
+            "https://small-adventure.onrender.com/api/profiles/" + idUsuario
         );
 
         const datos = await respuesta.json();
@@ -4257,7 +4257,7 @@ if (btnEnviarReporte) {
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/reports",
+                        "https://small-adventure.onrender.com/api/reports",
                         {
                             method: "POST",
 
@@ -4405,7 +4405,7 @@ if (guardarBiografia) {
         try {
 
             const respuesta = await fetch(
-                "http://localhost:3000/api/profiles/" +
+                "https://small-adventure.onrender.com/api/profiles/" +
                 usuarioActivo.id,
                 {
                     method: "PUT",
@@ -5166,7 +5166,7 @@ document.addEventListener(
         // =========================================
 
         fetch(
-            "http://localhost:3000/api/reports",
+            "https://small-adventure.onrender.com/api/reports",
             {
 
                 method: "POST",
@@ -5472,7 +5472,7 @@ document.addEventListener(
 
             const respuesta =
                 await fetch(
-                    "http://localhost:3000/api/conversations/private",
+                    "https://small-adventure.onrender.com/api/conversations/private",
                     {
                         method: "POST",
 
@@ -5755,7 +5755,7 @@ document.addEventListener(
 
             const respuesta =
                 await fetch(
-                    "http://localhost:3000/api/interactions/silenciar",
+                    "https://small-adventure.onrender.com/api/interactions/silenciar",
                     {
                         method: "POST",
 
@@ -5914,7 +5914,7 @@ document.addEventListener(
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/interactions/bloquear",
+                        "https://small-adventure.onrender.com/api/interactions/bloquear",
                         {
                             method: "PUT",
 
@@ -5979,7 +5979,7 @@ document.addEventListener(
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/interactions/bloquear",
+                        "https://small-adventure.onrender.com/api/interactions/bloquear",
                         {
                             method: "POST",
 
@@ -6109,7 +6109,7 @@ document.addEventListener(
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/interactions/silenciar",
+                        "https://small-adventure.onrender.com/api/interactions/silenciar",
                         {
                             method: "PUT",
 
@@ -6172,7 +6172,7 @@ document.addEventListener(
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/interactions/silenciar",
+                        "https://small-adventure.onrender.com/api/interactions/silenciar",
                         {
                             method: "POST",
 
@@ -6686,7 +6686,7 @@ if (botonGuardarCrearAdministrador) {
 
                 const respuesta =
                     await fetch(
-                        "http://localhost:3000/api/admin/users",
+                        "https://small-adventure.onrender.com/api/admin/users",
                         {
                             method: "POST",
 
@@ -7002,7 +7002,7 @@ document.addEventListener(
 
             const respuesta =
                 await fetch(
-                    "http://localhost:3000/api/notifications/" +
+                    "https://small-adventure.onrender.com/api/notifications/" +
                     idNotificacion,
                     {
                         method: "PUT"
@@ -7325,7 +7325,7 @@ try {
 
     const respuestaBloqueo =
         await fetch(
-            "http://localhost:3000/api/interactions/bloqueo/" +
+            "https://small-adventure.onrender.com/api/interactions/bloqueo/" +
             usuarioActivo.id
         );
 
@@ -7501,7 +7501,7 @@ datosFormulario.append(
         // =========================================
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/messages",
+            "https://small-adventure.onrender.com/api/messages",
             {
                 method: "POST",
 
@@ -7602,7 +7602,7 @@ datosFormulario.append(
                 document.createElement("img");
 
             imagen.src =
-                "http://localhost:3000/" +
+                "https://small-adventure.onrender.com/" +
                 datos.mens_image;
 
             imagen.alt =
@@ -8056,7 +8056,7 @@ console.log(
     }
 
     fetch(
-        "http://localhost:3000/api/profiles/" +
+        "https://small-adventure.onrender.com/api/profiles/" +
         usuarioActivo.id
     )
     .then(function(respuesta) {

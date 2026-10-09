@@ -98,7 +98,7 @@ async function iniciarSesion(e) {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/login",
+            "https://small-adventure.onrender.com/api/login",
             {
                 method: "POST",
 
@@ -292,7 +292,7 @@ if(nuevaPassword.length < 6){
 try {
 
     const respuesta = await fetch(
-        "http://localhost:3000/api/password",
+        "https://small-adventure.onrender.com/api/password",
         {
             method: "PUT",
 

@@ -57,7 +57,7 @@ async function registrar(e) {
 
     try {
 
-        const respuesta = await fetch("http://localhost:3000/api/users", {
+        const respuesta = await fetch("https://small-adventure.onrender.com/api/users", {
 
             method: "POST",
 
