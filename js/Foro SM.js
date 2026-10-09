@@ -7105,7 +7105,7 @@ async function traducirTexto(
 
         const respuesta =
             await fetch(
-                "http://small-adventure.onrender.com/translate",
+                "https://small-adventure.onrender.com/translate",
                 {
                     method: "POST",
 
