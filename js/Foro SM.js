@@ -6464,14 +6464,28 @@ function entrarForo() {
         );
 
         if (panelAdmin && esAdmin) {
-        panelAdmin.style.display = "block";
+            console.log("1. Entró al bloque de administrador");
 
-        const layoutForo = document.getElementById("layoutForo");
+            panelAdmin.style.display = "block";
 
-        if (layoutForo) {
-            layoutForo.classList.add("admin-activo");
+            const layoutForo = document.getElementById("layoutForo");
+
+            if (layoutForo) {
+                layoutForo.classList.add("admin-activo");
+
+                console.log(
+                    "2. Clase aplicada:",
+                    layoutForo.classList.contains("admin-activo")
+                );
+            } else {
+                console.log("2. No se encontró layoutForo");
+            }
+        } else {
+            console.log("No entró al bloque:", {
+                panelAdminEncontrado: !!panelAdmin,
+                esAdmin: esAdmin
+            });
         }
-    }
 
         console.log(
             "Panel de administración mostrado."
