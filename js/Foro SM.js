@@ -7611,8 +7611,10 @@ datosFormulario.append(
                 document.createElement("img");
 
             imagen.src =
-                "https://small-adventure.onrender.com/" +
-                datos.mens_image;
+                datos.mens_image.startsWith("https://")
+                    ? datos.mens_image
+                    : "https://small-adventure.onrender.com/" +
+                    datos.mens_image.replace(/^\/+/, "");
 
             imagen.alt =
                 "Imagen del mensaje";

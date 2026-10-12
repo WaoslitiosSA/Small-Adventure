@@ -16,6 +16,19 @@ const subirImagen =
     require('../config/upload');
 
 // =========================================
+// CONFIGURAR CLOUDINARY
+// =========================================
+
+const { v2: cloudinary } =
+    require('cloudinary');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// =========================================
 // OBTENER MENSAJES POR CANAL
 // =========================================
 
@@ -472,74 +485,124 @@ router.post(
             }
         );
 
+        
         // =========================================
         // FUNCIÓN PARA INSERTAR EL MENSAJE
         // =========================================
 
         function insertarMensaje() {
 
-            let mens_image = null;
+            // Guardar el mensaje en MySQL una vez
+            // obtenida la URL de Cloudinary.
+            function guardarMensaje(mens_image) {
 
-            if (req.file) {
+                const sql = `
+                    INSERT INTO menssages (
+                        id_user,
+                        mens_content,
+                        mens_image,
+                        mens_status,
+                        id_mens_fath,
+                        id_chan,
+                        mens_language
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                `;
 
-                mens_image =
-                    'uploads/mensajes/' +
-                    req.file.filename;
-            }
+                db.query(
+                    sql,
+                    [
+                        id_user,
+                        mens_content || null,
+                        mens_image,
+                        mens_status,
+                        id_mens_fath || null,
+                        id_chan,
+                        mens_language
+                    ],
+                    (error, resultado) => {
 
-            const sql = `
-                INSERT INTO menssages (
-                    id_user,
-                    mens_content,
-                    mens_image,
-                    mens_status,
-                    id_mens_fath,
-                    id_chan,
-                    mens_language
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `;
+                        if (error) {
 
-            db.query(
-                sql,
-                [
-                    id_user,
-                    mens_content || null,
-                    mens_image,
-                    mens_status,
-                    id_mens_fath || null,
-                    id_chan,
-                    mens_language
-                ],
-                (error, resultado) => {
+                            console.error(
+                                'Error al insertar mensaje:',
+                                error
+                            );
 
-                    if (error) {
+                            return res.status(500).json({
+                                error:
+                                    'Error al publicar el mensaje',
+                                codigo:
+                                    'ERROR_INSERTAR_MENSAJE'
+                            });
+                        }
 
-                        console.error(
-                            'Error al insertar mensaje:',
-                            error
-                        );
-
-                        return res.status(500).json({
-                            error:
-                                'Error al publicar el mensaje',
-                            codigo: 
-                                'ERROR_INSERTAR_MENSAJE'
+                        return res.status(201).json({
+                            mensaje:
+                                'Mensaje creado correctamente',
+                            id_mensaje:
+                                resultado.insertId,
+                            mens_image:
+                                mens_image
                         });
                     }
+                );
+            }
 
-                    res.status(201).json({
-                    mensaje:
-                        'Mensaje creado correctamente',
+            // Si el mensaje no tiene imagen,
+            // guardarlo normalmente.
+            if (!req.file) {
+                return guardarMensaje(null);
+            }
 
-                    id_mensaje:
-                        resultado.insertId,
+            // =========================================
+            // SUBIR IMAGEN A CLOUDINARY
+            // =========================================
 
-                    mens_image:
-                        mens_image
-                });
-                }
-            );
+            const flujoImagen =
+                cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'small-adventure/mensajes',
+                        resource_type: 'image'
+                    },
+                    (error, resultado) => {
+
+                        if (error) {
+
+                            console.error(
+                                'Error al subir imagen a Cloudinary:',
+                                error.message
+                            );
+
+                            return res.status(502).json({
+                                error:
+                                    'No se pudo almacenar la imagen. Inténtalo nuevamente.',
+                                codigo:
+                                    'ERROR_CLOUDINARY'
+                            });
+                        }
+
+                        if (
+                            !resultado ||
+                            !resultado.secure_url
+                        ) {
+
+                            return res.status(502).json({
+                                error:
+                                    'Cloudinary no devolvió la URL de la imagen.',
+                                codigo:
+                                    'URL_CLOUDINARY_NO_DISPONIBLE'
+                            });
+                        }
+
+                        // Guardar la URL HTTPS en MySQL.
+                        guardarMensaje(
+                            resultado.secure_url
+                        );
+                    }
+                );
+
+            flujoImagen.end(req.file.buffer);
         }
     }
 );
