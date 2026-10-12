@@ -6251,93 +6251,46 @@ function ocultarTodo() {
 
 }
 
-// =========================================
-// MOSTRAR / OCULTAR CAJA DE COMENTARIOS
-// =========================================
 
+ // =========================================
+ // MOSTRAR / OCULTAR CAJA DE COMENTARIOS
+ // =========================================
 
 function controlarCajaComentarios() {
-    const caja = document.getElementById("contenedorMensajes");
+
+    const caja = document.getElementById("panelEscritura");
 
     if (!caja) {
-        console.error("No se encontró #contenedorMensajes");
+        console.error("No se encontró #panelEscritura");
         return;
     }
 
-    // En Información General solo puede escribir el administrador.
+    // En General solamente puede escribir el administrador.
     const puedePublicar =
         categoriaActual !== "general" || esAdmin === true;
 
-    caja.style.display = puedePublicar ? "block" : "none";
+    // Ocultar únicamente el panel de escritura,
+    // sin ocultar el botón de cambio de tema.
+    caja.style.display = puedePublicar ? "" : "none";
 
-    // Evitar que los controles sigan activos cuando se ocultan.
+    // Activar o desactivar los controles.
     const entrada = document.getElementById("mensaje");
     const archivo = document.getElementById("imagenMensaje");
     const botonPublicar = document.getElementById("botonPublicarComentario");
 
-    if (entrada) entrada.disabled = !puedePublicar;
-    if (archivo) archivo.disabled = !puedePublicar;
-    if (botonPublicar) botonPublicar.disabled = !puedePublicar;
+    if (entrada) {
+        entrada.disabled = !puedePublicar;
+    }
+
+    if (archivo) {
+        archivo.disabled = !puedePublicar;
+    }
+
+    if (botonPublicar) {
+        botonPublicar.disabled = !puedePublicar;
+    }
 }
 
-function mostrarGeneral() {
-
-    categoriaActual = "general";
-
-    ocultarTodo();
-
-    document.getElementById("general").style.display = "block";
-
-    controlarCajaComentarios();
-
-    cargarMensajesDesdeBD();
-
-}
-
-
-function mostrarEspanol() {
-
-    categoriaActual = "espanol";
-
-    ocultarTodo();
-
-    document.getElementById("espanol").style.display = "block";
-
-    controlarCajaComentarios();
-
-    cargarMensajesDesdeBD();
-
-}
-
-
-function mostrarIngles() {
-
-    categoriaActual = "ingles";
-
-    ocultarTodo();
-
-    document.getElementById("ingles").style.display = "block";
-
-    controlarCajaComentarios();
-
-    cargarMensajesDesdeBD();
-
-}
-
-
-function mostrarPortugues() {
-
-    categoriaActual = "portugues";
-
-    ocultarTodo();
-
-    document.getElementById("portugues").style.display = "block";
-
-    controlarCajaComentarios();
-
-    cargarMensajesDesdeBD();
-
-}
 
 // =========================================
 // OCULTAR NOTIFICACIONES
