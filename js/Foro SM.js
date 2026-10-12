@@ -6292,6 +6292,51 @@ function controlarCajaComentarios() {
 }
 
 
+ // =========================================
+ // NAVEGACIÓN ENTRE CATEGORÍAS
+ // =========================================
+
+function mostrarGeneral() {
+    categoriaActual = "general";
+    ocultarTodo();
+
+    document.getElementById("general").style.display = "block";
+
+    controlarCajaComentarios();
+    cargarMensajesDesdeBD();
+}
+
+function mostrarEspanol() {
+    categoriaActual = "espanol";
+    ocultarTodo();
+
+    document.getElementById("espanol").style.display = "block";
+
+    controlarCajaComentarios();
+    cargarMensajesDesdeBD();
+}
+
+function mostrarIngles() {
+    categoriaActual = "ingles";
+    ocultarTodo();
+
+    document.getElementById("ingles").style.display = "block";
+
+    controlarCajaComentarios();
+    cargarMensajesDesdeBD();
+}
+
+function mostrarPortugues() {
+    categoriaActual = "portugues";
+    ocultarTodo();
+
+    document.getElementById("portugues").style.display = "block";
+
+    controlarCajaComentarios();
+    cargarMensajesDesdeBD();
+}
+
+
 // =========================================
 // OCULTAR NOTIFICACIONES
 // =========================================
@@ -6444,12 +6489,9 @@ function entrarForo() {
 
     }
 
-
     mostrarGeneral();
 
     cargarNotificacionesDesdeBD();
-
-
 
 // =========================================
 // CREAR ADMINISTRADOR
