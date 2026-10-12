@@ -2788,26 +2788,26 @@ function mostrarMensajesDesdeBD(mensajes) {
 
         if (mensaje.mens_image) {
 
-            const imagen =
-                document.createElement("img");
+            const imagen = document.createElement("img");
 
-            imagen.classList.add(
-                "imagen-mensaje"
-            );
+            imagen.classList.add("imagen-mensaje");
 
-            imagen.src =
-            mensaje.mens_image.startsWith("https://")
-            ? mensaje.mens_image
-            : "https://small-adventure.onrender.com/" +
-            mensaje.mens_image.replace(/^\/+/, "");
+            imagen.src = mensaje.mens_image.startsWith("https://")
+                ? mensaje.mens_image
+                : "https://small-adventure.onrender.com/" +
+                  mensaje.mens_image.replace(/^\/+/, "");
 
-            imagen.alt =
-                "Imagen del mensaje";
+            imagen.alt = "Imagen del mensaje";
 
-            comentario.appendChild(
-                imagen
-            );
+            imagen.onerror = function () {
+                console.error(
+                    "No se pudo cargar la imagen del mensaje:",
+                    mensaje.id_mensaje,
+                    imagen.src
+                );
+            };
 
+            comentario.appendChild(imagen);
         }
 
             // =========================================
