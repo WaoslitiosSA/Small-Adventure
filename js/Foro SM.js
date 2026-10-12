@@ -2796,8 +2796,10 @@ function mostrarMensajesDesdeBD(mensajes) {
             );
 
             imagen.src =
-                "https://small-adventure.onrender.com/" +
-                mensaje.mens_image;
+            mensaje.mens_image.startsWith("https://")
+            ? mensaje.mens_image
+            : "https://small-adventure.onrender.com/" +
+            mensaje.mens_image.replace(/^\/+/, "");
 
             imagen.alt =
                 "Imagen del mensaje";
@@ -7611,10 +7613,10 @@ datosFormulario.append(
                 document.createElement("img");
 
             imagen.src =
-                datos.mens_image.startsWith("https://")
-                    ? datos.mens_image
-                    : "https://small-adventure.onrender.com/" +
-                    datos.mens_image.replace(/^\/+/, "");
+            mensaje.mens_image.startsWith("https://")
+            ? mensaje.mens_image
+            : "https://small-adventure.onrender.com/" +
+            mensaje.mens_image.replace(/^\/+/, "");
 
             imagen.alt =
                 "Imagen del mensaje";
