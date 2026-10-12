@@ -7602,36 +7602,24 @@ datosFormulario.append(
 
         }
 
-
         // =========================================
         // MOSTRAR IMAGEN
         // =========================================
 
         if (datos.mens_image) {
 
-            const imagen =
-                document.createElement("img");
+            const imagen = document.createElement("img");
 
-            imagen.src =
-            mensaje.mens_image.startsWith("https://")
-            ? mensaje.mens_image
-            : "https://small-adventure.onrender.com/" +
-            mensaje.mens_image.replace(/^\/+/, "");
+            imagen.src = datos.mens_image.startsWith("https://")
+                ? datos.mens_image
+                : "https://small-adventure.onrender.com/" +
+                datos.mens_image.replace(/^\/+/, "");
 
-            imagen.alt =
-                "Imagen del mensaje";
+            imagen.alt = "Imagen del mensaje";
+            imagen.className = "imagen-mensaje";
 
-            imagen.className =
-                "imagen-mensaje";
-
-            nuevo.appendChild(
-                document.createElement("br")
-            );
-
-            nuevo.appendChild(
-                imagen
-            );
-
+            nuevo.appendChild(document.createElement("br"));
+            nuevo.appendChild(imagen);
         }
 
         // =========================================
