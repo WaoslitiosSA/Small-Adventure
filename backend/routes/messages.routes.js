@@ -15,8 +15,6 @@ const router =
 const subirImagen =
     require('../config/upload');
 
-const { franc } = require('franc');
-
 // =========================================
 // OBTENER MENSAJES POR CANAL
 // =========================================
@@ -55,6 +53,7 @@ router.get('/messages', (req, res) => {
         INNER JOIN users AS u
             ON m.id_user = u.id_user
         WHERE m.id_chan = ?
+        AND m.mens_status <> 'eliminado'
         ORDER BY m.mens_date_publ DESC
     `;
 
@@ -523,7 +522,9 @@ router.post(
 
                         return res.status(500).json({
                             error:
-                                'Error al publicar el mensaje'
+                                'Error al publicar el mensaje',
+                            codigo: 
+                                'ERROR_INSERTAR_MENSAJE'
                         });
                     }
 
