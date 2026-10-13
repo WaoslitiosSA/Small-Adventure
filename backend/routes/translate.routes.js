@@ -47,8 +47,7 @@ router.post('/translate', async (req, res) => {
     try {
         const parametros = new URLSearchParams({
             q: texto,
-            langpair: `${source}|${target}`,
-            mt: '1'
+            langpair: `${source}|${target}`
         });
 
         const respuesta = await fetch(
