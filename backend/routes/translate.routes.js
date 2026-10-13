@@ -61,16 +61,21 @@ router.post('/translate', async (req, res) => {
             }
         );
 
+        
         if (!respuesta.ok) {
+            const detalle = await respuesta.text();
+
             console.error(
                 'MyMemory respondió con HTTP:',
-                respuesta.status
+                respuesta.status,
+                detalle
             );
 
             return res.status(502).json({
                 error: 'El proveedor de traducción no está disponible.'
             });
         }
+
 
         const datos = await respuesta.json();
 
