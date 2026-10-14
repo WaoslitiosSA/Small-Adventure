@@ -8234,34 +8234,7 @@ function actualizarModoPanelEscritura() {
         "none";
 }
 
-/// =========================================================
-// RECUPERAR POSICIÓN DEL PANEL
-// =========================================================
 
-const posicionGuardada =
-    localStorage.getItem(
-        "posicionPanelEscritura"
-    );
-
-if (posicionGuardada) {
-
-    const posicion =
-        JSON.parse(
-            posicionGuardada
-        );
-
-    panelEscritura.style.left =
-        posicion.left + "px";
-
-    panelEscritura.style.top =
-        posicion.top + "px";
-
-    panelEscritura.style.right =
-        "auto";
-
-    panelEscritura.style.bottom =
-        "auto";
-}
 
 const cabeceraPanelEscritura =
     document.getElementById(
@@ -8414,10 +8387,7 @@ function terminarArrastre() {
 
     };
 
-    localStorage.setItem(
-        "posicionPanelEscritura",
-        JSON.stringify(posicionPanel)
-    );
+    
 
 }
 
