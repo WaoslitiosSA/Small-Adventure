@@ -7,6 +7,7 @@ const router =
 const db =
     require('../database/db');
 
+const { autenticarToken } = require('../middleware/auth');
 
 // =========================================
 // PERFIL DE USUARIO
@@ -81,10 +82,28 @@ router.get('/profiles/:id_user', (req, res) => {
 // ACTUALIZAR BIOGRAFÍA DEL PERFIL
 // =========================================
 
-router.put('/profiles/:id_user', (req, res) => {
+router.put(
+    '/profiles/:id_user',
+    autenticarToken,
+    (req, res) => {
 
-    const idUser =
-        req.params.id_user;
+        const idUsuarioAutenticado =
+        req.usuario.id_user;
+
+        const idUsuarioSolicitado =
+            Number(req.params.id_user);
+
+        if (
+            !Number.isSafeInteger(idUsuarioSolicitado) ||
+            idUsuarioSolicitado !== idUsuarioAutenticado
+        ) {
+            return res.status(403).json({
+                error: 'No puedes modificar el perfil de otro usuario.'
+            });
+        }
+
+        const idUser = idUsuarioAutenticado;
+
 
     const {
         biography,
