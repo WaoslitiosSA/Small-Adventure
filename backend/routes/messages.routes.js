@@ -9,6 +9,10 @@ const {
 } =
     require('../middleware/permissions');
 
+const {
+    autenticarToken
+} = require('../middleware/auth');
+
 const router =
     express.Router();
 
@@ -109,15 +113,16 @@ router.get('/messages', (req, res) => {
 // ELIMINAR MENSAJE
 // =========================================
 
-router.delete('/messages/:id', (req, res) => {
+router.delete(
+    '/messages/:id',
+    autenticarToken,
+    (req, res) => {
 
     const idMensaje =
         Number(req.params.id);
 
-    const {
-        id_user
-    } = req.body;
-
+    // Obtener la identidad del administrador desde el JWT.
+    const id_user = req.usuario.id_user;
 
     // =========================================
     // VALIDAR DATOS
@@ -222,16 +227,19 @@ router.delete('/messages/:id', (req, res) => {
 
 router.post(
     '/messages',
+    autenticarToken,
     subirImagen.single('mens_image'),
     async (req, res) => {
 
         const {
-            id_user,
-            mens_content,
-            mens_status,
-            id_mens_fath,
-            id_chan
-        } = req.body;
+    mens_content,
+    mens_status,
+    id_mens_fath,
+    id_chan
+} = req.body;
+
+// La identidad procede del JWT, no del navegador.
+const id_user = req.usuario.id_user;
 
         
 

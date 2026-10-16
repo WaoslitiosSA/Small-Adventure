@@ -7,17 +7,23 @@ const router =
 const db =
     require('../database/db');
 
+const {
+    autenticarToken
+} = require('../middleware/auth');
 
 // =========================================
 // SILENCIAR USUARIO
 // =========================================
 
-router.post('/interactions/silenciar', (req, res) => {
+router.post(
+    '/interactions/silenciar',
+    autenticarToken,
+    (req, res) => {
 
-    const {
-        id_original_user,
-        id_user_dest
-    } = req.body;
+    const id_original_user =
+        req.usuario.id_user;
+
+    const { id_user_dest } = req.body;
 
 
     // =========================================
@@ -107,12 +113,15 @@ router.post('/interactions/silenciar', (req, res) => {
 // BLOQUEAR USUARIO
 // =========================================
 
-router.post('/interactions/bloquear', (req, res) => {
+router.post(
+    '/interactions/bloquear',
+    autenticarToken,
+    (req, res) => {
 
-    const {
-        id_original_user,
-        id_user_dest
-    } = req.body;
+    const id_original_user =
+        req.usuario.id_user;
+
+    const { id_user_dest } = req.body;
 
 
     // =========================================
@@ -202,13 +211,15 @@ router.post('/interactions/bloquear', (req, res) => {
 // DESBLOQUEAR USUARIO
 // =========================================
 
-router.put('/interactions/bloquear', (req, res) => {
+router.put(
+    '/interactions/bloquear',
+    autenticarToken,
+    (req, res) => {
 
-    const {
-        id_user_original,
-        id_user_dest
-    } = req.body;
+    const id_user_original =
+        req.usuario.id_user;
 
+    const { id_user_dest } = req.body;
 
     // =========================================
     // VERIFICAR DATOS
@@ -287,11 +298,25 @@ router.put('/interactions/bloquear', (req, res) => {
 // OBTENER USUARIOS BLOQUEADOS
 // =========================================
 
-router.get('/interactions/bloqueados/:id_user', (req, res) => {
+router.get(
+    '/interactions/bloqueados/:id_user',
+    autenticarToken,
+    (req, res) => {
+
+    const idUserSolicitado =
+    Number(req.params.id_user);
 
     const idUser =
-        req.params.id_user;
+        req.usuario.id_user;
 
+    if (
+        !Number.isSafeInteger(idUserSolicitado) ||
+        idUserSolicitado !== idUser
+    ) {
+        return res.status(403).json({
+            error: 'No puedes consultar la lista de bloqueos de otro usuario.'
+        });
+    }
 
     const sql = `
         SELECT
@@ -342,10 +367,25 @@ router.get('/interactions/bloqueados/:id_user', (req, res) => {
 // COMPROBAR BLOQUEO TEMPORAL POR MODERACIÓN
 // =========================================
 
-router.get('/interactions/bloqueo/:id_user', (req, res) => {
+router.get(
+    '/interactions/bloqueo-moderacion/:id_user',
+    autenticarToken,
+    (req, res) => {
+
+    const idUserSolicitado =
+    Number(req.params.id_user);
 
     const idUser =
-        req.params.id_user;
+        req.usuario.id_user;
+
+    if (
+        !Number.isSafeInteger(idUserSolicitado) ||
+        idUserSolicitado !== idUser
+    ) {
+        return res.status(403).json({
+            error: 'No puedes consultar la lista de bloqueos de otro usuario.'
+        });
+    }
 
 
     const sql = `
@@ -415,13 +455,15 @@ router.get('/interactions/bloqueo/:id_user', (req, res) => {
 // DEJAR DE SILENCIAR USUARIO
 // =========================================
 
-router.put('/interactions/silenciar', (req, res) => {
+router.put(
+    '/interactions/silenciar',
+    autenticarToken,
+    (req, res) => {
 
-    const {
-        id_user_original,
-        id_user_dest
-    } = req.body;
+    const id_user_original =
+        req.usuario.id_user;
 
+    const { id_user_dest } = req.body;
 
     // =========================================
     // VERIFICAR DATOS
@@ -500,11 +542,25 @@ router.put('/interactions/silenciar', (req, res) => {
 // OBTENER USUARIOS SILENCIADOS
 // =========================================
 
-router.get('/interactions/silenciados/:id_user', (req, res) => {
+router.get(
+    '/interactions/silenciados/:id_user',
+    autenticarToken,
+    (req, res) => {
 
-    const idUser =
-        req.params.id_user;
+    const idUserSolicitado =
+    Number(req.params.id_user);
 
+const idUser =
+    req.usuario.id_user;
+
+if (
+    !Number.isSafeInteger(idUserSolicitado) ||
+    idUserSolicitado !== idUser
+) {
+    return res.status(403).json({
+        error: 'No puedes consultar la lista de silenciamientos de otro usuario.'
+    });
+}
 
     const sql = `
         SELECT
