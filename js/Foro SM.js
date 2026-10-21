@@ -1,3 +1,28 @@
+// =========================================
+// ENVIAR EL TOKEN EN TODAS LAS PETICIONES A LA API
+// =========================================
+
+const fetchOriginal = window.fetch.bind(window);
+
+window.fetch = function (url, opciones = {}) {
+
+    if (
+        typeof url === "string" &&
+        url.startsWith("https://small-adventure.onrender.com/api")
+    ) {
+        const token = sessionStorage.getItem("tokenAutenticacion");
+
+        if (token) {
+            opciones.headers = {
+                ...(opciones.headers || {}),
+                "Authorization": `Bearer ${token}`
+            };
+        }
+    }
+
+    return fetchOriginal(url, opciones);
+};
+
 function escapar(valor) {
     return String(valor ?? "")
         .replace(/&/g, "&amp;")

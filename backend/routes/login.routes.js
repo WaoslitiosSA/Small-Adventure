@@ -145,16 +145,24 @@ router.post('/login', (req, res) => {
                 );
 
                return res.json({
-                    token,
-                    usuario: {
-                        id: idUsuario,
-                        id_user: idUsuario,
-                        nombre: usuario.user_name,
-                        user_name: usuario.user_name,
-                        rol: Number(usuario.id_role) === 1 ? 'admin' : 'usuario',
-                        id_role: Number(usuario.id_role)
-                    }
-                });
+                token,
+
+                // Nivel superior: es lo que lee login SM.js
+                id_user: idUsuario,
+                user_name: usuario.user_name,
+                user_mail: usuario.user_mail,
+                id_role: Number(usuario.id_role),
+
+                // Mismos datos agrupados, por si algún script los usa así
+                usuario: {
+                    id: idUsuario,
+                    id_user: idUsuario,
+                    nombre: usuario.user_name,
+                    user_name: usuario.user_name,
+                    rol: Number(usuario.id_role) === 1 ? 'admin' : 'usuario',
+                    id_role: Number(usuario.id_role)
+                }
+            });
 
             } catch (error) {
 
