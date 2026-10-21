@@ -7008,10 +7008,7 @@ try {
     }
 
 } catch (error) {
-    console.error(
-        "Error al comprobar bloqueo de moderación:",
-        error
-    );
+    
 
     mostrarToast(
         "No se pudo verificar tu estado de moderación. Intenta nuevamente.",
@@ -7020,13 +7017,6 @@ try {
 
     return;
 }
-
-
-    console.error(
-        "Error al comprobar bloqueo de moderación:",
-        error
-    );
-
 
 
     let archivo =
