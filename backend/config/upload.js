@@ -5,11 +5,10 @@ const multer = require('multer');
 // VALIDAR TIPO DE ARCHIVO
 // =========================================
 
+const TIPOS_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
+
 function filtrarImagen(req, file, cb) {
-    if (
-        !file.mimetype ||
-        !file.mimetype.startsWith('image/')
-    ) {
+    if (!TIPOS_PERMITIDOS.includes(file.mimetype)) {
         return cb(
             new Error('Solo se permiten archivos de imagen.')
         );
@@ -18,17 +17,14 @@ function filtrarImagen(req, file, cb) {
     cb(null, true);
 }
 
-// =========================================
-// RECIBIR IMÁGENES EN MEMORIA
-// CLOUDINARY LAS ALMACENARÁ DESPUÉS
-// =========================================
-
 const subirImagen = multer({
     storage: multer.memoryStorage(),
     fileFilter: filtrarImagen,
     limits: {
-        fileSize: 5 * 1024 * 1024
+        fileSize: 5 * 1024 * 1024,
+        files: 1
     }
 });
+
 
 module.exports = subirImagen;

@@ -299,212 +299,168 @@ router.post(
 
                 function eliminarUsuarioConTransaccion() {
 
-                    db.beginTransaction((errorTransaccion) => {
+    db.getConnection((errorConexion, conn) => {
 
-                        if (errorTransaccion) {
-                            console.error(
-                                'Error al iniciar transacción:',
-                                errorTransaccion
-                            );
+        if (errorConexion) {
+            console.error('Error al obtener conexión:', errorConexion);
+            return res.status(500).json({
+                error: 'No se pudo iniciar la operación de eliminación.'
+            });
+        }
 
-                            return res.status(500).json({
-                                error: 'No se pudo iniciar la operación de eliminación.'
-                            });
-                        }
+        function terminarConError(mensaje, error, codigo = 500) {
+            if (error) {
+                console.error(mensaje, error);
+            }
 
-                        function revertirTransaccion(
-                            mensaje,
-                            error,
-                            codigo = 500
-                        ) {
-                            if (error) {
-                                console.error(mensaje, error);
-                            }
-
-                            db.rollback((errorRollback) => {
-                                if (errorRollback) {
-                                    console.error(
-                                        'Error al revertir transacción:',
-                                        errorRollback
-                                    );
-                                }
-
-                                if (!res.headersSent) {
-                                    return res.status(codigo).json({
-                                        error: mensaje
-                                    });
-                                }
-                            });
-                        }
-
-                        // 1. Buscar el usuario afectado.
-                        const sqlBuscarAfectado = `
-                            SELECT id_user_affe
-                            FROM users_affecteds
-                            WHERE id_user = ?
-                            LIMIT 1
-                        `;
-
-                        db.query(
-                            sqlBuscarAfectado,
-                            [idUsuarioSolicitado],
-                            (errorBusqueda, resultados) => {
-
-                                if (errorBusqueda) {
-                                    return revertirTransaccion(
-                                        'No se pudo buscar el usuario afectado.',
-                                        errorBusqueda
-                                    );
-                                }
-
-                                function registrarEliminacion(idUsuarioAfectado) {
-
-                                    // 3. Cambiar el estado de la cuenta.
-                                    const sqlEliminarUsuario = `
-                                        UPDATE users
-                                        SET user_status = 'eliminado'
-                                        WHERE id_user = ?
-                                          AND user_status = 'activo'
-                                    `;
-
-                                    db.query(
-                                        sqlEliminarUsuario,
-                                        [idUsuarioSolicitado],
-                                        (errorEliminar, resultadoEliminar) => {
-
-                                            if (errorEliminar) {
-                                                return revertirTransaccion(
-                                                    'No se pudo actualizar el estado del usuario.',
-                                                    errorEliminar
-                                                );
-                                            }
-
-                                            if (resultadoEliminar.affectedRows === 0) {
-                                                return revertirTransaccion(
-                                                    'El usuario ya no existe o no está activo.',
-                                                    null,
-                                                    409
-                                                );
-                                            }
-
-                                            // 4. Registrar la moderación.
-                                            const sqlGuardarModeracion = `
-                                                INSERT INTO moderations
-                                                (
-                                                    id_user_affe,
-                                                    id_mens,
-                                                    mode_action,
-                                                    mode_reason,
-                                                    id_user
-                                                )
-                                                VALUES (?, ?, ?, ?, ?)
-                                            `;
-
-                                            db.query(
-                                                sqlGuardarModeracion,
-                                                [
-                                                    idUsuarioAfectado,
-                                                    idMensajeSolicitado,
-                                                    mode_action,
-                                                    mode_reason,
-                                                    id_user
-                                                ],
-                                                (errorModeracion, resultadoModeracion) => {
-
-                                                    if (errorModeracion) {
-                                                        return revertirTransaccion(
-                                                            'No se pudo registrar la moderación.',
-                                                            errorModeracion
-                                                        );
-                                                    }
-
-                                                    // 5. Confirmar todos los cambios.
-                                                    db.commit((errorCommit) => {
-
-                                                        if (errorCommit) {
-                                                            console.error(
-                                                                'Error al confirmar transacción:',
-                                                                errorCommit
-                                                            );
-
-                                                            return db.rollback(() => {
-                                                                if (!res.headersSent) {
-                                                                    return res.status(500).json({
-                                                                        error: 'No se pudo confirmar la eliminación.'
-                                                                    });
-                                                                }
-                                                            });
-                                                        }
-
-                                                        console.log(
-                                                            'Usuario eliminado y moderación registrada:',
-                                                            resultadoModeracion.insertId
-                                                        );
-
-                                                        return res.json({
-                                                            mensaje: 'Usuario eliminado y moderación registrada correctamente.',
-                                                            id_mode: resultadoModeracion.insertId,
-                                                            mode_action: mode_action
-                                                        });
-                                                    });
-                                                }
-                                            );
-                                        }
-                                    );
-                                }
-
-                                // Si ya existe en users_affecteds,
-                                // reutilizar su identificador.
-                                if (resultados.length > 0) {
-                                    return registrarEliminacion(
-                                        resultados[0].id_user_affe
-                                    );
-                                }
-
-                                // 2. Si no existe, crearlo dentro
-                                // de la misma transacción.
-                                const sqlCrearAfectado = `
-                                    INSERT INTO users_affecteds
-                                    (
-                                        id_user,
-                                        usaf_name
-                                    )
-                                    SELECT id_user, user_name
-                                    FROM users
-                                    WHERE id_user = ?
-                                      AND user_status = 'activo'
-                                `;
-
-                                db.query(
-                                    sqlCrearAfectado,
-                                    [idUsuarioSolicitado],
-                                    (errorCrear, resultadoCrear) => {
-
-                                        if (errorCrear) {
-                                            return revertirTransaccion(
-                                                'No se pudo registrar el usuario afectado.',
-                                                errorCrear
-                                            );
-                                        }
-
-                                        if (resultadoCrear.affectedRows === 0) {
-                                            return revertirTransaccion(
-                                                'No se encontró un usuario activo para registrar.',
-                                                null,
-                                                404
-                                            );
-                                        }
-
-                                        return registrarEliminacion(
-                                            resultadoCrear.insertId
-                                        );
-                                    }
-                                );
-                            }
-                        );
-                    });
+            conn.rollback((errorRollback) => {
+                if (errorRollback) {
+                    console.error('Error al revertir transacción:', errorRollback);
                 }
 
+                conn.release();
+
+                if (!res.headersSent) {
+                    return res.status(codigo).json({ error: mensaje });
+                }
+            });
+        }
+
+        conn.beginTransaction((errorTransaccion) => {
+
+            if (errorTransaccion) {
+                conn.release();
+                console.error('Error al iniciar transacción:', errorTransaccion);
+                return res.status(500).json({
+                    error: 'No se pudo iniciar la operación de eliminación.'
+                });
+            }
+
+            // 1. Buscar el usuario afectado
+            conn.query(
+                `SELECT id_user_affe
+                 FROM users_affecteds
+                 WHERE id_user = ?
+                 LIMIT 1`,
+                [idUsuarioSolicitado],
+                (errorBusqueda, resultados) => {
+
+                    if (errorBusqueda) {
+                        return terminarConError(
+                            'No se pudo buscar el usuario afectado.',
+                            errorBusqueda
+                        );
+                    }
+
+                        function registrarEliminacion(idUsuarioAfectado) {
+
+                            // 3. Cambiar el estado de la cuenta
+                            conn.query(
+                                `UPDATE users
+                                SET user_status = 'eliminado'
+                                WHERE id_user = ?
+                                AND user_status = 'activo'`,
+                                [idUsuarioSolicitado],
+                                (errorEliminar, resultadoEliminar) => {
+
+                                    if (errorEliminar) {
+                                        return terminarConError(
+                                            'No se pudo actualizar el estado del usuario.',
+                                            errorEliminar
+                                        );
+                                    }
+
+                                    if (resultadoEliminar.affectedRows === 0) {
+                                        return terminarConError(
+                                            'El usuario ya no existe o no está activo.',
+                                            null,
+                                            409
+                                        );
+                                    }
+
+                                    // 4. Registrar la moderación
+                                    conn.query(
+                                        `INSERT INTO moderations
+                                        (id_user_affe, id_mens, mode_action, mode_reason, id_user)
+                                        VALUES (?, ?, ?, ?, ?)`,
+                                        [
+                                            idUsuarioAfectado,
+                                            idMensajeSolicitado,
+                                            mode_action,
+                                            mode_reason,
+                                            id_user
+                                        ],
+                                        (errorModeracion, resultadoModeracion) => {
+
+                                            if (errorModeracion) {
+                                                return terminarConError(
+                                                    'No se pudo registrar la moderación.',
+                                                    errorModeracion
+                                                );
+                                            }
+
+                                            // 5. Confirmar
+                                            conn.commit((errorCommit) => {
+
+                                                if (errorCommit) {
+                                                    return terminarConError(
+                                                        'No se pudo confirmar la eliminación.',
+                                                        errorCommit
+                                                    );
+                                                }
+
+                                                conn.release();
+
+                                                return res.json({
+                                                    mensaje: 'Usuario eliminado y moderación registrada correctamente.',
+                                                    id_mode: resultadoModeracion.insertId,
+                                                    mode_action: mode_action
+                                                });
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        }
+
+                        // Si ya existe en users_affecteds, reutilizarlo
+                        if (resultados.length > 0) {
+                            return registrarEliminacion(resultados[0].id_user_affe);
+                        }
+
+                        // 2. Si no existe, crearlo dentro de la misma transacción
+                        conn.query(
+                            `INSERT INTO users_affecteds (id_user, usaf_name)
+                            SELECT id_user, user_name
+                            FROM users
+                            WHERE id_user = ?
+                            AND user_status = 'activo'`,
+                            [idUsuarioSolicitado],
+                            (errorCrear, resultadoCrear) => {
+
+                                if (errorCrear) {
+                                    return terminarConError(
+                                        'No se pudo registrar el usuario afectado.',
+                                        errorCrear
+                                    );
+                                }
+
+                                if (resultadoCrear.affectedRows === 0) {
+                                    return terminarConError(
+                                        'No se encontró un usuario activo para registrar.',
+                                        null,
+                                        404
+                                    );
+                                }
+
+                                return registrarEliminacion(resultadoCrear.insertId);
+                            }
+                        );
+                    }
+                );
+            });
+        });
+    }
 
             // =========================================
             // BUSCAR O CREAR USUARIO AFECTADO

@@ -19,6 +19,7 @@ const router =
 const subirImagen =
     require('../config/upload');
 
+
 // =========================================
 // CONFIGURAR CLOUDINARY
 // =========================================
@@ -231,12 +232,31 @@ router.post(
     subirImagen.single('mens_image'),
     async (req, res) => {
 
-        const {
-    mens_content,
-    mens_status,
-    id_mens_fath,
-    id_chan
-} = req.body;
+        if (req.file && !subirImagen.esImagenReal(req.file.buffer)) {
+            return res.status(400).json({ error: 'Solo se permiten archivos de imagen.' });
+        }
+
+    const {
+        mens_content,
+        mens_status,
+        id_mens_fath,
+        id_chan
+    } = req.body;
+
+const textoLimpio =
+    typeof mens_content === 'string' ? mens_content.trim() : '';
+
+const canal = Number(id_chan);
+const padre = id_mens_fath ? Number(id_mens_fath) : null;
+
+if (
+    !Number.isSafeInteger(canal) || canal <= 0 ||
+    textoLimpio.length > 2000 ||
+    (!textoLimpio && !req.file) ||
+    (padre !== null && (!Number.isSafeInteger(padre) || padre <= 0))
+) {
+    return res.status(400).json({ error: 'Datos del mensaje no válidos' });
+}
 
 // La identidad procede del JWT, no del navegador.
 const id_user = req.usuario.id_user;

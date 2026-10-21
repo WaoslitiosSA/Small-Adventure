@@ -23,13 +23,12 @@ const {
 // OBTENER USUARIOS
 // =========================================
 
-router.get('/users', (req, res) => {
+router.get('/users', autenticarToken, (req, res) => {
 
     const sql = `
         SELECT
             u.id_user,
             u.user_name,
-            u.user_mail,
             u.user_date_regi,
             u.id_role,
             p.prof_avatar,
@@ -71,7 +70,7 @@ router.get('/users', (req, res) => {
 // BUSCAR USUARIOS
 // =========================================
 
-router.get('/users/search', (req, res) => {
+router.get('/users/search', autenticarToken, (req, res) => {
 
     const campo =
         typeof req.query.campo === 'string'
@@ -87,10 +86,7 @@ router.get('/users/search', (req, res) => {
     // OBTENER ID DEL USUARIO ACTUAL
     // =========================================
 
-    const idUsuarioActual =
-        req.query.exclude
-            ? Number(req.query.exclude)
-            : null;
+        const idUsuarioActual = req.usuario.id_user;
 
     // =========================================
     // VALIDAR CAMPO
@@ -142,7 +138,6 @@ router.get('/users/search', (req, res) => {
         SELECT
             u.id_user,
             u.user_name,
-            u.user_mail,
             u.user_date_regi,
             u.id_role,
             r.role_name,
@@ -191,9 +186,7 @@ router.get('/users/search', (req, res) => {
             AND u.user_name LIKE ?
         `;
 
-        parametros.push(
-            `%${textoBusqueda}%`
-        );
+        parametros.push(`%${textoBusqueda.replace(/[\\%_]/g, '\\$&')}%`);
 
     }
 
@@ -204,12 +197,10 @@ router.get('/users/search', (req, res) => {
     else if (campo === 'correo') {
 
         sql += `
-            AND u.user_mail LIKE ?
+            AND u.user_mail = ?
         `;
 
-        parametros.push(
-            `%${textoBusqueda}%`
-        );
+        parametros.push(textoBusqueda);
 
     }
 
@@ -330,85 +321,6 @@ router.get('/users/search', (req, res) => {
 
 });
 
-// =========================================
-// ELIMINAR USUARIO LÓGICAMENTE
-// =========================================
-
-
-router.delete('/users/:id', autenticarToken, (req, res) => {
-
-    const idObjetivo = Number(req.params.id);
-    const idAdministrador = req.usuario.id_user;
-
-    if (
-        !Number.isSafeInteger(idObjetivo) ||
-        idObjetivo <= 0
-    ) {
-        return res.status(400).json({
-            error: 'El ID del usuario no es válido.'
-        });
-    }
-
-    if (idObjetivo === idAdministrador) {
-        return res.status(400).json({
-            error: 'No puedes eliminar tu propia cuenta desde el panel de moderación.'
-        });
-    }
-
-    comprobarPermiso(
-        idAdministrador,
-        'gestionar_usuarios',
-        (errorPermiso, tienePermiso) => {
-
-            if (errorPermiso) {
-                console.error('Error al comprobar permiso:', errorPermiso);
-                return res.status(500).json({
-                    error: 'No se pudo comprobar el permiso.'
-                });
-            }
-
-            if (!tienePermiso) {
-                return res.status(403).json({
-                    error: 'No tienes permisos para eliminar usuarios.'
-                });
-            }
-
-            const sqlEliminar = `
-                UPDATE users
-                SET user_status = 'eliminado'
-                WHERE id_user = ?
-                  AND user_status = 'activo'
-            `;
-
-            db.query(
-                sqlEliminar,
-                [idObjetivo],
-                (error, resultado) => {
-
-                    if (error) {
-                        console.error('Error al eliminar usuario:', error);
-                        return res.status(500).json({
-                            error: 'No se pudo eliminar el usuario.'
-                        });
-                    }
-
-                    if (resultado.affectedRows === 0) {
-                        return res.status(404).json({
-                            error: 'El usuario no existe, ya está eliminado o no está activo.'
-                        });
-                    }
-
-                    return res.json({
-                        mensaje: 'Usuario eliminado correctamente.',
-                        id_user: idObjetivo,
-                        user_status: 'eliminado'
-                    });
-                }
-            );
-        }
-    );
-});
-
 
 // =========================================
 // REGISTRAR USUARIO
@@ -426,17 +338,24 @@ router.post('/users', (req, res) => {
     // VALIDAR DATOS
     // =========================================
 
-    if (
-        !user_name ||
-        !user_mail ||
-        !user_password
-    ) {
+    const nombre =
+        typeof user_name === 'string' ? user_name.trim() : '';
 
+    const correo =
+        typeof user_mail === 'string' ? user_mail.trim() : '';
+
+    if (
+        typeof user_password !== 'string' ||
+        !/^[\p{L}\p{N}_ .-]{3,30}$/u.test(nombre) ||
+        correo.length > 100 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo) ||
+        user_password.length < 8 ||
+        Buffer.byteLength(user_password) > 72
+    ) {
         return res.status(400).json({
             error:
-                'Todos los campos son obligatorios'
+                'Datos inválidos. El nombre debe tener de 3 a 30 caracteres, el correo debe ser válido y la contraseña debe tener entre 8 y 72 caracteres.'
         });
-
     }
 
     // =========================================
@@ -455,6 +374,12 @@ router.post('/users', (req, res) => {
                     errorHash
                 );
 
+                if (error.code === 'ER_DUP_ENTRY') {
+                    return res.status(409).json({
+                        error: 'Ese correo ya está registrado.'
+                    });
+                }
+
                 return res.status(500).json({
                     error:
                         'Error al registrar usuario'
@@ -469,8 +394,8 @@ router.post('/users', (req, res) => {
             const sqlUsuario = `
                 INSERT INTO users
                 (
-                    user_name,
-                    user_mail,
+                    nombre,
+                    correo,
                     user_password,
                     id_role
                 )
@@ -563,10 +488,10 @@ router.post('/users', (req, res) => {
                                     resultadoPerfil.insertId,
 
                                 user_name:
-                                    user_name,
+                                    nombre,
 
                                 user_mail:
-                                    user_mail,
+                                    correo,
 
                                 id_role:
                                     2

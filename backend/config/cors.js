@@ -1,14 +1,17 @@
-
 const ORIGENES_PERMITIDOS = [
-    'https://waoslitiossa.github.io',
-    'http://127.0.0.1:5500'
+    'https://waoslitiossa.github.io'
 ];
+
+// Solo en desarrollo se permite el servidor local
+if (process.env.NODE_ENV !== 'production') {
+    ORIGENES_PERMITIDOS.push('http://127.0.0.1:5500');
+}
 
 function configurarCors(req, res, next) {
     const origen = req.headers.origin;
 
-    // Permitir solicitudes sin Origin, como algunas
-    // herramientas de servidor y pruebas locales.
+    // Permitir solicitudes sin Origin, como herramientas
+    // de servidor y pruebas locales.
     if (!origen) {
         if (req.method === 'OPTIONS') {
             return res.sendStatus(204);
@@ -24,15 +27,8 @@ function configurarCors(req, res, next) {
         });
     }
 
-    res.setHeader(
-        'Access-Control-Allow-Origin',
-        origen
-    );
-
-    res.setHeader(
-        'Vary',
-        'Origin'
-    );
+    res.setHeader('Access-Control-Allow-Origin', origen);
+    res.setHeader('Vary', 'Origin');
 
     res.setHeader(
         'Access-Control-Allow-Methods',
@@ -43,9 +39,6 @@ function configurarCors(req, res, next) {
         'Access-Control-Allow-Headers',
         'Content-Type, Authorization'
     );
-
-    // No habilitamos credenciales mediante cookies
-    // hasta verificar el sistema de autenticación.
 
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204);

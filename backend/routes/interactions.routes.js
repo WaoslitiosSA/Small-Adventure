@@ -25,6 +25,11 @@ router.post(
 
     const { id_user_dest } = req.body;
 
+    const idDestino = Number(id_user_dest);
+
+    if (!Number.isSafeInteger(idDestino) || idDestino <= 0) {
+        return res.status(400).json({ error: 'El usuario indicado no es válido' });
+    }
 
     // =========================================
     // VERIFICAR DATOS
@@ -612,10 +617,17 @@ if (
 // POR SILENCIO
 // =========================================
 
-router.get('/interactions/silencio/:id_user', (req, res) => {
+router.get('/interactions/silencio/:id_user', autenticarToken, (req, res) => {
 
-    const idUser =
-        req.params.id_user;
+    const idSolicitado = Number(req.params.id_user);
+    const idUser = req.usuario.id_user;
+
+    if (!Number.isSafeInteger(idSolicitado) || idSolicitado !== idUser) {
+        return res.status(403).json({
+            error: 'No puedes consultar el estado de otro usuario.'
+        });
+    }
+    // ...el resto igual (ya usa [idUser])
 
 
     const sql = `

@@ -9,22 +9,39 @@ const db =
 
 const { autenticarToken } = require('../middleware/auth');
 
+// Completa con los colores que existan en tu frontend
+const COLORES_PERMITIDOS = ['blue', 'purple'];
+
+function avatarValido(url) {
+    if (typeof url !== 'string' || url.length > 300) return false;
+
+    // Avatares incluidos en tu proyecto
+    if (/^assets\/avatars\/[\w-]+\.(jpe?g|png|webp)$/i.test(url)) return true;
+
+    // Imágenes subidas a tu cuenta de Cloudinary
+    const cloud = process.env.CLOUDINARY_CLOUD_NAME;
+    return Boolean(cloud) &&
+        url.startsWith(`https://res.cloudinary.com/${cloud}/`) &&
+        !/["'<>\s]/.test(url);
+}
+
 // =========================================
 // PERFIL DE USUARIO
 // =========================================
 
 router.get('/profiles/:id_user', (req, res) => {
 
-    const idUser =
-        req.params.id_user;
+    const idUser = Number(req.params.id_user);
 
+    if (!Number.isSafeInteger(idUser) || idUser <= 0) {
+        return res.status(400).json({ error: 'ID de usuario no válido' });
+    }
 
     const sql = `
         SELECT
             p.id_prof,
             p.id_user,
             u.user_name,
-            u.user_mail,
             u.id_role,
             p.prof_avatar,
             p.prof_color,
@@ -33,50 +50,23 @@ router.get('/profiles/:id_user', (req, res) => {
         INNER JOIN users AS u
             ON p.id_user = u.id_user
         WHERE p.id_user = ?
+          AND u.user_status = 'activo'
     `;
 
+    db.query(sql, [idUser], (error, resultados) => {
 
-    db.query(
-        sql,
-        [idUser],
-        (error, resultados) => {
-
-            if (error) {
-
-                console.error(
-                    'Error al consultar perfil:',
-                    error
-                );
-
-                return res.status(500).json({
-                    error:
-                        'Error al consultar perfil'
-                });
-
-            }
-
-
-            if (
-                resultados.length === 0
-            ) {
-
-                return res.status(404).json({
-                    error:
-                        'Perfil no encontrado'
-                });
-
-            }
-
-
-            res.json(
-                resultados[0]
-            );
-
+        if (error) {
+            console.error('Error al consultar perfil:', error);
+            return res.status(500).json({ error: 'Error al consultar perfil' });
         }
-    );
 
+        if (resultados.length === 0) {
+            return res.status(404).json({ error: 'Perfil no encontrado' });
+        }
+
+        res.json(resultados[0]);
+    });
 });
-
 
 // =========================================
 // ACTUALIZAR BIOGRAFÍA DEL PERFIL
@@ -104,20 +94,20 @@ router.put(
 
         const idUser = idUsuarioAutenticado;
 
+    const { biography, prof_color, prof_avatar } = req.body;
 
-    const {
-        biography,
-        prof_color,
-        prof_avatar
-    } =
-        req.body;
+const bio = typeof biography === 'string' ? biography.trim() : null;
 
-
-    console.log(
-        "Datos recibidos para actualizar perfil:",
-        req.body
-    );
-
+if (
+    bio === null ||
+    bio.length > 500 ||
+    !COLORES_PERMITIDOS.includes(prof_color) ||
+    !avatarValido(prof_avatar)
+) {
+    return res.status(400).json({
+        error: 'Los datos del perfil no son válidos.'
+    });
+}
 
     const sql = `
         UPDATE profiles
@@ -125,20 +115,10 @@ router.put(
         WHERE id_user = ?
     `;
 
-
-    console.log(
-        "Valores que se enviarán a MySQL:",
-        biography,
-        prof_color,
-        prof_avatar,
-        idUser
-    );
-
-
     db.query(
         sql,
         [
-            biography,
+            bio,
             prof_color,
             prof_avatar,
             idUser

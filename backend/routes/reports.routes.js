@@ -16,6 +16,14 @@ const {
 const router =
     express.Router();
 
+const rateLimit = require('express-rate-limit');
+
+const limiteReportes = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    keyGenerator: (req) => String(req.usuario.id_user),
+    message: { error: 'Has enviado demasiados reportes. Intenta más tarde.' }
+});
 
 // =========================================
 // OBTENER REPORTES
@@ -75,6 +83,7 @@ router.get(
                         ON r.id_mens = m.id_mensaje
 
                     ORDER BY r.id_repo DESC
+                    LIMIT 200
                 `;
 
                 db.query(
@@ -107,11 +116,7 @@ router.get(
 // CREAR REPORTE
 // =========================================
 
-
-router.post(
-    '/reports',
-    autenticarToken,
-    (req, res) => {
+router.post('/reports', autenticarToken, limiteReportes, (req, res) => {
 
         const {
             id_repo_user,
@@ -129,6 +134,9 @@ router.post(
         // VERIFICAR DATOS OBLIGATORIOS
         // =========================================
 
+        const motivo = typeof repo_motive === 'string' ? repo_motive.trim() : '';
+        const descripcion = typeof repo_description === 'string' ? repo_description.trim() : '';
+
         if (
             !Number.isInteger(id_user_repo) ||
             id_user_repo <= 0 ||
@@ -136,14 +144,11 @@ router.post(
             Number(id_repo_user) <= 0 ||
             !Number.isInteger(Number(id_mens)) ||
             Number(id_mens) <= 0 ||
-            typeof repo_motive !== 'string' ||
-            !repo_motive.trim() ||
-            typeof repo_description !== 'string' ||
-            !repo_description.trim()
+            !motivo || motivo.length > 100 ||
+            !descripcion || descripcion.length > 1000
         ) {
             return res.status(400).json({
-                error:
-                    'Faltan datos válidos para crear el reporte'
+                error: 'Faltan datos válidos para crear el reporte'
             });
         }
 
@@ -154,6 +159,9 @@ router.post(
         const idMensajeReportado =
             Number(id_mens);
 
+        if (idUsuarioReportado === id_user_repo) {
+            return res.status(400).json({ error: 'No puedes reportarte a ti mismo.' });
+        }
 
     // =========================================
     // COMPROBAR ROL Y PROPIETARIO DEL MENSAJE
@@ -226,8 +234,8 @@ router.post(
                 id_user_repo,
                 id_repo_user,
                 id_mens,
-                repo_motive,
-                repo_description,
+                motivo,
+                description,
                 repo_status
             )
             VALUES (?, ?, ?, ?, ?, ?)
@@ -328,8 +336,9 @@ router.post(
 
                             const sqlAdministradores = `
                                 SELECT id_user
-                                FROM users
-                                WHERE id_role = 1
+                                FROM users 
+                                WHERE id_role = 1 
+                                AND user_status = 'activo'
                             `;
 
                             db.query(

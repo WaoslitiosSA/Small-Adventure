@@ -22,10 +22,10 @@ router.post('/login', (req, res) => {
     // =========================================
 
     if (
-        !user_mail ||
         typeof user_mail !== 'string' ||
-        !user_password ||
-        typeof user_password !== 'string'
+        typeof user_password !== 'string' ||
+        user_mail.length === 0 || user_mail.length > 100 ||
+        user_password.length === 0 || user_password.length > 72
     ) {
         return res.status(400).json({
             error: 'Correo y contraseña son obligatorios.'
@@ -62,6 +62,8 @@ router.post('/login', (req, res) => {
         WHERE user_mail = ?
     `;
 
+
+    
     db.query(
         sql,
         [user_mail],
@@ -105,16 +107,20 @@ router.post('/login', (req, res) => {
             // =========================================
 
             try {
-
-                const contrasenaCorrecta =
-                    await bcrypt.compare(
-                        user_password,
-                        usuario.user_password
-                    );
+                const contrasenaCorrecta = await bcrypt.compare(
+                    user_password,
+                    usuario.user_password
+                );
 
                 if (!contrasenaCorrecta) {
                     return res.status(401).json({
                         error: 'Correo o contraseña incorrectos.'
+                    });
+                }
+
+                if (usuario.user_status !== 'activo') {
+                    return res.status(403).json({
+                        error: 'Esta cuenta no está activa.'
                     });
                 }
 
@@ -148,17 +154,16 @@ router.post('/login', (req, res) => {
                     }
                 );
 
-                // =========================================
-                // LOGIN CORRECTO
-                // =========================================
-
-                return res.json({
-                    token: token,
-
-                    id_user: usuario.id_user,
-                    user_name: usuario.user_name,
-                    user_mail: usuario.user_mail,
-                    id_role: usuario.id_role
+               return res.json({
+                    token,
+                    usuario: {
+                        id: idUsuario,
+                        id_user: idUsuario,
+                        nombre: usuario.user_name,
+                        user_name: usuario.user_name,
+                        rol: Number(usuario.id_role) === 1 ? 'admin' : 'usuario',
+                        id_role: Number(usuario.id_role)
+                    }
                 });
 
             } catch (error) {
