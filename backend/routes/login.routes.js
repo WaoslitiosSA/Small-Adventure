@@ -93,16 +93,6 @@ router.post('/login', (req, res) => {
             const usuario = resultados[0];
 
             // =========================================
-            // COMPROBAR ESTADO DE LA CUENTA
-            // =========================================
-
-            if (usuario.user_status !== 'activo') {
-                return res.status(403).json({
-                    error: 'Esta cuenta no está activa.'
-                });
-            }
-
-            // =========================================
             // COMPARAR CONTRASEÑA CON BCRYPT
             // =========================================
 

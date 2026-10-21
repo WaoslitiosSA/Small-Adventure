@@ -74,9 +74,9 @@ const limiteAutenticacion = rateLimit({
     message: { error: 'Demasiados intentos. Intenta más tarde.' }
 });
 
-app.use('/api/login.routes.js', limiteAutenticacion);
+app.use('/api/login', limiteAutenticacion);
 app.post('/api/users', limiteAutenticacion);
-app.use('/api/password.routes.js', limiteAutenticacion);
+app.use('/api/password', limiteAutenticacion);
 
 // =========================================
 // RUTAS
