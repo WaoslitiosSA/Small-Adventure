@@ -20,7 +20,21 @@ window.fetch = function (url, opciones = {}) {
         }
     }
 
-    return fetchOriginal(url, opciones);
+        return fetchOriginal(url, opciones).then((respuesta) => {
+
+        const esApi =
+            typeof url === "string" &&
+            url.startsWith("https://small-adventure.onrender.com/api");
+
+        if (respuesta.status === 401 && esApi) {
+            sessionStorage.removeItem("tokenAutenticacion");
+            localStorage.removeItem("usuarioActivo");
+            window.location.href = "index.html";
+        }
+
+        return respuesta;
+    });
+    
 };
 
 function escapar(valor) {
@@ -75,10 +89,12 @@ let usuarioActivo =
 // COMPROBAR SESIÓN
 // =========================================
 
-if (!usuarioActivo) {
-
+if (
+    !usuarioActivo ||
+    !sessionStorage.getItem("tokenAutenticacion")
+) {
+    localStorage.removeItem("usuarioActivo");
     window.location.href = "index.html";
-
 }
 
 // =========================================
