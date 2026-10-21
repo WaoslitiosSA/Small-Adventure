@@ -9,11 +9,16 @@ const {
 } =
     require('../middleware/permissions');
 
+const {
+    autenticarToken
+} = require('../middleware/auth');
+
 const router =
     express.Router();
 
 const subirImagen =
     require('../config/upload');
+
 
 // =========================================
 // CONFIGURAR CLOUDINARY
@@ -109,15 +114,16 @@ router.get('/messages', (req, res) => {
 // ELIMINAR MENSAJE
 // =========================================
 
-router.delete('/messages/:id', (req, res) => {
+router.delete(
+    '/messages/:id',
+    autenticarToken,
+    (req, res) => {
 
     const idMensaje =
         Number(req.params.id);
 
-    const {
-        id_user
-    } = req.body;
-
+    // Obtener la identidad del administrador desde el JWT.
+    const id_user = req.usuario.id_user;
 
     // =========================================
     // VALIDAR DATOS
@@ -222,16 +228,38 @@ router.delete('/messages/:id', (req, res) => {
 
 router.post(
     '/messages',
+    autenticarToken,
     subirImagen.single('mens_image'),
     async (req, res) => {
 
-        const {
-            id_user,
-            mens_content,
-            mens_status,
-            id_mens_fath,
-            id_chan
-        } = req.body;
+        if (req.file && !subirImagen.esImagenReal(req.file.buffer)) {
+            return res.status(400).json({ error: 'Solo se permiten archivos de imagen.' });
+        }
+
+    const {
+        mens_content,
+        mens_status,
+        id_mens_fath,
+        id_chan
+    } = req.body;
+
+const textoLimpio =
+    typeof mens_content === 'string' ? mens_content.trim() : '';
+
+const canal = Number(id_chan);
+const padre = id_mens_fath ? Number(id_mens_fath) : null;
+
+if (
+    !Number.isSafeInteger(canal) || canal <= 0 ||
+    textoLimpio.length > 2000 ||
+    (!textoLimpio && !req.file) ||
+    (padre !== null && (!Number.isSafeInteger(padre) || padre <= 0))
+) {
+    return res.status(400).json({ error: 'Datos del mensaje no válidos' });
+}
+
+// La identidad procede del JWT, no del navegador.
+const id_user = req.usuario.id_user;
 
         
 

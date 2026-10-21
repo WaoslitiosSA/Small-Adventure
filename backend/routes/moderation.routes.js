@@ -9,181 +9,187 @@ const db =
 
 const {
     comprobarPermiso
-} =
-    require('../middleware/permissions');
+} = require('../middleware/permissions');
+
+const {
+    autenticarToken
+} = require('../middleware/auth');
 
 
-// =========================================
-// CONSULTAR HISTORIAL DE MODERACIONES
-// =========================================
+ // =========================================
+ // CONSULTAR HISTORIAL DE MODERACIONES
+ // =========================================
 
-router.get('/moderations', (req, res) => {
+router.get(
+    '/moderations',
+    autenticarToken,
+    (req, res) => {
 
-    const idUsuario =
-        Number(req.query.id_user);
+        // La identidad procede del token, no del cliente.
+        const idUsuario = req.usuario.id_user;
 
-    // =========================================
-    // VALIDAR ID DEL ADMINISTRADOR
-    // =========================================
+        // Comprobar que el usuario puede consultar el historial.
+        comprobarPermiso(
+            idUsuario,
+            'gestionar_moderaciones',
+            (errorPermiso, tienePermiso) => {
 
-    if (!idUsuario) {
-
-        return res.status(400).json({
-            error:
-                'ID de usuario no válido.'
-        });
-
-    }
-
-
-    // =========================================
-    // COMPROBAR PERMISO
-    // =========================================
-
-    comprobarPermiso(
-        idUsuario,
-        'gestionar_moderaciones',
-        (errorPermiso, tienePermiso) => {
-
-            if (errorPermiso) {
-
-                return res.status(500).json({
-                    error:
-                        'No se pudo comprobar el permiso para consultar las moderaciones.'
-                });
-
-            }
-
-
-            if (!tienePermiso) {
-
-                return res.status(403).json({
-                    error:
-                        'No tienes permisos para consultar el historial de moderaciones.'
-                });
-
-            }
-
-
-            // =========================================
-            // CONSULTAR MODERACIONES
-            // =========================================
-
-            const sqlModeraciones = `
-                SELECT
-
-                    m.id_mode,
-
-                    m.id_user_affe,
-
-                    ua.id_user AS id_usuario_afectado,
-
-                    ua.usaf_name AS usuario_afectado,
-
-                    m.id_mens,
-
-                    m.mode_action,
-
-                    m.mode_reason,
-
-                    m.mode_date,
-
-                    m.id_user AS id_administrador,
-
-                    u.user_name AS administrador
-
-                FROM moderations AS m
-
-                INNER JOIN users_affecteds AS ua
-                    ON ua.id_user_affe = m.id_user_affe
-
-                INNER JOIN users AS u
-                    ON u.id_user = m.id_user
-
-                ORDER BY
-                    m.mode_date DESC
-            `;
-
-
-            db.query(
-                sqlModeraciones,
-                (error, resultados) => {
-
-                    if (error) {
-
-                        console.error(
-                            'Error al consultar historial de moderaciones:',
-                            error
-                        );
-
-                        return res.status(500).json({
-                            error:
-                                'No se pudo consultar el historial de moderaciones.'
-                        });
-
-                    }
-
-
-                    console.log(
-                        'Moderaciones recibidas desde MySQL:',
-                        resultados.length
+                if (errorPermiso) {
+                    console.error(
+                        'Error al comprobar permiso de moderación:',
+                        errorPermiso
                     );
 
-
-                    return res.json(
-                        resultados
-                    );
-
+                    return res.status(500).json({
+                        error:
+                            'No se pudo comprobar el permiso para consultar las moderaciones.'
+                    });
                 }
-            );
 
-        }
-    );
+                if (!tienePermiso) {
+                    return res.status(403).json({
+                        error:
+                            'No tienes permisos para consultar el historial de moderaciones.'
+                    });
+                }
 
-});
+                const sqlModeraciones = `
+                    SELECT
+                        m.id_mode,
+                        m.id_user_affe,
+                        ua.id_user AS id_usuario_afectado,
+                        ua.usaf_name AS usuario_afectado,
+                        m.id_mens,
+                        m.mode_action,
+                        m.mode_reason,
+                        m.mode_date,
+                        m.id_user AS id_administrador,
+                        u.user_name AS administrador
+                    FROM moderations AS m
+                    INNER JOIN users_affecteds AS ua
+                        ON ua.id_user_affe = m.id_user_affe
+                    INNER JOIN users AS u
+                        ON u.id_user = m.id_user
+                    ORDER BY m.mode_date DESC
+                `;
+
+                db.query(
+                    sqlModeraciones,
+                    (error, resultados) => {
+
+                        if (error) {
+                            console.error(
+                                'Error al consultar historial de moderaciones:',
+                                error
+                            );
+
+                            return res.status(500).json({
+                                error:
+                                    'No se pudo consultar el historial de moderaciones.'
+                            });
+                        }
+
+                        return res.json(resultados);
+                    }
+                );
+            }
+        );
+    }
+);
 
 
 // =========================================
 // APLICAR CONSECUENCIA DE MODERACIÓN
 // =========================================
 
-router.post('/moderations', (req, res) => {
+router.post(
+    '/moderations',
+    autenticarToken,
+    (req, res) => {
 
     const {
         id_user_affe,
         id_mens,
-        id_user,
         mode_action,
         mode_reason
     } = req.body;
+
+    // Identidad del administrador verificada por el servidor.
+    const id_user =
+        req.usuario.id_user;
 
     // =========================================
     // VALIDAR DATOS
     // =========================================
 
-    if (
-        !id_user_affe ||
-        !id_mens ||
-        !id_user ||
-        !mode_action ||
-        !mode_reason
-    ) {
+    const idUsuarioSolicitado =
+        Number(id_user_affe);
 
+    const idMensajeSolicitado =
+    id_mens == null || id_mens === ''
+        ? null
+        : Number(id_mens);
+
+    const accionesPermitidas = [
+        'mensaje_eliminado',
+        'usuario_silenciado',
+        'advertencia',
+        'bloqueo_temporal',
+        'usuario_eliminado'
+    ];
+
+    if (
+        !Number.isSafeInteger(idUsuarioSolicitado) ||
+        idUsuarioSolicitado <= 0 ||
+        (
+            mode_action === 'usuario_eliminado'
+                ? idMensajeSolicitado !== null &&
+                (
+                    !Number.isSafeInteger(idMensajeSolicitado) ||
+                    idMensajeSolicitado <= 0
+                )
+                : (
+                    !Number.isSafeInteger(idMensajeSolicitado) ||
+                    idMensajeSolicitado <= 0
+                )
+        ) ||
+        typeof mode_action !== 'string' ||
+        !accionesPermitidas.includes(mode_action) ||
+        typeof mode_reason !== 'string' ||
+        !mode_reason.trim() ||
+        mode_reason.trim().length > 1000
+    ) {
         return res.status(400).json({
             error:
-                'Faltan datos para aplicar la moderación.'
+                'Los datos de la moderación no son válidos. Comprueba los identificadores, la acción y el motivo.'
         });
-
     }
 
+    // Evitar que el administrador se aplique una moderación a sí mismo.
+    if (idUsuarioSolicitado === id_user) {
+        return res.status(400).json({
+            error:
+                'No puedes aplicar una moderación sobre tu propia cuenta.'
+        });
+    }
+
+    // Utilizar valores ya validados en las consultas SQL.
+    req.body.id_user_affe = idUsuarioSolicitado;
+    req.body.id_mens = idMensajeSolicitado;
+    req.body.mode_reason = mode_reason.trim();
 
     // =========================================
     // COMPROBAR PERMISO
     // =========================================
 
+    const permisoRequerido =
+        mode_action === 'usuario_eliminado'
+            ? 'gestionar_usuarios'
+            : 'moderar_mensajes';
+
     comprobarPermiso(
         id_user,
-        'moderar_mensajes',
+        permisoRequerido,
         (errorPermiso, tienePermiso) => {
 
             if (errorPermiso) {
@@ -205,6 +211,256 @@ router.post('/moderations', (req, res) => {
 
             }
 
+            // =========================================
+            // VALIDAR USUARIO Y MENSAJE
+            // =========================================
+
+            const sqlValidarModeracion = `
+                SELECT
+                    u.user_status,
+                    m.id_user AS id_propietario_mensaje
+                FROM users AS u
+                LEFT JOIN menssages AS m
+                    ON m.id_mensaje = ?
+                WHERE u.id_user = ?
+                LIMIT 1
+            `;
+
+            db.query(
+                sqlValidarModeracion,
+                [
+                    idMensajeSolicitado,
+                    idUsuarioSolicitado
+                ],
+                (errorValidacion, resultadosValidacion) => {
+
+                    if (errorValidacion) {
+                        console.error(
+                            'Error al validar usuario y mensaje para moderación:',
+                            errorValidacion
+                        );
+
+                        return res.status(500).json({
+                            error:
+                                'No se pudo validar el usuario y el mensaje.'
+                        });
+                    }
+
+                    if (resultadosValidacion.length === 0) {
+                        return res.status(404).json({
+                            error:
+                                'El usuario afectado no existe.'
+                        });
+                    }
+
+                    const usuarioValidado =
+                        resultadosValidacion[0];
+
+                    if (
+                        usuarioValidado.user_status !== 'activo'
+                    ) {
+                        return res.status(400).json({
+                            error:
+                                'No se puede moderar una cuenta que no está activa.'
+                        });
+                    }
+
+                    if (mode_action !== 'usuario_eliminado') {
+                        if (!usuarioValidado.id_propietario_mensaje) {
+                            return res.status(404).json({
+                                error: 'El mensaje indicado no existe.'
+                            });
+                        }
+
+                        if (
+                            Number(usuarioValidado.id_propietario_mensaje)
+                            !== idUsuarioSolicitado
+                        ) {
+                            return res.status(400).json({
+                                error: 'El mensaje no pertenece al usuario indicado.'
+                            });
+                        }
+                    }
+
+                    continuarModeracion();
+
+                }
+            );
+
+            function continuarModeracion() {
+
+                // =========================================
+                // ELIMINAR USUARIO CON TRANSACCIÓN
+                // =========================================
+
+                if (mode_action === 'usuario_eliminado') {
+                    return eliminarUsuarioConTransaccion();
+                }
+
+                function eliminarUsuarioConTransaccion() {
+
+    db.getConnection((errorConexion, conn) => {
+
+        if (errorConexion) {
+            console.error('Error al obtener conexión:', errorConexion);
+            return res.status(500).json({
+                error: 'No se pudo iniciar la operación de eliminación.'
+            });
+        }
+
+        function terminarConError(mensaje, error, codigo = 500) {
+            if (error) {
+                console.error(mensaje, error);
+            }
+
+            conn.rollback((errorRollback) => {
+                if (errorRollback) {
+                    console.error('Error al revertir transacción:', errorRollback);
+                }
+
+                conn.release();
+
+                if (!res.headersSent) {
+                    return res.status(codigo).json({ error: mensaje });
+                }
+            });
+        }
+
+        conn.beginTransaction((errorTransaccion) => {
+
+            if (errorTransaccion) {
+                conn.release();
+                console.error('Error al iniciar transacción:', errorTransaccion);
+                return res.status(500).json({
+                    error: 'No se pudo iniciar la operación de eliminación.'
+                });
+            }
+
+            // 1. Buscar el usuario afectado
+            conn.query(
+                `SELECT id_user_affe
+                 FROM users_affecteds
+                 WHERE id_user = ?
+                 LIMIT 1`,
+                [idUsuarioSolicitado],
+                (errorBusqueda, resultados) => {
+
+                    if (errorBusqueda) {
+                        return terminarConError(
+                            'No se pudo buscar el usuario afectado.',
+                            errorBusqueda
+                        );
+                    }
+
+                        function registrarEliminacion(idUsuarioAfectado) {
+
+                            // 3. Cambiar el estado de la cuenta
+                            conn.query(
+                                `UPDATE users
+                                SET user_status = 'eliminado'
+                                WHERE id_user = ?
+                                AND user_status = 'activo'`,
+                                [idUsuarioSolicitado],
+                                (errorEliminar, resultadoEliminar) => {
+
+                                    if (errorEliminar) {
+                                        return terminarConError(
+                                            'No se pudo actualizar el estado del usuario.',
+                                            errorEliminar
+                                        );
+                                    }
+
+                                    if (resultadoEliminar.affectedRows === 0) {
+                                        return terminarConError(
+                                            'El usuario ya no existe o no está activo.',
+                                            null,
+                                            409
+                                        );
+                                    }
+
+                                    // 4. Registrar la moderación
+                                    conn.query(
+                                        `INSERT INTO moderations
+                                        (id_user_affe, id_mens, mode_action, mode_reason, id_user)
+                                        VALUES (?, ?, ?, ?, ?)`,
+                                        [
+                                            idUsuarioAfectado,
+                                            idMensajeSolicitado,
+                                            mode_action,
+                                            mode_reason,
+                                            id_user
+                                        ],
+                                        (errorModeracion, resultadoModeracion) => {
+
+                                            if (errorModeracion) {
+                                                return terminarConError(
+                                                    'No se pudo registrar la moderación.',
+                                                    errorModeracion
+                                                );
+                                            }
+
+                                            // 5. Confirmar
+                                            conn.commit((errorCommit) => {
+
+                                                if (errorCommit) {
+                                                    return terminarConError(
+                                                        'No se pudo confirmar la eliminación.',
+                                                        errorCommit
+                                                    );
+                                                }
+
+                                                conn.release();
+
+                                                return res.json({
+                                                    mensaje: 'Usuario eliminado y moderación registrada correctamente.',
+                                                    id_mode: resultadoModeracion.insertId,
+                                                    mode_action: mode_action
+                                                });
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        }
+
+                        // Si ya existe en users_affecteds, reutilizarlo
+                        if (resultados.length > 0) {
+                            return registrarEliminacion(resultados[0].id_user_affe);
+                        }
+
+                        // 2. Si no existe, crearlo dentro de la misma transacción
+                        conn.query(
+                            `INSERT INTO users_affecteds (id_user, usaf_name)
+                            SELECT id_user, user_name
+                            FROM users
+                            WHERE id_user = ?
+                            AND user_status = 'activo'`,
+                            [idUsuarioSolicitado],
+                            (errorCrear, resultadoCrear) => {
+
+                                if (errorCrear) {
+                                    return terminarConError(
+                                        'No se pudo registrar el usuario afectado.',
+                                        errorCrear
+                                    );
+                                }
+
+                                if (resultadoCrear.affectedRows === 0) {
+                                    return terminarConError(
+                                        'No se encontró un usuario activo para registrar.',
+                                        null,
+                                        404
+                                    );
+                                }
+
+                                return registrarEliminacion(resultadoCrear.insertId);
+                            }
+                        );
+                    }
+                );
+            });
+        });
+    }
 
             // =========================================
             // BUSCAR O CREAR USUARIO AFECTADO
@@ -220,7 +476,7 @@ router.post('/moderations', (req, res) => {
 
             db.query(
                 sqlUsuarioAfectado,
-                [id_user_affe],
+                [idUsuarioSolicitado],
                 (errorUsuario, resultadosUsuario) => {
 
                     if (errorUsuario) {
@@ -269,7 +525,7 @@ router.post('/moderations', (req, res) => {
 
                     db.query(
                         sqlDatosUsuario,
-                        [id_user_affe],
+                        [idUsuarioSolicitado],
                         (errorDatos, resultadosDatos) => {
 
                             if (errorDatos) {
@@ -316,7 +572,7 @@ router.post('/moderations', (req, res) => {
                             db.query(
                                 sqlCrearUsuarioAfectado,
                                 [
-                                    id_user_affe,
+                                    idUsuarioSolicitado,
                                     nombreUsuario
                                 ],
                                 (errorCrear, resultadoCrear) => {
@@ -375,7 +631,7 @@ router.post('/moderations', (req, res) => {
 
                     db.query(
                         sqlMensaje,
-                        [id_mens],
+                        [idMensajeSolicitado],
                         (errorMensaje, resultadoMensaje) => {
 
                             if (errorMensaje) {
@@ -453,7 +709,7 @@ router.post('/moderations', (req, res) => {
                         sqlSilenciar,
                         [
                             id_user,
-                            id_user_affe
+                            idUsuarioSolicitado
                         ],
                         (errorSilenciar) => {
 
@@ -509,7 +765,7 @@ router.post('/moderations', (req, res) => {
                         sqlModeracion,
                         [
                             idUsuarioAfectado,
-                            id_mens,
+                            idMensajeSolicitado,
                             mode_action,
                             mode_reason,
                             id_user
@@ -602,9 +858,9 @@ router.post('/moderations', (req, res) => {
                                     db.query(
                                         sqlNotificacion,
                                         [
-                                            id_user_affe,
+                                            idUsuarioSolicitado,
                                             contenido,
-                                            id_mens
+                                            idMensajeSolicitado
                                         ],
                                         (errorNotificacion, resultadoNotificacion) => {
 
@@ -716,7 +972,7 @@ router.post('/moderations', (req, res) => {
                         sqlBloquear,
                         [
                             id_user,
-                            id_user_affe
+                            idUsuarioSolicitado
                         ],
                         (errorBloquear) => {
 
@@ -744,78 +1000,6 @@ router.post('/moderations', (req, res) => {
 
                     return;
                 }
-
-
-                // =========================================
-                // USUARIO ELIMINADO
-                // =========================================
-
-                if (
-                    mode_action ===
-                    'usuario_eliminado'
-                ) {
-
-                    // =========================================
-                    // ELIMINAR USUARIO LÓGICAMENTE
-                    // =========================================
-
-                    const sqlEliminarUsuario = `
-                        UPDATE users
-                        SET user_status = 'eliminado'
-                        WHERE id_user = ?
-                    `;
-
-                    db.query(
-                        sqlEliminarUsuario,
-                        [id_user_affe],
-                        (errorEliminar, resultadoEliminar) => {
-
-                            if (errorEliminar) {
-
-                                console.error(
-                                    'Error al eliminar usuario:',
-                                    errorEliminar
-                                );
-
-                                return res.status(500).json({
-                                    error:
-                                        'No se pudo eliminar el usuario.'
-                                });
-
-                            }
-
-
-                            // =========================================
-                            // COMPROBAR SI EXISTÍA EL USUARIO
-                            // =========================================
-
-                            if (
-                                resultadoEliminar.affectedRows === 0
-                            ) {
-
-                                return res.status(404).json({
-                                    error:
-                                        'El usuario afectado no existe.'
-                                });
-
-                            }
-
-
-                            // =========================================
-                            // REGISTRAR MODERACIÓN
-                            // =========================================
-
-                            guardarModeracion(
-                                idUsuarioAfectado
-                            );
-
-                        }
-                    );
-
-                    return;
-
-                }
-
 
                 // =========================================
                 // ACCIÓN NO RECONOCIDA
@@ -854,7 +1038,7 @@ router.post('/moderations', (req, res) => {
                     sqlModeracion,
                     [
                         idUsuarioAfectado,
-                        id_mens,
+                        idMensajeSolicitado,
                         mode_action,
                         mode_reason,
                         id_user
@@ -896,95 +1080,117 @@ router.post('/moderations', (req, res) => {
                     }
                 );
 
-            }
 
+
+            }
         }
 
-    );
-
+    });
 });
 
+
  // =========================================
- // CONSULTAR ADVERTENCIAS DE UN USUARIO
- // =========================================
+// CONSULTAR ADVERTENCIAS DE UN USUARIO
+// =========================================
 
 router.get(
     '/moderations/advertencias/:id_user',
+    autenticarToken,
     (req, res) => {
+
+        const idSolicitante =
+            req.usuario.id_user;
 
         const idUsuario =
             Number(req.params.id_user);
 
-        if (!idUsuario) {
-
+        // Validar el ID solicitado.
+        if (
+            !Number.isSafeInteger(idUsuario) ||
+            idUsuario <= 0
+        ) {
             return res.status(400).json({
-                error:
-                    'ID de usuario no válido.'
+                error: 'ID de usuario no válido.'
             });
         }
 
-        const sqlAdvertencias = `
-            SELECT
-                COUNT(*) AS advertencias
-            FROM moderations m
+        // Los usuarios pueden consultar sus propias advertencias.
+        // Consultar las de otra persona requiere permiso de moderación.
+        function consultarAdvertencias() {
 
-            INNER JOIN users_affecteds ua
-                ON ua.id_user_affe =
-                   m.id_user_affe
+            const sqlAdvertencias = `
+                SELECT
+                    COUNT(*) AS advertencias
+                FROM moderations AS m
+                INNER JOIN users_affecteds AS ua
+                    ON ua.id_user_affe = m.id_user_affe
+                WHERE ua.id_user = ?
+                  AND m.mode_action = 'advertencia'
+            `;
 
-            WHERE ua.id_user = ?
-            AND m.mode_action = 'advertencia'
-        `;
+            db.query(
+                sqlAdvertencias,
+                [idUsuario],
+                (error, resultados) => {
 
-        db.query(
-            sqlAdvertencias,
-            [idUsuario],
-            (error, resultados) => {
+                    if (error) {
+                        console.error(
+                            'Error al contar advertencias:',
+                            error
+                        );
 
-                if (error) {
+                        return res.status(500).json({
+                            error:
+                                'No se pudieron consultar las advertencias.'
+                        });
+                    }
 
+                    const advertencias =
+                        Number(resultados[0].advertencias);
+
+                    return res.json({
+                        id_user: idUsuario,
+                        advertencias: advertencias,
+                        recomendarEliminacion:
+                            advertencias >= 10
+                    });
+                }
+            );
+        }
+
+        // Consulta propia: no necesita permiso administrativo.
+        if (idSolicitante === idUsuario) {
+            return consultarAdvertencias();
+        }
+
+        // Consulta de otro usuario: comprobar permiso.
+        comprobarPermiso(
+            idSolicitante,
+            'gestionar_moderaciones',
+            (errorPermiso, tienePermiso) => {
+
+                if (errorPermiso) {
                     console.error(
-                        'Error al contar advertencias:',
-                        error
+                        'Error al comprobar permiso para consultar advertencias:',
+                        errorPermiso
                     );
 
                     return res.status(500).json({
                         error:
-                            'No se pudieron consultar las advertencias.'
+                            'No se pudo comprobar el permiso para consultar las advertencias.'
                     });
                 }
 
-                const advertencias =
-                    Number(
-                        resultados[0].advertencias
-                    );
+                if (!tienePermiso) {
+                    return res.status(403).json({
+                        error:
+                            'No tienes permiso para consultar las advertencias de otro usuario.'
+                    });
+                }
 
-                const recomendarEliminacion =
-                    advertencias >= 10;
-
-                console.log(
-                    'Advertencias del usuario',
-                    idUsuario,
-                    ':',
-                    advertencias
-                );
-
-                return res.json({
-
-                    id_user:
-                        idUsuario,
-
-                    advertencias:
-                        advertencias,
-
-                    recomendarEliminacion:
-                        recomendarEliminacion
-
-                });
-
+                return consultarAdvertencias();
             }
         );
-
     }
 );
 

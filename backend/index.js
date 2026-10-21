@@ -1,43 +1,20 @@
 const express = require('express');
+const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
-const path =
-    require('path');
+const configurarCors = require('./config/cors');
 
-const translateRoutes = 
-    require('./routes/translate.routes');
-
-const configurarCors =
-    require('./config/cors');
-
-const usersRoutes =
-    require('./routes/users.routes');
-
-const messagesRoutes =
-    require('./routes/messages.routes');
-
-const reportsRoutes =
-    require('./routes/reports.routes');
-
-const moderationRoutes =
-    require('./routes/moderation.routes');
-
-const notificationsRoutes =
-    require('./routes/notifications.routes');
-
-const profilesRoutes =
-    require('./routes/profiles.routes');
-
-const interactionsRoutes =
-    require('./routes/interactions.routes');
-
-const loginRoutes =
-    require('./routes/login.routes');
-
-const passwordRoutes =
-    require('./routes/password.routes');
-
-const conversationsRoutes =
-    require('./routes/conversations.routes');
+const usersRoutes = require('./routes/users.routes');
+const messagesRoutes = require('./routes/messages.routes');
+const reportsRoutes = require('./routes/reports.routes');
+const moderationRoutes = require('./routes/moderation.routes');
+const notificationsRoutes = require('./routes/notifications.routes');
+const profilesRoutes = require('./routes/profiles.routes');
+const interactionsRoutes = require('./routes/interactions.routes');
+const loginRoutes = require('./routes/login.routes');
+const passwordRoutes = require('./routes/password.routes');
+const conversationsRoutes = require('./routes/conversations.routes');
 
 // =========================================
 // CREAR APLICACIÓN EXPRESS
@@ -45,73 +22,76 @@ const conversationsRoutes =
 
 const app = express();
 
+// Render usa un proxy: necesario para que el límite de intentos
+// identifique la IP real de cada visitante
+app.set('trust proxy', 1);
+
+// =========================================
+// SEGURIDAD (antes de las rutas)
+// =========================================
+
+app.use(
+    helmet({
+        // Permite que el frontend (otro dominio) cargue las imágenes de /uploads
+        crossOriginResourcePolicy: { policy: 'cross-origin' }
+    })
+);
+
 // =========================================
 // CORS
 // =========================================
 
-app.use(
-    configurarCors
-);
+app.use(configurarCors);
 
 // =========================================
 // JSON
 // =========================================
 
-app.use(
-    express.json()
-);
+app.use(express.json({ limit: '10kb' }));
 
-app.use(translateRoutes);
+// =========================================
+// LÍMITE DE INTENTOS
+// =========================================
 
-app.use(
-    '/api',
-    usersRoutes
-);
-
+// General: protege toda la API
 app.use(
     '/api',
-    messagesRoutes
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 300,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { error: 'Demasiadas solicitudes. Intenta más tarde.' }
+    })
 );
 
-app.use(
-    '/api',
-    reportsRoutes
-);
+// Estricto: login y recuperación de contraseña
+const limiteAutenticacion = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Demasiados intentos. Intenta más tarde.' }
+});
 
-app.use(
-    '/api',
-    moderationRoutes
-);
+app.use('/api/login', limiteAutenticacion);
+app.post('/api/users', limiteAutenticacion);
+app.use('/api/password', limiteAutenticacion);
 
-app.use(
-    '/api',
-    notificationsRoutes
-);
+// =========================================
+// RUTAS
+// =========================================
 
-app.use(
-    '/api',
-    profilesRoutes
-);
-
-app.use(
-    '/api',
-    interactionsRoutes
-);
-
-app.use(
-    '/api',
-    loginRoutes
-);
-
-app.use(
-    '/api',
-    passwordRoutes
-);
-
-app.use(
-    '/api',
-    conversationsRoutes
-);
+app.use('/api', usersRoutes);
+app.use('/api', messagesRoutes);
+app.use('/api', reportsRoutes);
+app.use('/api', moderationRoutes);
+app.use('/api', notificationsRoutes);
+app.use('/api', profilesRoutes);
+app.use('/api', interactionsRoutes);
+app.use('/api', loginRoutes);
+app.use('/api', passwordRoutes);
+app.use('/api', conversationsRoutes);
 
 // =========================================
 // ARCHIVOS SUBIDOS
@@ -119,24 +99,19 @@ app.use(
 
 app.use(
     '/uploads',
-    express.static(
-        path.join(
-            __dirname,
-            'uploads'
-        )
-    )
+    express.static(path.join(__dirname, 'uploads'))
 );
 
+app.get('/', (req, res) => {
+    res.send('Servidor de Small Adventure funcionando');
+});
 
 /* =========================================
    ERRORES DE SUBIDA Y DEL SERVIDOR
 ========================================= */
 
 app.use((error, req, res, next) => {
-    console.error(
-        'Error procesando la solicitud:',
-        error
-    );
+    console.error('Error procesando la solicitud:', error);
 
     if (error instanceof require('multer').MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
@@ -150,13 +125,8 @@ app.use((error, req, res, next) => {
         });
     }
 
-    if (
-        error.message ===
-        'Solo se permiten archivos de imagen.'
-    ) {
-        return res.status(400).json({
-            error: error.message
-        });
+    if (error.message === 'Solo se permiten archivos de imagen.') {
+        return res.status(400).json({ error: error.message });
     }
 
     return res.status(500).json({
@@ -166,16 +136,6 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-    res.send('Servidor de Small Adventure funcionando');
-});
-
-
-
 app.listen(PORT, () => {
-
-    console.log(
-        `Servidor ejecutándose en http://localhost:${PORT}`
-    );
-
+    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });

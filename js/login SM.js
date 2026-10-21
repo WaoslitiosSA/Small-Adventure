@@ -8,7 +8,7 @@ document
 // =========================================
 
 function mostrarToast(mensaje,tipo="ok"){
-    
+
     const toast=document.getElementById("toast");
     toast.textContent=mensaje;
     toast.className="";
@@ -100,6 +100,31 @@ async function iniciarSesion(e) {
 
 
         // =========================================
+        // COMPROBAR TOKEN RECIBIDO DEL SERVIDOR
+        // =========================================
+
+        if (
+            typeof datos.token !== "string" ||
+            datos.token.length === 0
+        ) {
+            mostrarToast(
+                "El servidor no devolvió una sesión válida.",
+                "error"
+            );
+
+            return;
+        }
+
+        // =========================================
+        // GUARDAR TOKEN DE AUTENTICACIÓN
+        // =========================================
+
+        sessionStorage.setItem(
+            "tokenAutenticacion",
+            datos.token
+        );
+
+        // =========================================
         // CREAR USUARIO ACTIVO
         // =========================================
 
@@ -116,7 +141,6 @@ async function iniciarSesion(e) {
                 : "usuario"
 
         };
-
 
         localStorage.setItem(
             "usuarioActivo",

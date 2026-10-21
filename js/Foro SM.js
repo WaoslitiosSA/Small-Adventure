@@ -1,9 +1,25 @@
+function escapar(valor) {
+    return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function cabecerasAuth() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+    };
+}
+
 // =========================================
 // MENSAJE DE BIENVENIDA
 // =========================================
 
 function mostrarToast(mensaje,tipo="ok"){
-    
+
     const toast=document.getElementById("toast");
     toast.textContent=mensaje;
     toast.className="";
@@ -228,12 +244,27 @@ async function cargarHistorialModeraciones() {
         // CONSULTAR HISTORIAL
         // =========================================
 
-        const respuesta =
-            await fetch(
-                "https://small-adventure.onrender.com/api/moderations?id_user=" +
-                usuarioActivo.id
-            );
 
+        const token = sessionStorage.getItem(
+            "tokenAutenticacion"
+        );
+
+        if (!token) {
+            throw new Error(
+                "Tu sesión ha caducado. Inicia sesión nuevamente."
+            );
+        }
+
+        const respuesta = await fetch(
+            "https://small-adventure.onrender.com/api/moderations",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+                },
+            }
+        );
 
         const datos =
             await respuesta.json();
@@ -332,61 +363,31 @@ datos.forEach(
         // =========================================
         // INFORMACIÓN
         // =========================================
-
         tarjeta.innerHTML =
+            "<h4>Moderación #" + escapar(moderacion.id_mode) + "</h4>" +
 
-            "<h4>" +
-                "Moderación #" +
-                moderacion.id_mode +
-            "</h4>" +
+            "<p><strong>Usuario afectado:</strong> " +
+                escapar(moderacion.usuario_afectado || "Desconocido") + "</p>" +
 
-            "<p>" +
-                "<strong>Usuario afectado:</strong> " +
-                (moderacion.usuario_afectado || "Desconocido") +
-            "</p>" +
+            "<p><strong>ID usuario afectado:</strong> " +
+                escapar(moderacion.id_usuario_afectado) + "</p>" +
 
-            "<p>" +
-                "<strong>ID usuario afectado:</strong> " +
-                moderacion.id_usuario_afectado +
-            "</p>" +
+            "<p><strong>Mensaje:</strong> " +
+                escapar(moderacion.id_mens) + "</p>" +
 
-            "<p>" +
-                "<strong>Mensaje:</strong> " +
-                moderacion.id_mens +
-            "</p>" +
+            "<p><strong>Acción:</strong> " +
+                escapar(moderacion.mode_action) + "</p>" +
 
-            "<p>" +
-                "<strong>Acción:</strong> " +
-                moderacion.mode_action +
-            "</p>" +
+            "<p><strong>Motivo:</strong> " +
+                escapar(moderacion.mode_reason || "Sin motivo") + "</p>" +
 
-            "<p>" +
-                "<strong>Motivo:</strong> " +
-                (moderacion.mode_reason || "Sin motivo") +
-            "</p>" +
+            "<p><strong>Administrador:</strong> " +
+                escapar(moderacion.administrador || "Desconocido") + "</p>" +
 
-            "<p>" +
-                "<strong>Administrador:</strong> " +
-                (moderacion.administrador || "Desconocido") +
-            "</p>" +
+            "<p><strong>Fecha:</strong> " +
+                escapar(new Date(moderacion.mode_date).toLocaleString("es-CO")) + "</p>";
 
-            "<p>" +
-                "<strong>Fecha:</strong> " +
-                new Date(
-                    moderacion.mode_date
-                ).toLocaleString(
-                    "es-CO"
-                ) +
-            "</p>";
-
-
-        // =========================================
-        // AGREGAR TARJETA
-        // =========================================
-
-        lista.appendChild(
-            tarjeta
-        );
+        lista.appendChild(tarjeta);
 
     }
 );
@@ -432,11 +433,28 @@ async function cargarReportes() {
 
     try {
 
-        const respuesta =
-            await fetch(
-                "https://small-adventure.onrender.com/api/reports?id_user=" +
-                usuarioActivo.id
+
+        const token = sessionStorage.getItem(
+            "tokenAutenticacion"
+        );
+
+        if (!token) {
+            throw new Error(
+                "Tu sesión ha caducado. Inicia sesión nuevamente."
             );
+        }
+
+        const respuesta = await fetch(
+            "https://small-adventure.onrender.com/api/reports",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+                },
+            }
+        );
+
 
 
         if (!respuesta.ok) {
@@ -510,79 +528,71 @@ async function cargarReportes() {
             reporte.repo_description;
 
         tarjeta.innerHTML = `
-
-            <h3>
-                Reporte #${reporte.id_repo}
-            </h3>
+            <h3>Reporte #${escapar(reporte.id_repo)}</h3>
 
             <p>
                 <strong>Reportado por:</strong>
-                ${reporte.usuario_reporta}
+                ${escapar(reporte.usuario_reporta)}
             </p>
 
             <p>
                 <strong>Usuario reportado:</strong>
-                ${reporte.usuario_reportado}
+                ${escapar(reporte.usuario_reportado)}
             </p>
 
             <p>
-                <strong>Mensaje #${reporte.id_mens}:</strong>
-                ${reporte.mens_content}
+                <strong>Mensaje #${escapar(reporte.id_mens)}:</strong>
+                ${escapar(reporte.mens_content)}
             </p>
 
             <p>
                 <strong>Motivo:</strong>
-                ${reporte.repo_motive}
+                ${escapar(reporte.repo_motive)}
             </p>
 
             <p>
                 <strong>Descripción:</strong>
-                ${reporte.repo_description}
+                ${escapar(reporte.repo_description)}
             </p>
 
             <p>
                 <strong>Estado:</strong>
-                <span class="estado-reporte">
-                    ${reporte.repo_status}
-                </span>
+                <span class="estado-reporte">${escapar(reporte.repo_status)}</span>
             </p>
 
             <p>
                 <strong>Fecha:</strong>
-                ${reporte.repo_date}
+                ${escapar(reporte.repo_date)}
             </p>
 
             <div class="acciones-reporte">
+                <button
+                    class="btn-ver-mensaje"
+                    data-id-mensaje="${escapar(reporte.id_mens)}"
+                >
+                    Ver mensaje
+                </button>
 
-            <button
-                class="btn-ver-mensaje"
-                data-id-mensaje="${reporte.id_mens}"
-            >
-                Ver mensaje
-            </button>
+                ${
+                    reporte.repo_status === "pendiente"
+                        ? `
+                            <button
+                                class="btn-resolver-reporte"
+                                data-id-reporte="${escapar(reporte.id_repo)}"
+                            >
+                                Resolver
+                            </button>
 
-            ${
-                reporte.repo_status === "pendiente"
-                    ? `
-                        <button
-                            class="btn-resolver-reporte"
-                            data-id-reporte="${reporte.id_repo}"
-                        >
-                            Resolver
-                        </button>
-
-                        <button
-                            class="btn-descartar-reporte"
-                            data-id-reporte="${reporte.id_repo}"
-                        >
-                            Descartar
-                        </button>
-                    `
-                    : ""
-            }
-
-        </div>
-
+                            <button
+                                class="btn-descartar-reporte"
+                                data-id-reporte="${escapar(reporte.id_repo)}"
+                            >
+                                Descartar
+                            </button>
+                        `
+                        : ""
+                }
+            </div>
         `;
 
 
@@ -616,75 +626,70 @@ async function cambiarEstadoReporte(
     idReporte,
     nuevoEstado
 ) {
-
     try {
+        const token = sessionStorage.getItem(
+            "tokenAutenticacion"
+        );
 
-        const respuesta =
-            await fetch(
-                "https://small-adventure.onrender.com/api/reports/" +
-                idReporte,
-                {
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        repo_status: nuevoEstado,
-                        id_user: usuarioActivo.id
-                    })
-                }
-            );
-
-
-        const datos =
-            await respuesta.json();
-
-
-        if (!respuesta.ok) {
-
+        if (!token) {
             throw new Error(
-                datos.error ||
-                "No se pudo actualizar el reporte"
+                "Tu sesión ha caducado. Inicia sesión nuevamente."
             );
-
         }
 
+        const respuesta = await fetch(
+            "https://small-adventure.onrender.com/api/reports/" +
+                idReporte,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+                },
+
+                body: JSON.stringify({
+                    repo_status: nuevoEstado
+                })
+            }
+        );
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(
+                datos.error ||
+                "No se pudo actualizar el reporte."
+            );
+        }
 
         console.log(
             "Estado del reporte actualizado:",
             datos
         );
 
-
         mostrarToast(
             "Reporte actualizado correctamente.",
             "info"
         );
 
-
-        // Volver a cargar los reportes
+        // Volver a cargar los reportes.
         cargarReportes();
 
-
     } catch (error) {
-
         console.error(
             "Error al cambiar estado del reporte:",
             error
         );
 
-
         mostrarToast(
+            error.message ||
             "No se pudo actualizar el reporte.",
             "error"
         );
-
     }
-
 }
+
 
 // =========================================
 // BUSCAR Y MOSTRAR MENSAJE REPORTADO
@@ -1089,30 +1094,27 @@ try {
             datosAdvertencias.recomendarEliminacion
         ) {
 
-            infoReporteModeracion.innerHTML =
-                "Reporte #" +
-                idReporte +
-                " seleccionado.<br><br>" +
+           infoReporteModeracion.innerHTML =
+            "Reporte #" +
+            escapar(idReporte) +
+            " seleccionado.<br><br>" +
 
-                "⚠️ <strong>Advertencias acumuladas:</strong> " +
-                datosAdvertencias.advertencias +
-                "<br><br>" +
+            "⚠️ <strong>Advertencias acumuladas:</strong> " +
+            escapar(datosAdvertencias.advertencias) +
+            "<br><br>" +
 
-                "🗑️ <strong>Se recomienda revisar la eliminación de esta cuenta.</strong>";
+            "🗑️ <strong>Se recomienda revisar la eliminación de esta cuenta.</strong>";
 
         }
 
         else {
 
             infoReporteModeracion.innerHTML =
-                "Reporte #" +
-                idReporte +
+                "Reporte #" + escapar (idReporte) +
                 " seleccionado.<br><br>" +
-
                 "⚠️ <strong>Advertencias acumuladas:</strong> " +
-                datosAdvertencias.advertencias +
+                escapar (datosAdvertencias.advertencias) +
                 "<br><br>" +
-
                 "Elige una consecuencia de moderación.";
 
         }
@@ -1457,7 +1459,7 @@ botonAplicarModeracion.addEventListener(
 
         try {
 
-                        // =========================================
+            // =========================================
             // ELIMINAR USUARIO
             // =========================================
 
@@ -1470,37 +1472,42 @@ botonAplicarModeracion.addEventListener(
                     "ELIMINACIÓN DE USUARIO"
                 );
 
-                const respuesta =
-                    await fetch(
+                    const token = sessionStorage.getItem(
+                        "tokenAutenticacion"
+                    );
+
+                    if (!token) {
+                        throw new Error(
+                            "Tu sesión ha caducado. Inicia sesión nuevamente."
+                        );
+                    }
+
+                    const respuesta = await fetch(
                         "https://small-adventure.onrender.com/api/moderations",
                         {
                             method: "POST",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                             },
 
                             body: JSON.stringify({
-
                                 id_user_affe:
                                     reporteModeracionActual.id_user_affe,
 
                                 id_mens:
                                     reporteModeracionActual.id_mens,
 
-                                id_user:
-                                    usuarioActivo.id,
-
                                 mode_action:
                                     "usuario_eliminado",
 
                                 mode_reason:
                                     reporteModeracionActual.mode_reason
-
                             })
                         }
                     );
+
 
                 const datos =
                     await respuesta.json();
@@ -1532,33 +1539,42 @@ botonAplicarModeracion.addEventListener(
 
             else {
 
-                const respuesta =
-                    await fetch(
-                        "https://small-adventure.onrender.com/api/moderations",
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-                            body: JSON.stringify({
-                                id_user_affe:
-                                    reporteModeracionActual.id_user_affe,
+                const token = sessionStorage.getItem(
+                    "tokenAutenticacion"
+                );
 
-                                id_mens:
-                                    reporteModeracionActual.id_mens,
-
-                                id_user:
-                                    usuarioActivo.id,
-
-                                mode_action:
-                                    accionModeracionSeleccionada,
-
-                                mode_reason:
-                                    reporteModeracionActual.mode_reason
-                            })
-                        }
+                if (!token) {
+                    throw new Error(
+                        "Tu sesión ha caducado. Inicia sesión nuevamente."
                     );
+                }
+
+                const respuesta = await fetch(
+                    "https://small-adventure.onrender.com/api/moderations",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+                        },
+
+                        body: JSON.stringify({
+                            id_user_affe:
+                                reporteModeracionActual.id_user_affe,
+
+                            id_mens:
+                                reporteModeracionActual.id_mens,
+
+                            mode_action:
+                                accionModeracionSeleccionada,
+
+                            mode_reason:
+                                reporteModeracionActual.mode_reason
+                        })
+                    }
+                );
+
 
                 const datos =
                     await respuesta.json();
@@ -1681,7 +1697,7 @@ botonAplicarModeracion.addEventListener(
         }
 
     }
-);    
+);
 
 }
 );
@@ -1698,10 +1714,13 @@ if (usuarioActivo) {
 
     if (esAdmin) {
 
-        usuarioTitulo.innerHTML =
-            "👑" +
-            usuarioActivo.nombre +
-            " <span style='color:gold;'>(Administrador)</span>";
+        usuarioTitulo.textContent = "👑" + usuarioActivo.nombre + "";
+
+        const etiqueta = document.createElement("span");
+        etiqueta.style.color = "gold";
+        etiqueta.textContent = "(Administrador)";
+
+        usuarioTitulo.appendChild(etiqueta);
 
     } else {
 
@@ -1990,9 +2009,21 @@ async function cargarUsuariosBloqueados() {
 
     try {
 
+        const token = sessionStorage.getItem("tokenAutenticacion");
+
+        if (!token) {
+            console.error("No hay token de autenticación.");
+            return;
+        }
+
         const respuesta = await fetch(
             "https://small-adventure.onrender.com/api/interactions/bloqueados/" +
-            usuarioActivo.id
+            usuarioActivo.id,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
         );
 
         const datos =
@@ -2075,10 +2106,21 @@ async function obtenerEstadoBloqueo(idUsuario) {
 
     try {
 
-        const respuesta =
-            await fetch(
-                `https://small-adventure.onrender.com/api/interactions/bloqueados/${usuarioActivo.id}`
-            );
+        const token = sessionStorage.getItem("tokenAutenticacion");
+
+        if (!token) {
+            console.error("No hay token de autenticación.");
+            return false;
+        }
+
+        const respuesta = await fetch(
+            `https://small-adventure.onrender.com/api/interactions/bloqueados/${usuarioActivo.id}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
 
         const datos =
             await respuesta.json();
@@ -2207,7 +2249,7 @@ async function cargarMensajesDesdeBD() {
 
         console.log("OBJETO COMPLETO DEL MENSAJE:", mensajes[0]);
 
-        
+
         console.table(mensajes.map(mensaje => ({
             id: mensaje.id_mensaje,
             texto: mensaje.mens_content,
@@ -2433,7 +2475,7 @@ function mostrarMensajesDesdeBD(mensajes) {
     const elementosMensajes = {};
 
 
-    
+
     // =========================================
     // CREAR LOS MENSAJES
     // =========================================
@@ -2465,7 +2507,7 @@ function mostrarMensajesDesdeBD(mensajes) {
         comentario.dataset.mensajePadre =
             mensaje.id_mens_fath || "";
 
-       
+
         comentario.dataset.idioma =
             mensaje.mens_language ||
             ({
@@ -2513,272 +2555,6 @@ function mostrarMensajesDesdeBD(mensajes) {
         comentario.appendChild(
             texto
         );
-
-        // =========================================
-        // BOTONES DE TRADUCCIÓN
-        // =========================================
-
-        const idiomasPorCanal = {
-            2: "es",
-            3: "en",
-            4: "pt"
-        };
-
-        const idiomaOriginal =
-            mensaje.mens_language ||
-            idiomasPorCanal[Number(mensaje.id_chan)] ||
-            null;
-
-
-        console.log("IDIOMA ORIGINAL:", mensaje.mens_language);
-        console.log("TEXTO ORIGINAL:", mensaje.mens_content);
-
-        console.log(
-            "ID DEL MENSAJE:",
-            mensaje.id_mensaje
-        );
-
-        const textoOriginal =
-            mensaje.mens_content;
-        
-        const contenedorTraducciones =
-            document.createElement("div");
-
-        contenedorTraducciones.classList.add(
-            "botones-traduccion"
-        );
-
-        // Español → Inglés y Portugués
-        if (idiomaOriginal === "es") {
-
-            const botonIngles =
-                document.createElement("button");
-
-            botonIngles.type = "button";
-            botonIngles.textContent =
-                "🇬🇧 English";
-
-            botonIngles.dataset.idiomaDestino =
-                "en";
-
-            contenedorTraducciones.appendChild(
-                botonIngles
-            );
-
-            const botonPortugues =
-                document.createElement("button");
-
-            botonPortugues.type = "button";
-            botonPortugues.textContent =
-                "🇧🇷 Português";
-
-            botonPortugues.dataset.idiomaDestino =
-                "pt";
-
-            contenedorTraducciones.appendChild(
-                botonPortugues
-            );
-
-        }
-
-        // Inglés → Español y Portugués
-        else if (idiomaOriginal === "en") {
-
-            const botonEspanol =
-                document.createElement("button");
-
-            botonEspanol.type = "button";
-            botonEspanol.textContent =
-                "🇪🇸 Español";
-
-            botonEspanol.dataset.idiomaDestino =
-                "es";
-
-            contenedorTraducciones.appendChild(
-                botonEspanol
-            );
-
-            const botonPortugues =
-                document.createElement("button");
-
-            botonPortugues.type = "button";
-            botonPortugues.textContent =
-                "🇧🇷 Português";
-
-            botonPortugues.dataset.idiomaDestino =
-                "pt";
-
-            contenedorTraducciones.appendChild(
-                botonPortugues
-            );
-
-        }
-
-        // Portugués → Español y Inglés
-        else if (idiomaOriginal === "pt") {
-
-            const botonEspanol =
-                document.createElement("button");
-
-            botonEspanol.type = "button";
-            botonEspanol.textContent =
-                "🇪🇸 Español";
-
-            botonEspanol.dataset.idiomaDestino =
-                "es";
-
-            contenedorTraducciones.appendChild(
-                botonEspanol
-            );
-
-            const botonIngles =
-                document.createElement("button");
-
-            botonIngles.type = "button";
-            botonIngles.textContent =
-                "🇬🇧 English";
-
-            botonIngles.dataset.idiomaDestino =
-                "en";
-
-            contenedorTraducciones.appendChild(
-                botonIngles
-            );
-
-            }
-
-        
-        // =========================================
-        // ACCIONES DE LOS BOTONES DE TRADUCCIÓN
-        // =========================================
-
-        const botonesTraduccion =
-            contenedorTraducciones.querySelectorAll(
-                "button"
-            );
-
-        botonesTraduccion.forEach(
-            function (boton) {
-
-                boton.onclick = async function () {
-
-                    const idiomaDestino =
-                        boton.dataset.idiomaDestino;
-
-                    if (boton.disabled) {
-                        return;
-                    }
-
-                    const claveTraduccion =
-                        idiomaOriginal + "_" + idiomaDestino;
-
-                    if (!mensaje.traducciones) {
-                        mensaje.traducciones = {};
-                    }
-
-                    const textoOriginalBoton =
-                        boton.textContent;
-
-                    // =========================================
-                    // COMPROBAR SI YA EXISTE LA TRADUCCIÓN
-                    // =========================================
-
-                    if (
-                        mensaje.traducciones[claveTraduccion]
-                    ) {
-
-                        mostrarTraduccion(
-                            comentario,
-                            idiomaDestino,
-                            mensaje.traducciones[
-                                claveTraduccion
-                            ]
-                        );
-
-                        return;
-                    }
-
-                    // =========================================
-                    // SOLICITAR NUEVA TRADUCCIÓN
-                    // =========================================
-
-                    boton.disabled = true;
-                    boton.textContent = "Traduciendo...";
-
-                    try {
-
-                        const traduccion =
-                            await traducirTexto(
-                                textoOriginal,
-                                idiomaOriginal,
-                                idiomaDestino
-                            );
-
-                        if (!traduccion) {
-
-                            mostrarToast(
-                                "No se pudo traducir el mensaje.",
-                                "error"
-                            );
-
-                            return;
-                        }
-
-                        // =========================================
-                        // GUARDAR TRADUCCIÓN EN MEMORIA
-                        // =========================================
-
-                        mensaje.traducciones[
-                            claveTraduccion
-                        ] = traduccion;
-
-                        // =========================================
-                        // MOSTRAR TRADUCCIÓN
-                        // =========================================
-
-                        mostrarTraduccion(
-                            comentario,
-                            idiomaDestino,
-                            traduccion
-                        );
-
-                    }
-                    catch (error) {
-
-                        console.error(
-                            "Error al traducir el mensaje:",
-                            error
-                        );
-
-                        mostrarToast(
-                            "Ocurrió un error al traducir el mensaje.",
-                            "error"
-                        );
-
-                    }
-                    finally {
-
-                        boton.disabled = false;
-
-                        boton.textContent =
-                            textoOriginalBoton;
-
-                    }
-
-                };
-
-            }
-        );
-
-
-        // Solo mostrar el contenedor si tiene botones
-        if (contenedorTraducciones.children.length > 0) {
-
-            comentario.appendChild(
-                contenedorTraducciones
-            );
-
-        }
 
     }
 
@@ -3264,7 +3040,7 @@ async function buscarUsuariosDesdeBD(
             usuariosBD
         );
 
-        
+
 
         // =========================================
         // MOSTRAR RESULTADOS
@@ -3722,8 +3498,8 @@ document.addEventListener(
                     {
                         method: "POST",
                         headers: {
-                            "Content-Type":
-                                "application/json"
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                         },
                         body: JSON.stringify({
                             id_user:
@@ -4004,7 +3780,7 @@ if (
         "none";
 
 }
-        
+
 // =========================================
 // BOTÓN DE SILENCIAR / DEJAR DE SILENCIAR
 // =========================================
@@ -4264,8 +4040,8 @@ if (btnEnviarReporte) {
                             method: "POST",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                             },
 
                             body: JSON.stringify({
@@ -4391,11 +4167,11 @@ if (guardarBiografia) {
             document.getElementById(
                 "nuevaBiografia"
             ).value.trim();
-            
+
         const nuevoColor =
             document.getElementById(
                 "nuevoColor"
-            ).value;    
+            ).value;
 
             const nuevoAvatar =
                 document.getElementById(
@@ -4406,23 +4182,36 @@ if (guardarBiografia) {
 
         try {
 
-            const respuesta = await fetch(
-                "https://small-adventure.onrender.com/api/profiles/" +
-                usuarioActivo.id,
-                {
-                    method: "PUT",
+        const token = sessionStorage.getItem(
+            "tokenAutenticacion"
+        );
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        biography: nuevaBiografia,
-                        prof_color: nuevoColor,
-                        prof_avatar: nuevoAvatar
-                    })
-                }
+        if (!token) {
+            throw new Error(
+                "Tu sesión ha caducado. Inicia sesión nuevamente."
             );
+        }
+
+        const respuesta = await fetch(
+            "https://small-adventure.onrender.com/api/profiles/" +
+                usuarioActivo.id,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+                },
+
+                body: JSON.stringify({
+                    biography: nuevaBiografia,
+                    prof_color: nuevoColor,
+                    prof_avatar: nuevoAvatar
+                })
+            }
+        );
+
+
 
             const datos =
                 await respuesta.json();
@@ -5167,44 +4956,38 @@ document.addEventListener(
         // ENVIAR AL BACKEND
         // =========================================
 
+
+        const token = sessionStorage.getItem(
+            "tokenAutenticacion"
+        );
+
+        if (!token) {
+            mostrarToast(
+                "Tu sesión ha caducado. Inicia sesión nuevamente.",
+                "error"
+            );
+            return;
+        }
+
         fetch(
             "https://small-adventure.onrender.com/api/reports",
             {
-
                 method: "POST",
 
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                 },
 
                 body: JSON.stringify({
-
-                    id_user_repo:
-                        Number(
-                            usuarioActivoActual.id
-                        ),
-
-                    id_repo_user:
-                        Number(
-                            usuarioSeleccionadoId
-                        ),
-
-                    id_mens:
-                        Number(
-                            mensajeSeleccionadoId
-                        ),
-
-                    repo_motive:
-                        motivo,
-
-                    repo_description:
-                        descripcion
-
+                    id_repo_user: Number(usuarioSeleccionadoId),
+                    id_mens: Number(mensajeSeleccionadoId),
+                    repo_motive: motivo,
+                    repo_description: descripcion
                 })
-
             }
         )
+
 
         .then(function(respuesta) {
 
@@ -5479,8 +5262,8 @@ document.addEventListener(
                         method: "POST",
 
                         headers: {
-                            "Content-Type":
-                                "application/json"
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                         },
 
                         body: JSON.stringify({
@@ -5762,8 +5545,8 @@ document.addEventListener(
                         method: "POST",
 
                         headers: {
-                            "Content-Type":
-                                "application/json"
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                         },
 
                         body: JSON.stringify({
@@ -5921,8 +5704,8 @@ document.addEventListener(
                             method: "PUT",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                             },
 
                             body: JSON.stringify({
@@ -5986,8 +5769,8 @@ document.addEventListener(
                             method: "POST",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                             },
 
                             body: JSON.stringify({
@@ -6116,8 +5899,8 @@ document.addEventListener(
                             method: "PUT",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                             },
 
                             body: JSON.stringify({
@@ -6179,8 +5962,8 @@ document.addEventListener(
                             method: "POST",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
                             },
 
                             body: JSON.stringify({
@@ -6702,11 +6485,9 @@ if (botonGuardarCrearAdministrador) {
                             method: "POST",
 
                             headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },                            body: JSON.stringify({
 
                                 user_name:
                                     nombre.value.trim(),
@@ -6715,12 +6496,9 @@ if (botonGuardarCrearAdministrador) {
                                     correo.value.trim(),
 
                                 user_password:
-                                    password.value,
-
-                                id_user:
-                                    usuarioActivo.id
-
+                                    password.value
                             })
+
 
                         }
                     );
@@ -6929,23 +6707,12 @@ document.addEventListener(
         // =========================================
 
         elemento.innerHTML = `
-            <strong>
-                ${notificacion.noti_type}
-            </strong>
-
-            <p>
-                ${notificacion.noti_content}
-            </p>
-
-            <small>
-                ${notificacion.noti_status}
-            </small>
+            <strong>${escapar(notificacion.noti_type)}</strong>
+            <p>${escapar(notificacion.noti_content)}</p>
+            <small>${escapar(notificacion.noti_status)}</small>
         `;
 
-
-        lista.appendChild(
-            elemento
-        );
+        lista.appendChild(elemento);
 
     }
 );
@@ -7088,195 +6855,6 @@ document.addEventListener(
     }
 );
 
-// =========================================
-// AGREGAR COMENTARIOS
-// =========================================
-
-async function traducirTexto(
-    texto,
-    idiomaOrigen,
-    idiomaDestino
-) {
-
-    try {
-
-        const respuesta =
-            await fetch(
-                "https://small-adventure.onrender.com/translate",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        q: texto,
-                        source: idiomaOrigen,
-                        target: idiomaDestino,
-                        format: "text"
-                    })
-                }
-            );
-
-        if (!respuesta.ok) {
-
-            throw new Error(
-                "No se pudo traducir el texto."
-            );
-
-        }
-
-        const datos =
-            await respuesta.json();
-
-        return datos.translatedText;
-
-    }
-    catch (error) {
-
-        console.error(
-            "Error al traducir:",
-            error
-        );
-
-        return null;
-
-    }
-
-}
-
-function mostrarTraduccion(
-    comentario,
-    idiomaDestino,
-    traduccion
-) {
-
-    const traduccionExistente =
-        comentario.querySelector(
-            ".traduccion-mensaje[data-idioma='" +
-            idiomaDestino +
-            "']"
-        );
-
-    if (traduccionExistente) {
-        traduccionExistente.remove();
-    }
-
-    const bloqueTraduccion =
-        document.createElement("div");
-
-    bloqueTraduccion.classList.add(
-        "traduccion-mensaje"
-    );
-
-    bloqueTraduccion.dataset.idioma =
-        idiomaDestino;
-
-    // =========================================
-    // TÍTULO
-    // =========================================
-
-    const tituloTraduccion =
-        document.createElement("div");
-
-    tituloTraduccion.classList.add(
-        "titulo-traduccion"
-    );
-
-    if (idiomaDestino === "es") {
-
-        tituloTraduccion.textContent =
-            "🌐 Traducción · Español";
-
-    }
-    else if (idiomaDestino === "en") {
-
-        tituloTraduccion.textContent =
-            "🌐 Traducción · English";
-
-    }
-    else if (idiomaDestino === "pt") {
-
-        tituloTraduccion.textContent =
-            "🌐 Traducción · Português";
-
-    }
-
-    // =========================================
-    // BOTÓN CERRAR
-    // =========================================
-
-    const botonCerrarTraduccion =
-        document.createElement("button");
-
-    botonCerrarTraduccion.type = "button";
-
-    botonCerrarTraduccion.textContent =
-        "✕";
-
-    botonCerrarTraduccion.classList.add(
-        "boton-cerrar-traduccion"
-    );
-
-    botonCerrarTraduccion.onclick =
-        function() {
-
-            bloqueTraduccion.remove();
-
-        };
-
-    // =========================================
-    // CABECERA
-    // =========================================
-
-    const cabeceraTraduccion =
-        document.createElement("div");
-
-    cabeceraTraduccion.classList.add(
-        "cabecera-traduccion"
-    );
-
-    cabeceraTraduccion.appendChild(
-        tituloTraduccion
-    );
-
-    cabeceraTraduccion.appendChild(
-        botonCerrarTraduccion
-    );
-
-    bloqueTraduccion.appendChild(
-        cabeceraTraduccion
-    );
-
-    // =========================================
-    // TEXTO TRADUCIDO
-    // =========================================
-
-    const textoTraduccion =
-        document.createElement("div");
-
-    textoTraduccion.classList.add(
-        "texto-traduccion"
-    );
-
-    textoTraduccion.textContent =
-        traduccion;
-
-    bloqueTraduccion.appendChild(
-        textoTraduccion
-    );
-
-    // =========================================
-    // MOSTRAR TRADUCCIÓN
-    // =========================================
-
-    comentario.appendChild(
-        bloqueTraduccion
-    );
-}
-
 async function agregarComentario() {
 
     usuarioActivo = JSON.parse(
@@ -7332,38 +6910,48 @@ if (estadoSilencio.silenciado) {
 // POR MODERACIÓN
 // =========================================
 
+
 try {
+    const token = sessionStorage.getItem("tokenAutenticacion");
 
-    const respuestaBloqueo =
-        await fetch(
-            "https://small-adventure.onrender.com/api/interactions/bloqueo/" +
-            usuarioActivo.id
+    if (!token) {
+        mostrarToast(
+            "Tu sesión no tiene un token válido. Inicia sesión nuevamente.",
+            "error"
         );
+        return;
+    }
 
-    const datosBloqueo =
-        await respuestaBloqueo.json();
+    const respuestaBloqueo = await fetch(
+        "https://small-adventure.onrender.com/api/interactions/bloqueo-moderacion/" +
+        usuarioActivo.id,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    const datosBloqueo = await respuestaBloqueo.json();
 
     if (!respuestaBloqueo.ok) {
-
         throw new Error(
             datosBloqueo.error ||
             "No se pudo comprobar el bloqueo"
         );
-
     }
 
     if (datosBloqueo.bloqueado) {
-
         let mensajeBloqueo =
             "No puedes enviar mensajes porque estás bloqueado temporalmente.";
 
-        if (datosBloqueo.interaccion &&
-            datosBloqueo.interaccion.usin_date_end) {
-
-            const fechaFin =
-                new Date(
-                    datosBloqueo.interaccion.usin_date_end
-                );
+        if (
+            datosBloqueo.interaccion &&
+            datosBloqueo.interaccion.usin_date_end
+        ) {
+            const fechaFin = new Date(
+                datosBloqueo.interaccion.usin_date_end
+            );
 
             mensajeBloqueo +=
                 " Podrás volver a enviar mensajes el " +
@@ -7372,26 +6960,33 @@ try {
                     timeStyle: "short"
                 }) +
                 ".";
-
         }
 
-        mostrarToast(
-            mensajeBloqueo,
-            "error"
-        );
-
+        mostrarToast(mensajeBloqueo, "error");
         return;
-
     }
 
 } catch (error) {
+    console.error(
+        "Error al comprobar bloqueo de moderación:",
+        error
+    );
+
+    mostrarToast(
+        "No se pudo verificar tu estado de moderación. Intenta nuevamente.",
+        "error"
+    );
+
+    return;
+}
+
 
     console.error(
         "Error al comprobar bloqueo de moderación:",
         error
     );
 
-}
+
 
     let archivo =
         document.getElementById("imagenMensaje").files[0];
@@ -7511,22 +7106,55 @@ datosFormulario.append(
         // ENVIAR A MYSQL / BACKEND
         // =========================================
 
+
+        const token = sessionStorage.getItem("tokenAutenticacion");
+
+        if (!token) {
+            throw new Error(
+                "Tu sesión ha caducado. Inicia sesión nuevamente."
+            );
+        }
+
         const respuesta = await fetch(
             "https://small-adventure.onrender.com/api/messages",
             {
                 method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
+                },
 
                 body: datosFormulario
             }
         );
 
 
+
+
         if (!respuesta.ok) {
 
-            throw new Error(
-                "No se pudo guardar el mensaje"
-            );
+            let detalle = {};
 
+            try {
+                detalle = await respuesta.json();
+            } catch (error) {
+                // La respuesta no contenía JSON válido.
+            }
+
+            if (respuesta.status === 401) {
+                sessionStorage.removeItem("tokenAutenticacion");
+
+                throw new Error(
+                    detalle.error ||
+                    "Tu sesión ha caducado. Inicia sesión nuevamente."
+                );
+            }
+
+            throw new Error(
+                detalle.error ||
+                `No se pudo guardar el mensaje (HTTP ${respuesta.status}).`
+            );
         }
 
 
@@ -8387,7 +8015,7 @@ function terminarArrastre() {
 
     };
 
-    
+
 
 }
 

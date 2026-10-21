@@ -1,11 +1,10 @@
-const express = require('express');
 
+const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
-
 const db = require('../database/db');
-
 
 // =========================================
 // LOGIN
@@ -18,20 +17,34 @@ router.post('/login', (req, res) => {
         user_password
     } = req.body;
 
-
     // =========================================
     // COMPROBAR DATOS
     // =========================================
 
-    if (!user_mail || !user_password) {
-
+    if (
+        typeof user_mail !== 'string' ||
+        typeof user_password !== 'string' ||
+        user_mail.length === 0 || user_mail.length > 100 ||
+        user_password.length === 0 || user_password.length > 72
+    ) {
         return res.status(400).json({
-            error:
-                'Correo y contraseña son obligatorios'
+            error: 'Correo y contraseña son obligatorios.'
         });
-
     }
 
+    // =========================================
+    // COMPROBAR CONFIGURACIÓN JWT
+    // =========================================
+
+    const secreto = process.env.JWT_SECRET;
+
+    if (!secreto) {
+        console.error('Falta configurar JWT_SECRET.');
+
+        return res.status(500).json({
+            error: 'El servidor no tiene configurada la autenticación.'
+        });
+    }
 
     // =========================================
     // BUSCAR USUARIO POR CORREO
@@ -50,123 +63,113 @@ router.post('/login', (req, res) => {
     `;
 
 
+    
     db.query(
         sql,
         [user_mail],
         async (error, resultados) => {
 
             if (error) {
-
                 console.error(
                     'Error al buscar usuario:',
                     error
                 );
 
                 return res.status(500).json({
-                    error:
-                        'Error al iniciar sesión'
+                    error: 'Error al iniciar sesión.'
                 });
-
             }
-
 
             // =========================================
             // USUARIO NO EXISTE
             // =========================================
 
             if (resultados.length === 0) {
-
                 return res.status(401).json({
-                    error:
-                        'Correo o contraseña incorrectos'
+                    error: 'Correo o contraseña incorrectos.'
                 });
-
             }
 
-
-            const usuario =
-                resultados[0];
-
-
-            // =========================================
-            // COMPROBAR ESTADO
-            // =========================================
-
-            if (
-                usuario.user_status !==
-                'activo'
-            ) {
-
-                return res.status(403).json({
-                    error:
-                        'Esta cuenta no está activa.'
-                });
-
-            }
-
+            const usuario = resultados[0];
 
             // =========================================
             // COMPARAR CONTRASEÑA CON BCRYPT
             // =========================================
 
             try {
+                const contrasenaCorrecta = await bcrypt.compare(
+                    user_password,
+                    usuario.user_password
+                );
 
-                const contraseñaCorrecta =
-                    await bcrypt.compare(
-                        user_password,
-                        usuario.user_password
-                    );
-
-
-                if (!contraseñaCorrecta) {
-
+                if (!contrasenaCorrecta) {
                     return res.status(401).json({
-                        error:
-                            'Correo o contraseña incorrectos'
+                        error: 'Correo o contraseña incorrectos.'
                     });
-
                 }
 
+                if (usuario.user_status !== 'activo') {
+                    return res.status(403).json({
+                        error: 'Esta cuenta no está activa.'
+                    });
+                }
 
                 // =========================================
-                // LOGIN CORRECTO
+                // GENERAR TOKEN JWT
                 // =========================================
 
-                res.json({
+                const idUsuario = Number(usuario.id_user);
 
-                    id_user:
-                        usuario.id_user,
+                if (
+                    !Number.isSafeInteger(idUsuario) ||
+                    idUsuario <= 0
+                ) {
+                    console.error(
+                        'El ID del usuario no es un entero seguro.'
+                    );
 
-                    user_name:
-                        usuario.user_name,
+                    return res.status(500).json({
+                        error: 'No se pudo completar la autenticación.'
+                    });
+                }
 
-                    user_mail:
-                        usuario.user_mail,
+                const token = jwt.sign(
+                    {
+                        id_user: idUsuario
+                    },
+                    secreto,
+                    {
+                        algorithm: 'HS256',
+                        expiresIn: '1h'
+                    }
+                );
 
-                    id_role:
-                        usuario.id_role
-
+               return res.json({
+                    token,
+                    usuario: {
+                        id: idUsuario,
+                        id_user: idUsuario,
+                        nombre: usuario.user_name,
+                        user_name: usuario.user_name,
+                        rol: Number(usuario.id_role) === 1 ? 'admin' : 'usuario',
+                        id_role: Number(usuario.id_role)
+                    }
                 });
 
             } catch (error) {
 
                 console.error(
-                    'Error al comprobar contraseña:',
+                    'Error durante la autenticación:',
                     error
                 );
 
                 return res.status(500).json({
-                    error:
-                        'Error al comprobar la contraseña'
+                    error: 'Error al iniciar sesión.'
                 });
-
             }
-
         }
     );
-
 });
-
 
 // =========================================
 // EXPORTAR RUTAS

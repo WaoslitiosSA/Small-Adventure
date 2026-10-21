@@ -11,21 +11,24 @@ const bcrypt =
     require('bcrypt');
 
 const {
-    comprobarPermiso
+    autenticarToken
 } =
-    require('../middleware/permissions');
+    require('../middleware/auth');
+
+const {
+    comprobarPermiso
+} = require('../middleware/permissions');
 
 // =========================================
 // OBTENER USUARIOS
 // =========================================
 
-router.get('/users', (req, res) => {
+router.get('/users', autenticarToken, (req, res) => {
 
     const sql = `
         SELECT
             u.id_user,
             u.user_name,
-            u.user_mail,
             u.user_date_regi,
             u.id_role,
             p.prof_avatar,
@@ -67,7 +70,7 @@ router.get('/users', (req, res) => {
 // BUSCAR USUARIOS
 // =========================================
 
-router.get('/users/search', (req, res) => {
+router.get('/users/search', autenticarToken, (req, res) => {
 
     const campo =
         typeof req.query.campo === 'string'
@@ -83,10 +86,7 @@ router.get('/users/search', (req, res) => {
     // OBTENER ID DEL USUARIO ACTUAL
     // =========================================
 
-    const idUsuarioActual =
-        req.query.exclude
-            ? Number(req.query.exclude)
-            : null;
+        const idUsuarioActual = req.usuario.id_user;
 
     // =========================================
     // VALIDAR CAMPO
@@ -138,7 +138,6 @@ router.get('/users/search', (req, res) => {
         SELECT
             u.id_user,
             u.user_name,
-            u.user_mail,
             u.user_date_regi,
             u.id_role,
             r.role_name,
@@ -187,9 +186,7 @@ router.get('/users/search', (req, res) => {
             AND u.user_name LIKE ?
         `;
 
-        parametros.push(
-            `%${textoBusqueda}%`
-        );
+        parametros.push(`%${textoBusqueda.replace(/[\\%_]/g, '\\$&')}%`);
 
     }
 
@@ -200,12 +197,10 @@ router.get('/users/search', (req, res) => {
     else if (campo === 'correo') {
 
         sql += `
-            AND u.user_mail LIKE ?
+            AND u.user_mail = ?
         `;
 
-        parametros.push(
-            `%${textoBusqueda}%`
-        );
+        parametros.push(textoBusqueda);
 
     }
 
@@ -326,253 +321,6 @@ router.get('/users/search', (req, res) => {
 
 });
 
-// =========================================
-// ELIMINAR USUARIO LÓGICAMENTE
-// =========================================
-
-router.delete('/users/:id', (req, res) => {
-
-    const idUsuario =
-        req.params.id;
-
-    const idAdministrador =
-        req.body.id_user;
-
-
-    // =========================================
-    // VALIDAR DATOS
-    // =========================================
-
-    if (!idAdministrador) {
-
-        return res.status(400).json({
-            error:
-                'No se indicó el administrador que realiza la acción.'
-        });
-
-    }
-
-
-    // =========================================
-    // COMPROBAR ADMINISTRADOR
-    // =========================================
-
-    const sqlAdministrador = `
-        SELECT
-            id_user,
-            id_role
-        FROM users
-        WHERE id_user = ?
-        AND user_status = 'activo'
-        LIMIT 1
-    `;
-
-    db.query(
-        sqlAdministrador,
-        [idAdministrador],
-        (errorAdministrador, resultadosAdministrador) => {
-
-            if (errorAdministrador) {
-
-                console.error(
-                    'Error al comprobar administrador:',
-                    errorAdministrador
-                );
-
-                return res.status(500).json({
-                    error:
-                        'No se pudo comprobar el administrador.'
-                });
-
-            }
-
-
-            if (
-                resultadosAdministrador.length === 0
-            ) {
-
-                return res.status(404).json({
-                    error:
-                        'El administrador no existe o está inactivo.'
-                });
-
-            }
-
-
-            const administrador =
-                resultadosAdministrador[0];
-
-
-            // =========================================
-            // COMPROBAR ROL DE ADMINISTRADOR
-            // =========================================
-
-            if (
-                administrador.id_role !== 1
-            ) {
-
-                return res.status(403).json({
-                    error:
-                        'No tienes permisos para eliminar usuarios.'
-                });
-
-            }
-
-
-            // =========================================
-            // COMPROBAR USUARIO OBJETIVO
-            // =========================================
-
-            const sqlUsuario = `
-                SELECT
-                    id_user,
-                    user_name,
-                    user_status
-                FROM users
-                WHERE id_user = ?
-                LIMIT 1
-            `;
-
-            db.query(
-                sqlUsuario,
-                [idUsuario],
-                (errorUsuario, resultadosUsuario) => {
-
-                    if (errorUsuario) {
-
-                        console.error(
-                            'Error al buscar usuario:',
-                            errorUsuario
-                        );
-
-                        return res.status(500).json({
-                            error:
-                                'No se pudo buscar el usuario.'
-                        });
-
-                    }
-
-
-                    if (
-                        resultadosUsuario.length === 0
-                    ) {
-
-                        return res.status(404).json({
-                            error:
-                                'El usuario no existe.'
-                        });
-
-                    }
-
-
-                    const usuario =
-                        resultadosUsuario[0];
-
-
-                    // =========================================
-                    // COMPROBAR SI YA ESTÁ ELIMINADO
-                    // =========================================
-
-                    if (
-                        usuario.user_status ===
-                        'eliminado'
-                    ) {
-
-                        return res.status(400).json({
-                            error:
-                                'El usuario ya está eliminado.'
-                        });
-
-                    }
-
-
-                    // =========================================
-                    // EVITAR ELIMINAR AL PROPIO ADMINISTRADOR
-                    // =========================================
-
-                    if (
-                        Number(idUsuario) ===
-                        Number(idAdministrador)
-                    ) {
-
-                        return res.status(400).json({
-                            error:
-                                'No puedes eliminar tu propia cuenta desde el panel de moderación.'
-                        });
-
-                    }
-
-
-                    // =========================================
-                    // ELIMINACIÓN LÓGICA
-                    // =========================================
-
-                    const sqlEliminar = `
-                        UPDATE users
-                        SET user_status = 'eliminado'
-                        WHERE id_user = ?
-                    `;
-
-                    db.query(
-                        sqlEliminar,
-                        [idUsuario],
-                        (errorEliminar, resultadoEliminar) => {
-
-                            if (errorEliminar) {
-
-                                console.error(
-                                    'Error al eliminar usuario:',
-                                    errorEliminar
-                                );
-
-                                return res.status(500).json({
-                                    error:
-                                        'No se pudo eliminar el usuario.'
-                                });
-
-                            }
-
-
-                            if (
-                                resultadoEliminar.affectedRows === 0
-                            ) {
-
-                                return res.status(404).json({
-                                    error:
-                                        'No se pudo encontrar el usuario para eliminar.'
-                                });
-
-                            }
-
-
-                            // =========================================
-                            // RESPUESTA
-                            // =========================================
-
-                            console.log(
-                                'Usuario eliminado lógicamente:',
-                                idUsuario
-                            );
-
-                            return res.json({
-                                mensaje:
-                                    'Usuario eliminado correctamente.',
-                                id_user:
-                                    Number(idUsuario),
-                                user_status:
-                                    'eliminado'
-                            });
-
-                        }
-                    );
-
-                }
-            );
-
-        }
-    );
-
-});
 
 // =========================================
 // REGISTRAR USUARIO
@@ -590,17 +338,24 @@ router.post('/users', (req, res) => {
     // VALIDAR DATOS
     // =========================================
 
-    if (
-        !user_name ||
-        !user_mail ||
-        !user_password
-    ) {
+    const nombre =
+        typeof user_name === 'string' ? user_name.trim() : '';
 
+    const correo =
+        typeof user_mail === 'string' ? user_mail.trim() : '';
+
+    if (
+        typeof user_password !== 'string' ||
+        !/^[\p{L}\p{N}_ .-]{3,30}$/u.test(nombre) ||
+        correo.length > 100 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo) ||
+        user_password.length < 8 ||
+        Buffer.byteLength(user_password) > 72
+    ) {
         return res.status(400).json({
             error:
-                'Todos los campos son obligatorios'
+                'Datos inválidos. El nombre debe tener de 3 a 30 caracteres, el correo debe ser válido y la contraseña debe tener entre 8 y 72 caracteres.'
         });
-
     }
 
     // =========================================
@@ -619,6 +374,12 @@ router.post('/users', (req, res) => {
                     errorHash
                 );
 
+                if (error.code === 'ER_DUP_ENTRY') {
+                    return res.status(409).json({
+                        error: 'Ese correo ya está registrado.'
+                    });
+                }
+
                 return res.status(500).json({
                     error:
                         'Error al registrar usuario'
@@ -633,8 +394,8 @@ router.post('/users', (req, res) => {
             const sqlUsuario = `
                 INSERT INTO users
                 (
-                    user_name,
-                    user_mail,
+                    nombre,
+                    correo,
                     user_password,
                     id_role
                 )
@@ -727,10 +488,10 @@ router.post('/users', (req, res) => {
                                     resultadoPerfil.insertId,
 
                                 user_name:
-                                    user_name,
+                                    nombre,
 
                                 user_mail:
-                                    user_mail,
+                                    correo,
 
                                 id_role:
                                     2
@@ -752,278 +513,135 @@ router.post('/users', (req, res) => {
 // CREAR ADMINISTRADOR
 // =========================================
 
-router.post('/admin/users', (req, res) => {
+
+router.post('/admin/users', autenticarToken, (req, res) => {
+
+    const idAdministrador = req.usuario.id_user;
 
     const {
         user_name,
         user_mail,
-        user_password,
-        id_user
+        user_password
     } = req.body;
 
-    // =========================================
-    // VALIDAR DATOS
-    // =========================================
-
     if (
-        !user_name ||
-        !user_mail ||
-        !user_password ||
-        !id_user
+        typeof user_name !== 'string' ||
+        typeof user_mail !== 'string' ||
+        typeof user_password !== 'string' ||
+        !user_name.trim() ||
+        !user_mail.trim() ||
+        !user_password
     ) {
-
         return res.status(400).json({
-            error:
-                'Todos los campos son obligatorios.'
+            error: 'Todos los campos son obligatorios y deben ser válidos.'
         });
-
     }
 
-    // =========================================
-    // COMPROBAR ADMINISTRADOR QUE REALIZA
-    // LA ACCIÓN
-    // =========================================
+    comprobarPermiso(
+        idAdministrador,
+        'gestionar_administradores',
+        (errorPermiso, tienePermiso) => {
 
-    const sqlAdministrador = `
-        SELECT
-            id_user,
-            id_role,
-            user_status
-        FROM users
-        WHERE id_user = ?
-        LIMIT 1
-    `;
-
-    db.query(
-        sqlAdministrador,
-        [id_user],
-        (errorAdministrador, resultadosAdministrador) => {
-
-            if (errorAdministrador) {
-
-                console.error(
-                    'Error al comprobar administrador:',
-                    errorAdministrador
-                );
-
+            if (errorPermiso) {
+                console.error('Error al comprobar permiso:', errorPermiso);
                 return res.status(500).json({
-                    error:
-                        'No se pudo comprobar el administrador.'
+                    error: 'No se pudo comprobar el permiso del administrador.'
                 });
-
             }
 
-            // =========================================
-            // ADMINISTRADOR NO EXISTE
-            // =========================================
-
-            if (
-                resultadosAdministrador.length === 0
-            ) {
-
-                return res.status(404).json({
-                    error:
-                        'El usuario que realiza la acción no existe.'
-                });
-
-            }
-
-            const administrador =
-                resultadosAdministrador[0];
-
-            // =========================================
-            // COMPROBAR ESTADO
-            // =========================================
-
-            if (
-                administrador.user_status !==
-                'activo'
-            ) {
-
+            if (!tienePermiso) {
                 return res.status(403).json({
-                    error:
-                        'El administrador no está activo.'
+                    error: 'No tienes permisos para crear administradores.'
                 });
-
             }
 
-            // =========================================
-            // COMPROBAR PERMISO
-            // =========================================
+            bcrypt.hash(
+                user_password,
+                12,
+                (errorHash, passwordHash) => {
 
-            comprobarPermiso(
-                id_user,
-                'gestionar_administradores',
-                (errorPermiso, tienePermiso) => {
-
-                    if (errorPermiso) {
-
-                        console.error(
-                            'Error al comprobar permiso:',
-                            errorPermiso
-                        );
-
+                    if (errorHash) {
+                        console.error('Error al proteger la contraseña:', errorHash);
                         return res.status(500).json({
-                            error:
-                                'No se pudo comprobar el permiso del administrador.'
+                            error: 'No se pudo proteger la contraseña.'
                         });
-
                     }
 
-                    if (!tienePermiso) {
+                    const sqlUsuario = `
+                        INSERT INTO users
+                        (
+                            user_name,
+                            user_mail,
+                            user_password,
+                            id_role
+                        )
+                        VALUES (?, ?, ?, ?)
+                    `;
 
-                        return res.status(403).json({
-                            error:
-                                'No tienes permisos para crear administradores.'
-                        });
+                    db.query(
+                        sqlUsuario,
+                        [
+                            user_name.trim(),
+                            user_mail.trim(),
+                            passwordHash,
+                            1
+                        ],
+                        (errorUsuario, resultadoUsuario) => {
 
-                    }
-
-                    // =========================================
-                    // PROTEGER CONTRASEÑA
-                    // =========================================
-
-                    bcrypt.hash(
-                        user_password,
-                        12,
-                        (errorHash, passwordHash) => {
-
-                            if (errorHash) {
-
-                                console.error(
-                                    'Error al proteger la contraseña del administrador:',
-                                    errorHash
-                                );
-
+                            if (errorUsuario) {
+                                console.error('Error al crear administrador:', errorUsuario);
                                 return res.status(500).json({
-                                    error:
-                                        'No se pudo proteger la contraseña del administrador.'
+                                    error: 'No se pudo crear el administrador.'
                                 });
-
                             }
 
-                            // =========================================
-                            // CREAR NUEVO ADMINISTRADOR
-                            // =========================================
+                            const nuevoIdUsuario = resultadoUsuario.insertId;
 
-                            const sqlUsuario = `
-                                INSERT INTO users
+                            const sqlPerfil = `
+                                INSERT INTO profiles
                                 (
-                                    user_name,
-                                    user_mail,
-                                    user_password,
-                                    id_role
+                                    id_user,
+                                    prof_avatar,
+                                    prof_color,
+                                    biography
                                 )
                                 VALUES (?, ?, ?, ?)
                             `;
 
                             db.query(
-                                sqlUsuario,
+                                sqlPerfil,
                                 [
-                                    user_name,
-                                    user_mail,
-                                    passwordHash,
-                                    1
+                                    nuevoIdUsuario,
+                                    'assets/avatars/the_traveler.jpeg',
+                                    'purple',
+                                    ''
                                 ],
-                                (errorUsuario, resultadoUsuario) => {
+                                (errorPerfil, resultadoPerfil) => {
 
-                                    if (errorUsuario) {
-
-                                        console.error(
-                                            'Error al crear administrador:',
-                                            errorUsuario
-                                        );
-
+                                    if (errorPerfil) {
+                                        console.error('Error al crear perfil del administrador:', errorPerfil);
                                         return res.status(500).json({
-                                            error:
-                                                'No se pudo crear el administrador.'
+                                            error: 'El administrador fue creado, pero no se pudo crear su perfil.'
                                         });
-
                                     }
 
-                                    const nuevoIdUsuario =
-                                        resultadoUsuario.insertId;
-
-                                    // =========================================
-                                    // CREAR PERFIL DEL ADMINISTRADOR
-                                    // =========================================
-
-                                    const sqlPerfil = `
-                                        INSERT INTO profiles
-                                        (
-                                            id_user,
-                                            prof_avatar,
-                                            prof_color,
-                                            biography
-                                        )
-                                        VALUES (?, ?, ?, ?)
-                                    `;
-
-                                    db.query(
-                                        sqlPerfil,
-                                        [
-                                            nuevoIdUsuario,
-                                            'assets/avatars/the_traveler.jpeg',
-                                            'purple',
-                                            ''
-                                        ],
-                                        (errorPerfil, resultadoPerfil) => {
-
-                                            if (errorPerfil) {
-
-                                                console.error(
-                                                    'Error al crear perfil del administrador:',
-                                                    errorPerfil
-                                                );
-
-                                                return res.status(500).json({
-                                                    error:
-                                                        'El administrador fue creado, pero no se pudo crear su perfil.'
-                                                });
-
-                                            }
-
-                                            // =========================================
-                                            // RESPUESTA
-                                            // =========================================
-
-                                            return res.status(201).json({
-
-                                                mensaje:
-                                                    'Administrador creado correctamente.',
-
-                                                id_user:
-                                                    nuevoIdUsuario,
-
-                                                id_prof:
-                                                    resultadoPerfil.insertId,
-
-                                                user_name:
-                                                    user_name,
-
-                                                user_mail:
-                                                    user_mail,
-
-                                                id_role:
-                                                    1
-
-                                            });
-
-                                        }
-                                    );
-
+                                    return res.status(201).json({
+                                        mensaje: 'Administrador creado correctamente.',
+                                        id_user: nuevoIdUsuario,
+                                        id_prof: resultadoPerfil.insertId,
+                                        user_name: user_name.trim(),
+                                        user_mail: user_mail.trim(),
+                                        id_role: 1
+                                    });
                                 }
                             );
-
                         }
                     );
-
                 }
             );
-
         }
     );
-
 });
+
 
 module.exports = router;

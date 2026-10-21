@@ -9,186 +9,219 @@ const {
 } =
     require('../middleware/permissions');
 
+const {
+    autenticarToken
+} = require('../middleware/auth');
+
 const router =
     express.Router();
 
+const rateLimit = require('express-rate-limit');
+
+const limiteReportes = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    keyGenerator: (req) => String(req.usuario.id_user),
+    message: { error: 'Has enviado demasiados reportes. Intenta más tarde.' }
+});
 
 // =========================================
 // OBTENER REPORTES
 // =========================================
 
-router.get('/reports', (req, res) => {
 
-    const idUsuario =
-        req.query.id_user;
+router.get(
+    '/reports',
+    autenticarToken,
+    (req, res) => {
 
-    comprobarPermiso(
-        idUsuario,
-        'ver_reportes',
-        (errorPermiso, tienePermiso) => {
+        // Identidad obtenida del token JWT.
+        const idUsuario =
+            req.usuario.id_user;
 
-            // =========================================
-            // COMPROBAR PERMISO
-            // =========================================
+        comprobarPermiso(
+            idUsuario,
+            'ver_reportes',
+            (errorPermiso, tienePermiso) => {
 
-            if (errorPermiso) {
-
-                return res.status(500).json({
-                    error:
-                        'No se pudo comprobar el permiso para ver reportes.'
-                });
-
-            }
-
-            if (!tienePermiso) {
-
-                return res.status(403).json({
-                    error:
-                        'No tienes permisos para ver los reportes.'
-                });
-
-            }
-
-
-            const sql = `
-                SELECT
-                    r.id_repo,
-                    r.id_user_repo,
-                    reporter.user_name AS usuario_reporta,
-                    r.id_repo_user,
-                    reported.user_name AS usuario_reportado,
-                    r.id_mens,
-                    r.repo_motive,
-                    r.repo_description,
-                    r.repo_date,
-                    r.repo_status,
-                    m.mens_content
-                FROM reports AS r
-
-                INNER JOIN users AS reporter
-                    ON r.id_user_repo = reporter.id_user
-
-                INNER JOIN users AS reported
-                    ON r.id_repo_user = reported.id_user
-
-                INNER JOIN menssages AS m
-                    ON r.id_mens = m.id_mensaje
-
-                ORDER BY r.id_repo DESC
-            `;
-
-            db.query(
-                sql,
-                (error, resultados) => {
-
-                    if (error) {
-
-                        console.error(
-                            "Error al obtener reportes:",
-                            error
-                        );
-
-                        return res.status(500).json({
-                            error:
-                                "Error al obtener reportes"
-                        });
-
-                    }
-
-                    console.log(
-                        "Reportes recibidos desde MySQL:",
-                        resultados
-                    );
-
-                    return res.json(
-                        resultados
-                    );
-
+                if (errorPermiso) {
+                    return res.status(500).json({
+                        error:
+                            'No se pudo comprobar el permiso para ver reportes.'
+                    });
                 }
-            );
 
-        }
-    );
+                if (!tienePermiso) {
+                    return res.status(403).json({
+                        error:
+                            'No tienes permisos para ver los reportes.'
+                    });
+                }
 
-});
+                const sql = `
+                    SELECT
+                        r.id_repo,
+                        r.id_user_repo,
+                        reporter.user_name AS usuario_reporta,
+                        r.id_repo_user,
+                        reported.user_name AS usuario_reportado,
+                        r.id_mens,
+                        r.repo_motive,
+                        r.repo_description,
+                        r.repo_date,
+                        r.repo_status,
+                        m.mens_content
+                    FROM reports AS r
 
+                    INNER JOIN users AS reporter
+                        ON r.id_user_repo = reporter.id_user
+
+                    INNER JOIN users AS reported
+                        ON r.id_repo_user = reported.id_user
+
+                    INNER JOIN menssages AS m
+                        ON r.id_mens = m.id_mensaje
+
+                    ORDER BY r.id_repo DESC
+                    LIMIT 200
+                `;
+
+                db.query(
+                    sql,
+                    (error, resultados) => {
+
+                        if (error) {
+                            console.error(
+                                'Error al obtener reportes:',
+                                error
+                            );
+
+                            return res.status(500).json({
+                                error:
+                                    'Error al obtener reportes'
+                            });
+                        }
+
+                        return res.json(resultados);
+                    }
+                );
+
+            }
+        );
+
+    }
+);
 
 // =========================================
 // CREAR REPORTE
 // =========================================
 
-router.post('/reports', (req, res) => {
+router.post('/reports', autenticarToken, limiteReportes, (req, res) => {
 
-    const {
-        id_user_repo,
-        id_repo_user,
-        id_mens,
-        repo_motive,
-        repo_description
-    } = req.body;
+        const {
+            id_repo_user,
+            id_mens,
+            repo_motive,
+            repo_description
+        } = req.body;
+
+        // La identidad del autor procede del JWT.
+        const id_user_repo =
+            req.usuario.id_user;
+
+
+        // =========================================
+        // VERIFICAR DATOS OBLIGATORIOS
+        // =========================================
+
+        const motivo = typeof repo_motive === 'string' ? repo_motive.trim() : '';
+        const descripcion = typeof repo_description === 'string' ? repo_description.trim() : '';
+
+        if (
+            !Number.isInteger(id_user_repo) ||
+            id_user_repo <= 0 ||
+            !Number.isInteger(Number(id_repo_user)) ||
+            Number(id_repo_user) <= 0 ||
+            !Number.isInteger(Number(id_mens)) ||
+            Number(id_mens) <= 0 ||
+            !motivo || motivo.length > 100 ||
+            !descripcion || descripcion.length > 1000
+        ) {
+            return res.status(400).json({
+                error: 'Faltan datos válidos para crear el reporte'
+            });
+        }
+
+        // Normalizar los IDs para las consultas SQL.
+        const idUsuarioReportado =
+            Number(id_repo_user);
+
+        const idMensajeReportado =
+            Number(id_mens);
+
+        if (idUsuarioReportado === id_user_repo) {
+            return res.status(400).json({ error: 'No puedes reportarte a ti mismo.' });
+        }
 
     // =========================================
-    // VERIFICAR DATOS OBLIGATORIOS
-    // =========================================
-
-    if (
-        !id_user_repo ||
-        !id_repo_user ||
-        !id_mens ||
-        !repo_motive ||
-        !repo_description
-    ) {
-
-        return res.status(400).json({
-            error:
-                'Faltan datos para crear el reporte'
-        });
-
-    }
-
-
-    // =========================================
-    // COMPROBAR ROL DEL USUARIO
+    // COMPROBAR ROL Y PROPIETARIO DEL MENSAJE
     // =========================================
 
     const sqlRol = `
-        SELECT id_role
-        FROM users
-        WHERE id_user = ?
+        SELECT
+            u.id_role,
+            m.id_user AS id_propietario_mensaje
+        FROM users AS u
+        INNER JOIN menssages AS m
+            ON m.id_mensaje = ?
+        WHERE u.id_user = ?
     `;
 
     db.query(
         sqlRol,
-        [id_user_repo],
+        [
+            idMensajeReportado,
+            id_user_repo
+        ],
         (error, resultadosRol) => {
 
             if (error) {
 
                 console.error(
-                    'Error al consultar el rol del usuario:',
+                    'Error al comprobar el usuario y el mensaje:',
                     error
                 );
 
                 return res.status(500).json({
                     error:
-                        'Error al consultar el rol del usuario'
+                        'Error al comprobar los datos del reporte'
                 });
-
             }
 
-            if (
-                resultadosRol.length === 0
-            ) {
+            if (resultadosRol.length === 0) {
 
                 return res.status(404).json({
                     error:
-                        'El usuario que realiza el reporte no existe'
+                        'El usuario o el mensaje no existe'
                 });
+            }
 
+            // Comprobar que el mensaje pertenece
+            // al usuario que se intenta reportar.
+            if (
+                Number(
+                    resultadosRol[0].id_propietario_mensaje
+                ) !== idUsuarioReportado
+            ) {
+
+                return res.status(400).json({
+                    error:
+                        'El usuario reportado no es el propietario del mensaje'
+                });
             }
 
             const esAdmin =
-                resultadosRol[0].id_role === 1;
+                Number(resultadosRol[0].id_role) === 1;
 
 
             // =========================================
@@ -196,24 +229,24 @@ router.post('/reports', (req, res) => {
             // =========================================
 
             const sqlReporte = `
-                INSERT INTO reports
-                (
-                    id_user_repo,
-                    id_repo_user,
-                    id_mens,
-                    repo_motive,
-                    repo_description,
-                    repo_status
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-            `;
+            INSERT INTO reports
+            (
+                id_user_repo,
+                id_repo_user,
+                id_mens,
+                motivo,
+                description,
+                repo_status
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
 
             db.query(
                 sqlReporte,
                 [
                     id_user_repo,
-                    id_repo_user,
-                    id_mens,
+                    idUsuarioReportado,
+                    idMensajeReportado,
                     repo_motive,
                     repo_description,
                     'pendiente'
@@ -259,10 +292,10 @@ router.post('/reports', (req, res) => {
                     db.query(
                         sqlNotificacionUsuario,
                         [
-                            id_repo_user,
+                            idUsuarioReportado,
                             'reporte',
                             contenidoUsuario,
-                            id_mens
+                            idMensajeReportado
                         ],
                         (error) => {
 
@@ -303,8 +336,9 @@ router.post('/reports', (req, res) => {
 
                             const sqlAdministradores = `
                                 SELECT id_user
-                                FROM users
-                                WHERE id_role = 1
+                                FROM users 
+                                WHERE id_role = 1 
+                                AND user_status = 'activo'
                             `;
 
                             db.query(
@@ -359,7 +393,7 @@ router.post('/reports', (req, res) => {
                                                     admin.id_user,
                                                     'reporte',
                                                     contenidoAdmin,
-                                                    id_mens
+                                                    idMensajeReportado
                                                 ],
                                                 (error) => {
 
@@ -429,88 +463,88 @@ router.post('/reports', (req, res) => {
 // ACTUALIZAR ESTADO DE UN REPORTE
 // =========================================
 
-router.put('/reports/:id', (req, res) => {
 
-    const idReporte =
-        Number(req.params.id);
+router.put(
+    '/reports/:id',
+    autenticarToken,
+    (req, res) => {
 
-    const {
-        repo_status,
-        id_user
-    } = req.body;
+        const idReporte =
+            Number(req.params.id);
 
-
-    // =========================================
-    // VALIDAR DATOS
-    // =========================================
-
-    if (
-        !idReporte ||
-        !repo_status ||
-        !id_user
-    ) {
-
-        return res.status(400).json({
-            error:
-                "El ID del reporte, el estado y el usuario son obligatorios"
-        });
-
-    }
-
-
-    // =========================================
-    // ESTADOS PERMITIDOS
-    // =========================================
-
-    const estadosPermitidos = [
-        "pendiente",
-        "resuelto",
-        "descartado"
-    ];
-
-
-    if (
-        !estadosPermitidos.includes(
+        const {
             repo_status
-        )
-    ) {
+        } = req.body;
 
-        return res.status(400).json({
-            error:
-                "Estado de reporte no válido"
-        });
+        // La identidad del autor procede del JWT.
+        const id_user_repo =
+            req.usuario.id_user;
 
-    }
-
-
-    // =========================================
-    // COMPROBAR PERMISO
-    // =========================================
-
-    comprobarPermiso(
-        id_user,
-        'gestionar_reportes',
-        (errorPermiso, tienePermiso) => {
-
-            if (errorPermiso) {
-
-                return res.status(500).json({
-                    error:
-                        "No se pudo comprobar el permiso para gestionar reportes."
-                });
-
-            }
+        // No confiamos en un ID enviado por el navegador.
+        const id_user =
+            req.usuario.id_user;
 
 
-            if (!tienePermiso) {
+        // =========================================
+        // VALIDAR DATOS
+        // =========================================
 
-                return res.status(403).json({
-                    error:
-                        "No tienes permisos para gestionar los reportes."
-                });
+        if (
+            !Number.isInteger(idReporte) ||
+            idReporte <= 0 ||
+            !repo_status
+        ) {
+            return res.status(400).json({
+                error:
+                    "El ID del reporte y el estado son obligatorios y deben ser válidos."
+            });
+        }
 
-            }
 
+        // =========================================
+        // ESTADOS PERMITIDOS
+        // =========================================
+
+        const estadosPermitidos = [
+            "pendiente",
+            "resuelto",
+            "descartado"
+        ];
+
+        if (
+            !estadosPermitidos.includes(
+                repo_status
+            )
+        ) {
+            return res.status(400).json({
+                error:
+                    "Estado de reporte no válido"
+            });
+        }
+
+
+        // =========================================
+        // COMPROBAR PERMISO
+        // =========================================
+
+        comprobarPermiso(
+            id_user,
+            'gestionar_reportes',
+            (errorPermiso, tienePermiso) => {
+
+                if (errorPermiso) {
+                    return res.status(500).json({
+                        error:
+                            "No se pudo comprobar el permiso para gestionar reportes."
+                    });
+                }
+
+                if (!tienePermiso) {
+                    return res.status(403).json({
+                        error:
+                            "No tienes permisos para gestionar los reportes."
+                    });
+                }
 
             // =========================================
             // BUSCAR EL REPORTE
@@ -682,14 +716,7 @@ router.put('/reports/:id', (req, res) => {
                                                 noti_status,
                                                 id_mensaje
                                             )
-                                            VALUES
-                                            (
-                                                ?,
-                                                'reporte',
-                                                ?,
-                                                'no_leida',
-                                                ?
-                                            )
+                                            VALUES (?, 'reporte', ?, 'no_leida', ?)
                                         `;
 
                                         db.query(
