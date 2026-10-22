@@ -261,70 +261,6 @@ if (
 // La identidad procede del JWT, no del navegador.
 const id_user = req.usuario.id_user;
 
-        
-
-    let mens_language = null;
-
-    // =========================================
-    // DETECTAR IDIOMA DEL MENSAJE
-    // =========================================
-
-    const idiomasPorCanal = {
-        2: 'es',
-        3: 'en',
-        4: 'pt'
-    };
-
-    const textoMensaje =
-        typeof mens_content === 'string'
-            ? mens_content.trim()
-            : '';
-
-    if (textoMensaje.length >= 10) {
-        try {
-            const { franc } = await import('franc');
-
-            const idiomaDetectado = franc(
-                textoMensaje,
-                { minLength: 10 }
-            );
-
-            const equivalencias = {
-                spa: 'es',
-                eng: 'en',
-                por: 'pt'
-            };
-
-            mens_language =
-                equivalencias[idiomaDetectado] || null;
-
-            console.log(
-                'Idioma detectado por franc:',
-                idiomaDetectado
-            );
-
-        } catch (error) {
-            console.error(
-                'Error al detectar idioma:',
-                error
-            );
-        }
-    }
-
-    // =========================================
-    // RESPALDO SEGÚN EL IDIOMA DEL CANAL
-    // =========================================
-
-    if (!mens_language) {
-        mens_language =
-            idiomasPorCanal[Number(id_chan)] || null;
-    }
-
-    console.log('Texto del mensaje:', textoMensaje);
-    console.log('Canal del mensaje:', id_chan);
-    console.log('Idioma que se guardará:', mens_language);
-
-
         // =========================================
         // VERIFICAR SI EL USUARIO ESTÁ
         // SANCIONADO POR SILENCIO
@@ -525,15 +461,16 @@ const id_user = req.usuario.id_user;
             function guardarMensaje(mens_image) {
 
                 const sql = `
-                    INSERT INTO menssages (
+                    INSERT INTO menssages [
                         id_user,
-                        mens_content,
+                        textoLimpio || null,
                         mens_image,
-                        mens_status,
-                        id_mens_fath,
-                        id_chan,
-                        mens_language
-                    )
+                        'activo',          // usa el valor real que manda hoy tu frontend
+                        padre,
+                        canal,
+                        null               // mens_language: ya no se usa
+                    ]
+                        
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 `;
 

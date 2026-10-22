@@ -228,14 +228,14 @@ router.post('/reports', autenticarToken, limiteReportes, (req, res) => {
             // GUARDAR EL REPORTE
             // =========================================
 
-            const sqlReporte = `
+        const sqlReporte = `
             INSERT INTO reports
             (
                 id_user_repo,
                 id_repo_user,
                 id_mens,
-                motivo,
-                description,
+                repo_motive,
+                repo_description,
                 repo_status
             )
             VALUES (?, ?, ?, ?, ?, ?)
