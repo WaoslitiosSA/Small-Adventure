@@ -136,6 +136,10 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
+process.on('uncaughtException', (error) => {
+    console.error('Excepción no capturada:', error);
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
