@@ -7017,25 +7017,22 @@ try {
 }
 
 
-    let archivo =
-        document.getElementById("imagenMensaje").files[0];
-
+    
 
     // =========================================
     // VALIDAR QUE HAYA TEXTO O IMAGEN
     // =========================================
 
-    if (mensaje === "" && !archivo) {
+   const archivo = inputImagen.files[0];
 
-        mostrarToast(
-            "Escribe un comentario o selecciona una imagen.",
-            "error"
-        );
+if (archivo && archivo.size > 5 * 1024 * 1024) {
+    mostrarToast("La imagen supera el límite de 5 MB.", "error");
+    return;
+}
 
-        return;
+// ...aquí sigue tu código normal (validar texto, crear FormData, etc.)
 
-    }
-
+    
 
     try {
 
