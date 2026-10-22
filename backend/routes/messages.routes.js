@@ -460,17 +460,16 @@ const id_user = req.usuario.id_user;
             // obtenida la URL de Cloudinary.
             function guardarMensaje(mens_image) {
 
-                const sql = `
-                    INSERT INTO menssages [
+                               const sql = `
+                    INSERT INTO menssages (
                         id_user,
-                        textoLimpio || null,
+                        mens_content,
                         mens_image,
-                        'activo',          
-                        padre,
-                        canal,
-                        null          
-                    ]
-                        
+                        mens_status,
+                        id_mens_fath,
+                        id_chan,
+                        mens_language
+                    )
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 `;
 
@@ -478,12 +477,12 @@ const id_user = req.usuario.id_user;
                     sql,
                     [
                         id_user,
-                        mens_content || null,
+                        textoLimpio || null,
                         mens_image,
-                        mens_status,
-                        id_mens_fath || null,
-                        id_chan,
-                        mens_language
+                        'activo',
+                        padre,
+                        canal,
+                        null
                     ],
                     (error, resultado) => {
 
@@ -512,6 +511,7 @@ const id_user = req.usuario.id_user;
                         });
                     }
                 );
+
             }
 
             // Si el mensaje no tiene imagen,
