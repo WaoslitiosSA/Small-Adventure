@@ -465,10 +465,10 @@ const id_user = req.usuario.id_user;
                         id_user,
                         textoLimpio || null,
                         mens_image,
-                        'activo',          // usa el valor real que manda hoy tu frontend
+                        'activo',          
                         padre,
                         canal,
-                        null               // mens_language: ya no se usa
+                        null          
                     ]
                         
                     VALUES (?, ?, ?, ?, ?, ?, ?)
