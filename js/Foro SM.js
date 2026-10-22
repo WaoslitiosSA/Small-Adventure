@@ -6,45 +6,33 @@ const fetchOriginal = window.fetch.bind(window);
 
 window.fetch = function (url, opciones = {}) {
 
-    if (
+    const esApi =
         typeof url === "string" &&
-        url.startsWith("https://small-adventure.onrender.com/api")
-    ) {
+        url.startsWith("https://small-adventure.onrender.com/api");
+
+    if (esApi) {
         const token = sessionStorage.getItem("tokenAutenticacion");
 
-        const cabeceras = { ...(opciones.headers || {}) };
-
-        if (opciones.body instanceof FormData) {
-            delete cabeceras["Content-Type"];
-            delete cabeceras["content-type"];
-        }
-
-        cabeceras["Authorization"] = `Bearer ${token}`;
-        opciones.headers = cabeceras;
-
         if (token) {
-            opciones.headers = {
-                ...(opciones.headers || {}),
-                "Authorization": `Bearer ${token}`
-            };
+            const cabeceras = new Headers(opciones.headers || {});
+
+            if (opciones.body instanceof FormData) {
+                cabeceras.delete("Content-Type");
+            }
+
+            cabeceras.set("Authorization", `Bearer ${token}`);
+            opciones = { ...opciones, headers: cabeceras };
         }
     }
 
-        return fetchOriginal(url, opciones).then((respuesta) => {
-
-        const esApi =
-            typeof url === "string" &&
-            url.startsWith("https://small-adventure.onrender.com/api");
-
+    return fetchOriginal(url, opciones).then((respuesta) => {
         if (respuesta.status === 401 && esApi) {
             sessionStorage.removeItem("tokenAutenticacion");
             localStorage.removeItem("usuarioActivo");
             window.location.href = "index.html";
         }
-
         return respuesta;
     });
-    
 };
 
 function escapar(valor) {
