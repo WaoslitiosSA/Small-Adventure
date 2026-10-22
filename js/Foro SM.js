@@ -12,6 +12,16 @@ window.fetch = function (url, opciones = {}) {
     ) {
         const token = sessionStorage.getItem("tokenAutenticacion");
 
+        const cabeceras = { ...(opciones.headers || {}) };
+
+        if (opciones.body instanceof FormData) {
+            delete cabeceras["Content-Type"];
+            delete cabeceras["content-type"];
+        }
+
+        cabeceras["Authorization"] = `Bearer ${token}`;
+        opciones.headers = cabeceras;
+
         if (token) {
             opciones.headers = {
                 ...(opciones.headers || {}),
@@ -7150,12 +7160,6 @@ datosFormulario.append(
             "https://small-adventure.onrender.com/api/messages",
             {
                 method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${sessionStorage.getItem("tokenAutenticacion")}`
-                },
-
                 body: datosFormulario
             }
         );
